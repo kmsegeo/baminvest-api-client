@@ -1,0 +1,26 @@
+{
+  "name": "bam-client-api",
+  "version": "1.0.0",
+  "description": "Application Bridge Asset Management (BAM), pour améliorer l'accessibilité aux produits et services financiers.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mediasoftci",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1",
+    "pg-promise": "^11.10.2",
+    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^11.0.5",
+    "winston": "^3.17.0"
+  }
+}
