@@ -1,4 +1,4 @@
-const { default: response } = require('../middlewares/response');
+const response = require('../middlewares/response');
 const PaiementActeur = require('../models/PaiementActeur');
 const Session = require('../models/Session');
 const TypeMoyenPaiement = require('../models/TypeMoyenPaiement');

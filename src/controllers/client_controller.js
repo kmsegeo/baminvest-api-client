@@ -1,7 +1,7 @@
+const response = require('../middlewares/response');
 const Utils = require('../utils/utils.methods');
 const Client = require('../models/Client');
 const Acteur = require('../models/Acteur');
-const { default: response } = require('../middlewares/response');
 const TypeActeur = require('../models/TypeActeur');
 const bcrypt = require('bcryptjs');
 

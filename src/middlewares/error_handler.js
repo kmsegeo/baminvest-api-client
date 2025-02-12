@@ -9,4 +9,4 @@ const errorhandling = async (err, req, res, next) => {
     });
 }
 
-export default errorhandling;
+module.exports = errorhandling;

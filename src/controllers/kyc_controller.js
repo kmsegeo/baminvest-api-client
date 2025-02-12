@@ -1,4 +1,4 @@
-const { default: response } = require('../middlewares/response');
+const response = require('../middlewares/response');
 const KYC = require('../models/KYC');
 
 // PARTICULIER

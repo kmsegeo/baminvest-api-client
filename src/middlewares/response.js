@@ -7,4 +7,4 @@ const response = async (res, statut, message, data) => {
     })
 }
 
-export default response;
+module.exports = response;

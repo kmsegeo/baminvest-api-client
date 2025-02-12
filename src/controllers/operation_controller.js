@@ -1,4 +1,4 @@
-const { default: response } = require('../middlewares/response');
+const response = require('../middlewares/response');
 const Operation = require("../models/Operation");
 const Acteur = require("../models/Acteur");
 const Session = require("../models/Session");

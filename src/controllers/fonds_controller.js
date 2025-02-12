@@ -1,4 +1,4 @@
-const { default: response } = require('../middlewares/response');
+const response = require('../middlewares/response');
 const Fonds = require('../models/Fonds');
 
 const getAllFonds = async (req, res, next) => {
