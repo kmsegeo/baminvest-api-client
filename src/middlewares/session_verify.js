@@ -1,5 +1,5 @@
 const Session = require('../models/Session')
-const { default: response } = require("./response");
+const response = require("./response");
 const jwt = require('jsonwebtoken');
 
 module.exports = async (req, res, next) => {

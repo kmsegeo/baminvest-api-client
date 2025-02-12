@@ -1,5 +1,5 @@
 const { createHash } = require('crypto');
-const { default: response } = require("./response");
+const response = require("./response");
 
 module.exports = (req, res, next) => {
 

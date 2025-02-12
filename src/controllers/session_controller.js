@@ -25,7 +25,7 @@ const login = async (req, res, next) => {
             console.log(`Vérification de mot de passe`)
             bcrypt.compare(req.body.mdp, acteur.r_mdp).then(async valid => {
                 if(!valid) return response(res, 401, `Login ou mot de passe incorrect !`);
-                console.log(`Ouverture de session`)
+                console.log(`Création de session`)
                 await Session.create({
                     os: req.headers.os,
                     adresse_ip: req.headers.adresse_ip,
@@ -34,7 +34,7 @@ const login = async (req, res, next) => {
                     autres: "",
                     acteur: acteur.r_i
                 }).then(session => {
-                    return response(res, 200, 'Nouvelle session', {
+                    return response(res, 200, 'Ouverture de session', {
                         auth_token: jwt.sign(
                             {session: session.r_reference},
                             process.env.SESSION_KEY,

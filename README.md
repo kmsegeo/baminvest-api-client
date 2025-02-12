@@ -1,1 +1,1 @@
-# bam-client-api
+# baminvest-api-client
