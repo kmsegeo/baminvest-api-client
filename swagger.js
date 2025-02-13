@@ -6,7 +6,7 @@ const doc = {
         version: process.env.VERSION,
         description: `Api de l'application de fonds commun de placement de Bridge Asset Management`,
     },
-    host: 'localhost:3000',
+    host: 'localhost:3001',
     schemes: ['http']
 };
 
