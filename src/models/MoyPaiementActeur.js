@@ -1,6 +1,6 @@
 const db = require('../config/database');
 
-const PaiementActeur = {
+const MoyPaiementActeur = {
 
     tableName: `t_moyen_paiement_acteur`,
 
@@ -26,14 +26,26 @@ const PaiementActeur = {
         return (await res).rows[0];
     },
 
-    // async findByCode(code) {
-    //     const queryString = `
-    //         SELECT r_valeur, r_intitule, r_statut, e_acteur, e_type_moypaiement
-    //         FROM ${this.tableName} 
-    //         WHERE r_code=$1`;
-    //     const res = db.query(queryString, [code]);
-    //     return (await res).rows[0];
-    // },
+    async findByValeur(valeur) {
+        const queryString = `
+            SELECT r_i, r_valeur, r_intitule, e_acteur, e_type_moypaiement
+            FROM ${this.tableName} 
+            WHERE r_valeur=$1`;
+        const res = db.query(queryString, [valeur]);
+        return (await res).rows[0];
+    },
+
+    async update(id, type_moypaiement, {valeur, intitule}) {
+        const res = await db.query(`
+            UPDATE ${this.tableName} 
+            SET r_valeur=$1, 
+                r_intitule=$2, 
+                r_date_modif=$3, 
+                e_type_moypaiement=$4
+            WHERE r_i=$5
+            RETURNING *`, [valeur, intitule, new Date(), type_moypaiement, id]);
+            return res.rows[0];
+    },
 
     async findAllByActeur(id) {
         const queryString = `
@@ -43,4 +55,4 @@ const PaiementActeur = {
     }
 }
 
-module.exports = PaiementActeur;
+module.exports = MoyPaiementActeur;

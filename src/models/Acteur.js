@@ -124,6 +124,21 @@ const Acteur = {
     const res = await db.query(queryString, [email]);
     return res.rows[0];
   },
+
+  async findAllByTypeActeur(typeActeur) {
+    const res = await db.query(`SELECT * FROM ${this.tableName} WHERE e_type_acteur=$1`, [typeActeur]);
+    return res.rows;
+  },
+
+  async findAllByProfil(profil) {
+    const res = await db.query(`
+      SELECT act.*, agt.e_profil 
+      FROM ${this.tableName} As act 
+      INNER JOIN t_agent As agt 
+      ON act.e_agent=agt.r_i 
+      WHERE agt.e_profil=$1`, [profil]);
+    return res.rows;
+  },
   
   async update(id, {civilite, nom, prenom}) {
     const queryString = `UPDATE ${this.tableName} SET ... WHERE r_i=$4 RETURNING r_civilite, r_nom, r_prenom`;

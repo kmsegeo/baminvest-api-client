@@ -9,7 +9,7 @@ const typeActeurRoutes = require('./src/routes/type_acteur_routes');
 const acteurRoutes = require('./src/routes/acteur_routes');
 const clientRoutes = require('./src/routes/client_routes');
 const fondsRoutes = require('./src/routes/fonds_routes');
-const paiementRoutes = require('./src/routes/paiement_routes');
+const moyenPaiementRoutes = require('./src/routes/moyen_paiement_routes');
 const operationRoutes = require('./src/routes/operation_routes');
 
 const app = express();
@@ -26,13 +26,13 @@ app.use(express.json());
 
 // Routes
 
-const default_path = ''
+const default_path = '/v1';
 
 app.use(default_path + '/t-acteurs', typeActeurRoutes);
 app.use(default_path + '/acteurs', acteurRoutes);
 app.use(default_path + '/clients', clientRoutes);
 app.use(default_path + '/fonds', fondsRoutes);
-app.use(default_path + '/paiements', paiementRoutes);
+app.use(default_path + '/moy_paiements', moyenPaiementRoutes);
 app.use(default_path + '/operations', operationRoutes);
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));

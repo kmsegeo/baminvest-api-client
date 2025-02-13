@@ -10,14 +10,14 @@ const Operation = {
         return res.rows;
     },
 
-    async create(acteur, type_operation, moyen_paiement, fonds, {
+    async create(acteur, type_operation, moyen_paiement, fonds, status, {
         reference_operateur,
         libelle, 
         montant, 
         frais_operation, 
         frais_operateur, 
         compte_paiement}) {
-        
+            
         const date = new Date();
 
         const res = await db.query(`
@@ -46,7 +46,7 @@ const Operation = {
                 montant, 
                 frais_operation, 
                 frais_operateur, 
-                0, 
+                status, 
                 acteur, 
                 type_operation, 
                 moyen_paiement, 
