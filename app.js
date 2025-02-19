@@ -14,28 +14,29 @@ const operationRoutes = require('./src/routes/operation_routes');
 
 const app = express();
 
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization, AppAuth');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-//     next();
-// });
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization, AppAuth');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    next();
+});
 
 app.use(cors());
 app.use(express.json());
 
 // Routes
 
-const default_path = '/v1';
+const base_path = '/v1';
 
-app.use(default_path + '/t-acteurs', typeActeurRoutes);
-app.use(default_path + '/acteurs', acteurRoutes);
-app.use(default_path + '/clients', clientRoutes);
-app.use(default_path + '/fonds', fondsRoutes);
-app.use(default_path + '/moy_paiements', moyenPaiementRoutes);
-app.use(default_path + '/operations', operationRoutes);
+app.use(base_path + '/t-acteurs', typeActeurRoutes);
+app.use(base_path + '/acteurs', acteurRoutes);
+app.use(base_path + '/clients', clientRoutes);
+app.use(base_path + '/fonds', fondsRoutes);
+app.use(base_path + '/moy_paiements', moyenPaiementRoutes);
+app.use(base_path + '/operations', operationRoutes);
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+app.use(base_path + '/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 // Error handling middlware
 
