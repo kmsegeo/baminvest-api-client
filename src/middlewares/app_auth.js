@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
 
 function appVerifyer(app_id, op_code, timestamp) {
 
-    const app_mdp = 'mot*de*passe';
+    const app_mdp = 'rdt!8vz5';
 
     console.log(`Vérification du canal`);
     /* à faire */
