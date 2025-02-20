@@ -1,10 +1,11 @@
+const errorhandling = require('./src/middlewares/error_handler');
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
 const swaggerUI = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-outpout.json');
-const errorhandling = require('./src/middlewares/error_handler');
+const authRoutes = require('./src/routes/auth_routes');
 const typeActeurRoutes = require('./src/routes/type_acteur_routes');
 const acteurRoutes = require('./src/routes/acteur_routes');
 const clientRoutes = require('./src/routes/client_routes');
@@ -14,12 +15,12 @@ const operationRoutes = require('./src/routes/operation_routes');
 
 const app = express();
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization, AppAuth');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    next();
-});
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization, AppAuth');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+//     next();
+// });
 
 app.use(cors());
 app.use(express.json());
@@ -28,6 +29,7 @@ app.use(express.json());
 
 const base_path = '/v1';
 
+app.use(`${base_path}/auth`, authRoutes);
 app.use(base_path + '/t-acteurs', typeActeurRoutes);
 app.use(base_path + '/acteurs', acteurRoutes);
 app.use(base_path + '/clients', clientRoutes);

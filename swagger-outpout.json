@@ -5,12 +5,77 @@
     "version": "1.0.0",
     "description": "Api de l'application de fonds commun de placement de Bridge Asset Management"
   },
-  "host": "localhost:3001",
+  "host": "verolive-secure.com/apibam",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "paths": {
+    "/v1/auth/encode": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "op_code": {
+                  "example": "any"
+                },
+                "app_id": {
+                  "example": "any"
+                },
+                "timestamp": {
+                  "example": "any"
+                },
+                "app_mdp": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/auth/verify": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/v1/t-acteurs/": {
       "get": {
         "description": "",
