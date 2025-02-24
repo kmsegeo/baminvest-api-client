@@ -17,16 +17,38 @@ const getAllTypeOperations = async (req, res, next) => {
 }
 
 const getAllActeurOperations = async (req, res, next) => {
-    const id = req.params.id;
+    const id = req.acteur;
     await Acteur.findById(id).then(async acteur => {
         if (!acteur) return response(res, 404, `Acteur introuvable !`);
-        await Operation.findAllByActeur(id)
-            .then(operations => response(res, 200, `Chargement des opérations de l'acteur`, operations))
-            .catch(err => next(err));
+        await Operation.findAllByActeur(id).then(operations => {
+            
+            return response(res, 200, `Chargement des opérations de l'acteur`, operations)
+        }).catch(err => next(err));
     }).catch(err => next(err));
 }
 
-const saveOparation = async (req, res, next) => {
+const opSouscription = async (req, res, next) => {
+    console.log(`Chargement du type opération`);
+    // Utils.selectTypeOperation('souscription').then(async op_code => {
+        saveOparation('TYOP-006', req, res, next);
+    // }).catch(err => response(res, 400, err));
+};
+
+const opRachat = async (req, res, next) => {
+    console.log(`Chargement du type opération`);
+    // Utils.selectTypeOperation('rachat').then(async op_code => {
+        saveOparation('TYOP-007', req, res, next);
+    // }).catch(err => response(res, 400, err));
+};
+
+const opTransfert = async (req, res, next) => {
+    console.log(`Chargement du type opération`);
+    // Utils.selectTypeOperation('transfert').then(async op_code => {
+        saveOparation('TYOP-008', req, res, next);
+    // }).catch(err => response(res, 400, err));
+};
+
+async function saveOparation (op_code, req, res, next) {
     /**
      * [x] Vérification des paramètres
      * [x] Chargement de la session pour en deduire le ID de l'acteur
@@ -48,8 +70,8 @@ const saveOparation = async (req, res, next) => {
     Utils.expectedParameters({session_ref, reference_operateur, libelle, montant, frais_operation, frais_operateur, moyen_paiement, compte_paiement, fonds_ref}).then( async () => {
         console.log('Chargement de la session');
         await Session.findByRef(session_ref).then(async session => {
-            console.log(`Chargement du type opération`);
-            Utils.selectTypeOperation(req.params.op).then(async op_code => {
+            // console.log(`Chargement du type opération`);
+            // Utils.selectTypeOperation(req.params.op).then(async op_code => {
                 await TypeOperation.findByCode(op_code).then(async type_operation => {
                     if(!type_operation) return response(res, 404, `Type opération non trouvé !`);
                     console.log(`Chargement de moyen de paiment`)
@@ -85,7 +107,7 @@ const saveOparation = async (req, res, next) => {
                         }).catch(err => next(err));
                     }).catch(err => next(err));
                 }).catch(err => next(err));
-            }).catch(err => response(res, 400, err));
+            // }).catch(err => response(res, 400, err));
         }).catch(err => response(res, 400, err));
     }).catch(err => response(res, 400, err));
 }
@@ -142,5 +164,8 @@ async function AffectationPanierValidation(etapes, operation) {
 module.exports = {
     getAllTypeOperations,
     getAllActeurOperations,
-    saveOparation
+    opSouscription,
+    opRachat,
+    opTransfert
+    // saveOparation
 }

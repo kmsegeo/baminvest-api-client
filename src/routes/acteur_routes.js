@@ -7,10 +7,9 @@ const router = express.Router();
 
 router.post('/connexion', app_auth, sessionController.login);
 
-router.get('/:id/sessions', app_auth, session_verify, sessionController.loadActiveSsessions);
-router.delete('/:id/sessions/:ref', app_auth, session_verify, sessionController.destroySession);
+router.get('/sessions', app_auth, session_verify, sessionController.loadActiveSsessions);
+router.delete('/sessions/:ref', app_auth, session_verify, sessionController.destroySession);
 
-router.get('/:id/operations', app_auth, session_verify, operationController.getAllActeurOperations);
-
+router.get('/operations', app_auth, session_verify, operationController.getAllActeurOperations);
 
 module.exports = router;

@@ -13,7 +13,8 @@ const getAllTypeMoypaiement = async (req, res, next) => {
 }
 
 const getAllMoyPaiementActeur = async (req, res, next) => {
-    await MoyPaiementActeur.findAllByActeur(req.params.id).then(paiements => {
+    const id = req.acteur;
+    await MoyPaiementActeur.findAllByActeur(id).then(paiements => {
         if (paiements.length==0) return response(res, 404, `Aucun paiement effectué`);
         return response(res, 200, `Chargement des paiement disponible de l'acteur`, paiements);
     }).catch(err => next(err));
@@ -25,7 +26,8 @@ const saveMoyPaiementActeur = async (req, res, next) => {
     console.log(`Vérification des paramètres`)
     Utils.expectedParameters({session_ref, type_mp_code, valeur, intitule}).then( async () => {
         console.log(`Chargement de session`)
-        await Session.findByRef(session_ref).then( async session => {
+        await Session.findByRef(session_ref).then(async session => {
+            if(!session) return response(res, 401, `Vérifier la reférence de session`);
             console.log(`Chargement du type moyen de paiement`)
             await TypeMoyenPaiement.findByCode(type_mp_code).then(async typemp => {
                 if (!typemp) return response(res, 404, `Type moyen de paiement non trouvé !`);

@@ -34,7 +34,7 @@ const Utils = {
         const data = ['Souscription', 'Rachat', 'Transfert'];
         for (let i = 0; i < data.length; i++) {
             const d = data[i];
-            if (operation.toLowerCase()==d.toLowerCase()) 
+            if (operation.toLowerCase()==d.toLowerCase())
                 return await TypeOperation.findCodeByIntitule(d);
         }
         return operation;

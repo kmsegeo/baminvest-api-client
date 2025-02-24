@@ -31,9 +31,8 @@ const Session = {
     },
     
     async findByRef(ref) {
-        const queryString = `SELECT * FROM ${this.tableName} WHERE r_reference=$1 AND r_statut=$2`;
-        const res = db.query(queryString, [ref, 1]);
-        if (!(await res).rows[0]) throw `Reference de session inconnue !`;
+        const queryString = `SELECT * FROM ${this.tableName} WHERE r_reference=$1`;
+        const res = db.query(queryString, [ref]);
         return (await res).rows[0];
     },
 

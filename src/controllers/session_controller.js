@@ -4,6 +4,7 @@ const Session = require('../models/Session');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Utils = require('../utils/utils.methods');
+const { Particulier, Entreprise } = require('../models/Client');
 
 const login = async (req, res, next) => {
 
@@ -33,14 +34,31 @@ const login = async (req, res, next) => {
                     model_device: req.headers.model_device,
                     autres: "",
                     acteur: acteur.r_i
-                }).then(session => {
+                }).then(async session => {
+                    let acteur = null;
+                    await Acteur.findById(session.e_acteur).then(async result => {
+                        if (!result) return response(res, 400, `Une erreur s'est produite à la récupération de l'acteur !`);
+                        if (result.e_entreprise==0 && result.e_particulier!=0) {            // Particulier
+                            await Particulier.findById(result.e_particulier).then(async particulier => {
+                                if (!particulier) return response(res, 400, `Une erreur s'est produite à la récupération du compte client !`);
+                                result['particulier'] = particulier;
+                            }).catch(err => next(err));
+                        } else if (result.e_entreprise!=0 && result.e_particulier==0) {     // Entreprise
+                            await Entreprise.findById(result.e_entreprise).then(async entreprise => {
+                                if (!entreprise) return response(res, 400, `Une erreur s'est produite à la récupération du compte client !`);
+                                result['entreprise'] = entreprise;
+                            }).catch(err => next(err));
+                        }
+                        acteur = result;
+                    }).catch(err => next(err));
                     return response(res, 200, 'Ouverture de session', {
                         auth_token: jwt.sign(
                             {session: session.r_reference},
                             process.env.SESSION_KEY,
                             // { expiresIn: '24h' }
                         ),
-                        session: session
+                        session: session,
+                        acteur: acteur
                     });
                 }).catch(error => next(error));
             }).catch(error => next(error));
@@ -53,7 +71,7 @@ const loadActiveSsessions = async (req, res, next) => {
      * [x] Charger les sessions actives de l'agent
      */
     console.log(`Chargement des sessions de l'acteur`);
-    await Session.findAllByActeur(req.params.id).then(sessions => {
+    await Session.findAllByActeur(req.acteur).then(sessions => {
         for (let index = 0; index < sessions.length; index++)
             delete sessions[index].r_statut;
         return response(res, 200, "Chargement terminé", sessions);
@@ -67,9 +85,9 @@ const destroySession = async (req, res, next) => {
      */
     console.log(`Destruction de la session: ${req.params.ref}`);
     await Session.findByRef(req.params.ref).then(async session => {
-        if (!session) return response(res, 404, "Session active non trouvée");
+        if (!session) return response(res, 404, "Session non trouvée");
         await Session.destroy({
-            acteur: req.params.id, 
+            acteur: req.acteur, 
             ref: req.params.ref
         }).then(() => response(res, 200, "Session détruite"))
         .catch(error => next(error));

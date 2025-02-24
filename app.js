@@ -6,7 +6,7 @@ require('dotenv').config();
 const swaggerUI = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-outpout.json');
 const authRoutes = require('./src/routes/auth_routes');
-const typeActeurRoutes = require('./src/routes/type_acteur_routes');
+const ressouceRoutes = require('./src/routes/ressources_routes');
 const acteurRoutes = require('./src/routes/acteur_routes');
 const clientRoutes = require('./src/routes/client_routes');
 const fondsRoutes = require('./src/routes/fonds_routes');
@@ -29,8 +29,8 @@ app.use(express.json());
 
 const base_path = '/v1';
 
-app.use(`${base_path}/auth`, authRoutes);
-app.use(base_path + '/t-acteurs', typeActeurRoutes);
+app.use(base_path + '/auth', authRoutes);
+app.use(base_path + '/ressources', ressouceRoutes);
 app.use(base_path + '/acteurs', acteurRoutes);
 app.use(base_path + '/clients', clientRoutes);
 app.use(base_path + '/fonds', fondsRoutes);

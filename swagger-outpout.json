@@ -76,7 +76,76 @@
         }
       }
     },
-    "/v1/t-acteurs/": {
+    "/v1/ressources/type-acteurs": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/ressources/type-operations": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/ressources/type-moy-paiements": {
       "get": {
         "description": "",
         "parameters": [
@@ -180,16 +249,10 @@
         }
       }
     },
-    "/v1/acteurs/{id}/sessions": {
+    "/v1/acteurs/sessions": {
       "get": {
         "description": "",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "appauth",
             "in": "header",
@@ -223,16 +286,10 @@
         }
       }
     },
-    "/v1/acteurs/{id}/sessions/{ref}": {
+    "/v1/acteurs/sessions/{ref}": {
       "delete": {
         "description": "",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "ref",
             "in": "path",
@@ -272,16 +329,10 @@
         }
       }
     },
-    "/v1/acteurs/{id}/operations": {
+    "/v1/acteurs/operations": {
       "get": {
         "description": "",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "appauth",
             "in": "header",
@@ -433,6 +484,11 @@
             "name": "timestamp",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -467,6 +523,11 @@
           },
           {
             "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
             "in": "header",
             "type": "string"
           }
@@ -587,6 +648,11 @@
             "name": "timestamp",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -621,6 +687,11 @@
           },
           {
             "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
             "in": "header",
             "type": "string"
           }
@@ -669,154 +740,45 @@
         }
       }
     },
-    "/v1/moy_paiements/types": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/v1/moy_paiements/acteur/{id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/v1/moy_paiements/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "session_ref": {
-                  "example": "any"
-                },
-                "type_mp_code": {
-                  "example": "any"
-                },
-                "valeur": {
-                  "example": "any"
-                },
-                "intitule": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/v1/moy_paiements/{id}": {
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "appauth",
             "in": "header",
@@ -914,49 +876,12 @@
         }
       }
     },
-    "/v1/operations/types": {
-      "get": {
+    "/v1/moy_paiements/{id}": {
+      "put": {
         "description": "",
         "parameters": [
           {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/v1/operations/{op}": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "op",
+            "name": "id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -995,32 +920,128 @@
                 "session_ref": {
                   "example": "any"
                 },
-                "reference_operateur": {
+                "type_mp_code": {
                   "example": "any"
                 },
-                "libelle": {
+                "valeur": {
                   "example": "any"
                 },
-                "montant": {
-                  "example": "any"
-                },
-                "frais_operation": {
-                  "example": "any"
-                },
-                "frais_operateur": {
-                  "example": "any"
-                },
-                "moyen_paiement": {
-                  "example": "any"
-                },
-                "compte_paiement": {
-                  "example": "any"
-                },
-                "fonds_ref": {
+                "intitule": {
                   "example": "any"
                 }
               }
             }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/operations/souscription": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/operations/rachat": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/operations/transfert": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
