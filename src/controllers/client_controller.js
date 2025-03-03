@@ -4,6 +4,7 @@ const Client = require('../models/Client');
 const Acteur = require('../models/Acteur');
 const TypeActeur = require('../models/TypeActeur');
 const bcrypt = require('bcryptjs');
+const Representant = require('../models/Representant');
 
 const getAllTypeActeurs = async (req, res, next) => {
     console.log(`Récupération des types acteur..`);
@@ -19,7 +20,7 @@ const createParticulier = async (req, res, next) => {
      * - S'il existe retourner une erreur 409 
      * - Sinon poursuivre la création de compte
      * [] Créer le compte particulier
-     * [] Créer le compte acteur avec un statut à 0 (compte innactif)
+     * [] Créer le compte acteur avec un statut à 1 (compte innactif)
      */
 
     console.log(`Création d'un compte particulier..`);
@@ -84,12 +85,12 @@ const createParticulier = async (req, res, next) => {
 
 const createEntreprise = async (req, res, next) => {
     /**
-     * [] Vérifier que les paramètres attendu sont bien reçu, ainsi que ceux obligatoires
-     * [] Vérifier que le compte (l'adresse e-mail) n'existe pas,
+     * [x] Vérifier que les paramètres attendu sont bien reçu, ainsi que ceux obligatoires
+     * [x] Vérifier que le compte (l'adresse e-mail) n'existe pas,
      * - S'il existe retourner une erreur 409 
      * - Sinon poursuivre la création de compte
-     * [] Créer le compte particulier
-     * [] Créer le compte acteur avec un statut à 0 (compte innactif)
+     * [x] Créer le compte particulier
+     * [x] Créer le compte acteur avec un statut à 1 (compte innactif)
      */
 
     console.log(`Création d'un compte particulier..`);
@@ -148,8 +149,27 @@ const createEntreprise = async (req, res, next) => {
     }).catch(error => response(res, 400, error));
 }
 
+const createRepresentant = async (req, res, next) => {
+
+    console.log(`Création d'un representant..`);
+    const {civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, fonction} = req.body;
+    const acteur_id = req.session.e_acteur;
+    console.log(`Vérification des paramètres`);
+    await Utils.expectedParameters({civilite, nom, prenom, type_piece, num_piece}).then(async () => {
+        console.log(`Vérification de l'existance du compte`);
+        await Representant.create({ ...req.body }).then(async representant => {
+            if (!representant) return response(res, 400,`Une erreur s'est produite`)
+            await Acteur.updateRepresentant(acteur_id, representant.r_i).then(async acteur => {
+                await Acteur.updateStatus(acteur.r_i, 3).catch(err => next(err));
+                return response(res, 201, `Ajoute d'un représentant terminé`, representant);
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+    }).catch(error => response(res, 400, error));
+}
+
 module.exports = {
     getAllTypeActeurs,
     createParticulier,
     createEntreprise,
+    createRepresentant
 }

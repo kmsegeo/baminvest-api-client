@@ -157,8 +157,13 @@ const buildProfilRisqueResponses = async (req, res, next) => {
                 }).catch(err => next(err));
             }).catch(err => next(err));
         }
+        
         profil_investisseur = await Utils.calculProflInvestisseur(profil_investisseur);
         await Acteur.updateProfilInvestisseur(acteur_id, profil_investisseur).catch(err => next(err));
+
+        console.log(`Mise à jour du status de l'acteur`)
+        await Acteur.updateStatus(acteur_id, 3).catch(err => next(err));
+
         return response(res, 200, `Profil investisseur de l'acteur définit`, { point_total, profil_investisseur });
     }).catch(err => next(err));
 }

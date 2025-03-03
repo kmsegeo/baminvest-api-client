@@ -52,7 +52,7 @@ const Acteur = {
           telephone, 
           null, 
           adresse, 
-          0, 
+          1, 
           create_date, 
           create_date, 
           type_acteur, 
@@ -166,6 +166,52 @@ const Acteur = {
         profil_investisseur,
         r_langue`;
     const res = await db.query(queryString, [profil, acteur_id])
+    return res.rows[0];
+  },
+
+  async updateStatus(acteur_id, status) {
+    const queryString = `UPDATE ${this.tableName} SET r_statut=$1 WHERE r_i=$2 RETURNING r_i,
+        r_nom_complet, 
+        r_email, 
+        r_telephone_prp, 
+        r_telephone_scd, 
+        r_adresse, 
+        r_statut,
+        r_date_creer, 
+        r_date_modif, 
+        r_date_activation,
+        e_type_acteur,
+        e_signataire,
+        e_entreprise,
+        e_represantant,
+        e_particulier,
+        r_rib, 
+        profil_investisseur,
+        r_langue`;
+    const res = await db.query(queryString, [status, acteur_id])
+    return res.rows[0];
+  },
+
+  async updateRepresentant(acteur_id, representant_id) {
+    const queryString = `UPDATE ${this.tableName} SET e_represantant=$1 WHERE r_i=$2 RETURNING r_i,
+        r_nom_complet, 
+        r_email, 
+        r_telephone_prp, 
+        r_telephone_scd, 
+        r_adresse, 
+        r_statut,
+        r_date_creer, 
+        r_date_modif, 
+        r_date_activation,
+        e_type_acteur,
+        e_signataire,
+        e_entreprise,
+        e_represantant,
+        e_particulier,
+        r_rib, 
+        profil_investisseur,
+        r_langue`;
+    const res = await db.query(queryString, [representant_id, acteur_id])
     return res.rows[0];
   }
 

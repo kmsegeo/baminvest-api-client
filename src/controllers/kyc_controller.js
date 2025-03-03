@@ -16,8 +16,9 @@ const createParticulierKYC = async (req, res, next) => {
             await KYC.Particulier.findByParticulierId(particulier.r_i).then(async exists => {
                 if(exists) return response(res, 409, `KYC déjà renseigné !`);
                 console.log(`Début de création du KYC`);
-                await KYC.Particulier.create(particulier.r_i, {...req.body}).then(kyc => {
+                await KYC.Particulier.create(particulier.r_i, {...req.body}).then(async kyc => {
                     if (!kyc) return response(res, 400, `Une erreur s'est produite !`);
+                    await Acteur.updateStatus(acteur.r_i, 2).catch(err => next(err));
                     return response(res, 201, `Ajout de KYC terminé`, kyc);
                 }).catch(err => next(err));
             }).catch(err => next(err));
@@ -44,10 +45,11 @@ const createEntrepriseKYC = async (req, res, next) => {
             if (!entreprise) return response(res, 404, `Compte entreprise inexistant !`);
             console.log(`Vérification de l'existance du KYC`);
             await KYC.Entreprise.findByEntrepriseId(entreprise.r_i).then(async exists => {
-                if(exists) return response(res, 409, `Aucun paramètre KYC renseigné !`);
+                if(exists) return response(res, 409, `Paramètre KYC déjà renseigné !`);
                 console.log(`Début de création du KYC`);
-                await KYC.Entreprise.create(entreprise.r_i, {...req.body}).then(kyc => {
+                await KYC.Entreprise.create(entreprise.r_i, {...req.body}).then(async kyc => {
                     if (!kyc) return response(res, 400, `Une erreur s'est produite !`);
+                    await Acteur.updateStatus(acteur.r_i, 2).catch(err => next(err));
                     return response(res, 201, `Ajout de KYC terminé`, kyc);
                 }).catch(err => next(err));
             }).catch(err => next(err));

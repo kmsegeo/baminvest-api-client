@@ -23,7 +23,8 @@ const login = async (req, res, next) => {
         console.log(`Chargement de l'acteur`)
         await Acteur.findByEmail(req.body.email).then(acteur => {
             if (!acteur) return response(res, 401, `Login ou mot de passe incorrect !`);
-            if (acteur.e_agent!=0) return response(res, 401, `Ce compte n'est pas enregistré en tant que client`);
+            console.log(acteur)
+            if (acteur.e_agent && acteur.e_agent!=0) return response(res, 401, `Ce compte n'est pas enregistré en tant que client`);
             console.log(`Vérification de mot de passe`)
             bcrypt.compare(req.body.mdp, acteur.r_mdp).then(async valid => {
                 if(!valid) return response(res, 401, `Login ou mot de passe incorrect !`);
