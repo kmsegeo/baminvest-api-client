@@ -70,10 +70,11 @@ const createParticulier = async (req, res, next) => {
                             represantant: 0,
                             particulier: particulier.r_i, 
                             rib: rib, 
-                            langue: langue}).then(acteur => {
-                                particulier['acteur'] = acteur;
-                                return response(res, 201, `Compte particulier créé avec succès`, particulier);
-                            }).catch(error => next(error));
+                            langue: langue
+                        }).then(acteur => {
+                            particulier['acteur'] = acteur;
+                            return response(res, 201, `Compte particulier créé avec succès`, particulier);
+                        }).catch(error => next(error));
                     }).catch(error => next(error));
                 }).catch(error => next(error));
             }).catch(error => next(error));
@@ -150,5 +151,5 @@ const createEntreprise = async (req, res, next) => {
 module.exports = {
     getAllTypeActeurs,
     createParticulier,
-    createEntreprise
+    createEntreprise,
 }

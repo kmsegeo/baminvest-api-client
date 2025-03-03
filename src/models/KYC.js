@@ -143,7 +143,8 @@ const Entreprise = {
         return (await res).rows[0];
     },
 
-    async create(entreprise, {contexte_ouverture_compte,
+    async create(entreprise, {
+        contexte_ouverture_compte,
         autres_contexte_ouv,
         raisons_ouverture_compte,
         ouverture_compte,
@@ -210,8 +211,9 @@ const Entreprise = {
             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33)
             RETURNING *`;
         
-        const date_create = new Date();
-        const res = await db.query(queryString, [uudi.v4(),
+        const date = new Date();
+        const res = await db.query(queryString, [
+            uudi.v4(),
             contexte_ouverture_compte,
             autres_contexte_ouv,
             raisons_ouverture_compte,
@@ -241,8 +243,8 @@ const Entreprise = {
             autres_comptes_bridge,
             comptes_bridge,
             banques_relations,
-            date_create,
-            date_create,
+            date,
+            date,
             entreprise
         ]);
 

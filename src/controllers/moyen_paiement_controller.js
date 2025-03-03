@@ -13,7 +13,7 @@ const getAllTypeMoypaiement = async (req, res, next) => {
 }
 
 const getAllMoyPaiementActeur = async (req, res, next) => {
-    const id = req.acteur;
+    const id = req.session.e_acteur;
     await MoyPaiementActeur.findAllByActeur(id).then(paiements => {
         if (paiements.length==0) return response(res, 404, `Aucun paiement effectué`);
         return response(res, 200, `Chargement des paiement disponible de l'acteur`, paiements);

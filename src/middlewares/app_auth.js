@@ -13,9 +13,7 @@ module.exports = async (req, res, next) => {
         console.log(`Vérification du hash`)
         if (app_hash!=req_hash) 
             throw `Authentification de l'application à échoué !`;
-
         next(); 
-
     } catch(error) {
         return response(res, 401, error);
     }

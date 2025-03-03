@@ -32,7 +32,6 @@ const base_path = '/v1';
 app.use(base_path + '/auth', authRoutes);
 app.use(base_path + '/ressources', ressouceRoutes);
 app.use(base_path + '/acteurs', acteurRoutes);
-// app.use(base_path + '/clients', clientRoutes);
 app.use(base_path + '/fonds', fondsRoutes);
 app.use(base_path + '/moy_paiements', moyenPaiementRoutes);
 app.use(base_path + '/operations', operationRoutes);

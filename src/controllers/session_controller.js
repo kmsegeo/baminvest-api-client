@@ -23,6 +23,7 @@ const login = async (req, res, next) => {
         console.log(`Chargement de l'acteur`)
         await Acteur.findByEmail(req.body.email).then(acteur => {
             if (!acteur) return response(res, 401, `Login ou mot de passe incorrect !`);
+            if (acteur.e_agent!=0) return response(res, 401, `Ce compte n'est pas enregistré en tant que client`);
             console.log(`Vérification de mot de passe`)
             bcrypt.compare(req.body.mdp, acteur.r_mdp).then(async valid => {
                 if(!valid) return response(res, 401, `Login ou mot de passe incorrect !`);
@@ -71,7 +72,7 @@ const loadActiveSsessions = async (req, res, next) => {
      * [x] Charger les sessions actives de l'agent
      */
     console.log(`Chargement des sessions de l'acteur`);
-    await Session.findAllByActeur(req.acteur).then(sessions => {
+    await Session.findAllByActeur(req.session.e_acteur).then(sessions => {
         for (let index = 0; index < sessions.length; index++)
             delete sessions[index].r_statut;
         return response(res, 200, "Chargement terminé", sessions);
@@ -87,7 +88,7 @@ const destroySession = async (req, res, next) => {
     await Session.findByRef(req.params.ref).then(async session => {
         if (!session) return response(res, 404, "Session non trouvée");
         await Session.destroy({
-            acteur: req.acteur, 
+            acteur: req.session.e_acteur, 
             ref: req.params.ref
         }).then(() => response(res, 200, "Session détruite"))
         .catch(error => next(error));

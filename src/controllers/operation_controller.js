@@ -17,7 +17,7 @@ const getAllTypeOperations = async (req, res, next) => {
 }
 
 const getAllActeurOperations = async (req, res, next) => {
-    const id = req.acteur;
+    const id = req.session.e_acteur;
     await Acteur.findById(id).then(async acteur => {
         if (!acteur) return response(res, 404, `Acteur introuvable !`);
         await Operation.findAllByActeur(id).then(operations => {

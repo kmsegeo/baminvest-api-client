@@ -38,6 +38,22 @@ const Utils = {
                 return await TypeOperation.findCodeByIntitule(d);
         }
         return operation;
+    },
+
+    async calculProflInvestisseur(points) {
+
+        let profil = null;
+
+        if (points >= 0 && points <= 20)
+            profil = 'Prudent';
+        else if (points >= 21 && points <= 29)
+            profil = 'Équilibré';
+        else if (points >= 30 && points <= 39)
+            profil = 'Dynamique';
+        else if (points >= 40 )
+            profil = 'Audacieux';
+
+        return profil;
     }
     
 }

@@ -29,8 +29,7 @@ module.exports = async (req, res, next) => {
         .then(session => {
             if (!session) throw `Erreur de session !`;
             if (session.r_statut==0) throw `Session inactive, connexion requise !`;
-            req.session = session.r_reference;
-            req.acteur = session.e_acteur;
+            req.session = session;
             next();
         }).catch(error => response(res, 401, error));
         
