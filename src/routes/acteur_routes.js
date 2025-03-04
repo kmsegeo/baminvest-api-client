@@ -6,27 +6,34 @@ const clientController = require('../controllers/client_controller')
 const kycController = require('../controllers/kyc_controller');
 const operationController = require('../controllers/operation_controller')
 const campagneController = require('../controllers/campagne_controller')
+const upload = require('../middlewares/multer-config');
 const router = express.Router();
 
-// PARTICULIER
+// ONBORDING: PARTICULIER
 
 router.post('/particulier', app_auth, clientController.createParticulier);
-router.post('/particulier/kyc', app_auth, session_verify, kycController.createParticulierKYC);
-router.get('/particulier/kyc', app_auth, session_verify, kycController.getParticulierKYC);
+router.post('/particulier/:particulierId/kyc', app_auth, kycController.createParticulierKYC);
+router.get('/particulier/:particulierId/kyc', app_auth, kycController.getParticulierKYC);
 
-router.post('/campagne/profilrisque/reponse', app_auth, session_verify, campagneController.saveResponse);
-router.get('/campagne/profilrisque/recap', app_auth, session_verify, campagneController.recapProfilRisqueResponses);
-router.get('/campagne/profilrisque/build', app_auth, session_verify, campagneController.buildProfilRisqueResponses);
+router.post('/particulier/:particulierId/profilrisque/reponse', app_auth, campagneController.saveResponse);
+router.get('/particulier/:particulierId/profilrisque/recap', app_auth, campagneController.recapProfilRisqueResponses);
+router.get('/particulier/:particulierId/profilrisque/terminer', app_auth, campagneController.buildProfilRisqueResponses);
 
-// ENTREPRISE
+// ONBORDING: ENTREPRISE
 
 router.post('/entreprise', app_auth, clientController.createEntreprise);
-router.post('/entreprise/kyc', app_auth, session_verify, kycController.createEntrepriseKYC);
-router.get('/entreprise/kyc', app_auth, session_verify, kycController.getEntrepriseKYC);
+router.post('/entreprise/:id/kyc', app_auth, kycController.createEntrepriseKYC);
+router.get('/entreprise/:id/kyc', app_auth, kycController.getEntrepriseKYC);
 
-router.post('/entreprise/representant', app_auth, session_verify, clientController.createRepresentant);
+router.post('/entreprise/:id/representant', app_auth, clientController.createRepresentant);
 
-// COMMUNS
+// ONBORDING: COMMUNS
+
+router.post('/:acteurId/fichiers/photoprofil', app_auth, upload.single('file'), clientController.uploadPhotoProfil);
+router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), clientController.uploadSignature);
+router.post('/:acteurId/motdepasse', app_auth, clientController.createPassword);
+
+// SESSION ACTIVE
 
 router.post('/connexion', app_auth, sessionController.login);
 

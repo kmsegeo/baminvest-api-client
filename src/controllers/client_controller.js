@@ -5,6 +5,8 @@ const Acteur = require('../models/Acteur');
 const TypeActeur = require('../models/TypeActeur');
 const bcrypt = require('bcryptjs');
 const Representant = require('../models/Representant');
+const Document = require('../models/Document');
+const TypeDocument = require('../models/TypeDocument');
 
 const getAllTypeActeurs = async (req, res, next) => {
     console.log(`Récupération des types acteur..`);
@@ -37,13 +39,12 @@ const createParticulier = async (req, res, next) => {
         type_acteur, 
         type_piece, 
         num_piece, 
-        mdp, 
         type_compte, 
         rib, 
         langue} = req.body;
 
     console.log(`Vérification des paramètres`);
-    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, nationalite, email, type_acteur, mdp, type_compte})
+    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, nationalite, email, type_acteur, type_compte})
     .then(async () => {
         console.log(`Vérification de l'existance du compte`);
         await Acteur.findByEmail(email).then(async result => {
@@ -56,27 +57,28 @@ const createParticulier = async (req, res, next) => {
                 .then(async particulier => {
                     if (!particulier) return response(res, 400, `Une erreur s'est produite !`);
                     console.log(particulier)
-                    console.log(`Hashage du mot de passe`);
-                    await bcrypt.hash(mdp, 10).then(async hash => {
-                        console.log(hash);
+                    // console.log(`Hashage du mot de passe`);
+                    // await bcrypt.hash(mdp, 10).then(async hash => {
+                        // console.log(hash);
                         await Acteur.create({
                             nom_complet: particulier.r_nom + ' ' + particulier.r_prenom, 
                             email: email, 
                             telephone: telephone, 
                             adresse: adresse, 
                             type_acteur: type_acteur.r_i, 
-                            mdp: hash, 
+                            // mdp: hash, 
                             signataire: 0, 
                             entreprise: 0, 
                             represantant: 0,
                             particulier: particulier.r_i, 
                             rib: rib, 
                             langue: langue
-                        }).then(acteur => {
+                        }).then(async acteur => {
                             particulier['acteur'] = acteur;
+                            // await Acteur.updateStatus(acteur.r_i, 1).catch(err => next(err));
                             return response(res, 201, `Compte particulier créé avec succès`, particulier);
                         }).catch(error => next(error));
-                    }).catch(error => next(error));
+                    // }).catch(error => next(error));
                 }).catch(error => next(error));
             }).catch(error => next(error));
         }).catch(error => next(error));
@@ -105,7 +107,6 @@ const createEntreprise = async (req, res, next) => {
         adresse, 
         telephone, 
         type_acteur, 
-        mdp, 
         rib, 
         langue} = req.body;
 
@@ -124,15 +125,15 @@ const createEntreprise = async (req, res, next) => {
                     if (!entreprise) return response(res, 400, `Une erreur s'est produite !`);
                     console.log(entreprise)
                     console.log(`Hashage du mot de passe`);
-                    await bcrypt.hash(mdp, 10).then(async hash => {
-                        console.log(hash);
+                    // await bcrypt.hash(mdp, 10).then(async hash => {
+                    //     console.log(hash);
                         await Acteur.create({
                             nom_complet: entreprise.r_raison_sociale, 
                             email: email, 
                             telephone: telephone, 
                             adresse: adresse, 
                             type_acteur: type_acteur.r_i, 
-                            mdp: hash, 
+                            // mdp: hash, 
                             signataire: 0, 
                             entreprise: entreprise.r_i, 
                             represantant: 0,
@@ -140,9 +141,10 @@ const createEntreprise = async (req, res, next) => {
                             rib: rib, 
                             langue: langue}).then(acteur => {
                                 entreprise['acteur'] = acteur;
+                                // await Acteur.updateStatus(acteur.r_i, 1).catch(err => next(err));
                                 return response(res, 201, `Compte entreprise créé avec succès`, entreprise);
                             }).catch(error => next(error));
-                    }).catch(error => next(error));
+                    // }).catch(error => next(error));
                 }).catch(error => next(error));
             }).catch(error => next(error));
         }).catch(error => next(error));
@@ -153,23 +155,68 @@ const createRepresentant = async (req, res, next) => {
 
     console.log(`Création d'un representant..`);
     const {civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, fonction} = req.body;
-    const acteur_id = req.session.e_acteur;
+    const entreprise_id = req.params.entrepriseId;
+
     console.log(`Vérification des paramètres`);
     await Utils.expectedParameters({civilite, nom, prenom, type_piece, num_piece}).then(async () => {
         console.log(`Vérification de l'existance du compte`);
         await Representant.create({ ...req.body }).then(async representant => {
-            if (!representant) return response(res, 400,`Une erreur s'est produite`)
-            await Acteur.updateRepresentant(acteur_id, representant.r_i).then(async acteur => {
-                await Acteur.updateStatus(acteur.r_i, 3).catch(err => next(err));
-                return response(res, 201, `Ajoute d'un représentant terminé`, representant);
+            if (!representant) return response(res, 400,`Une erreur s'est produite`);
+            await Acteur.findByEntrepriseId(entreprise_id).then(async acteur => {
+                await Acteur.updateRepresentant(acteur.r_i, representant.r_i).then(async result => {
+                    // await Acteur.updateStatus(acteur.r_i, 3).catch(err => next(err));
+                    return response(res, 201, `Ajout d'un représentant terminé`, representant);
+                }).catch(err => next(err));
             }).catch(err => next(err));
         }).catch(err => next(err));
     }).catch(error => response(res, 400, error));
+}
+
+const uploadPhotoProfil = async (req, res, next) => {
+    const acteur = req.params.acteurId;
+    const typedoc_intitule = "photoprofil";
+    const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
+        if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
+        await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
+            return response(res, 200, `Uploads terminé`, document);
+        }).catch(err => next(err));
+    }).catch(err => next(err));
+}
+
+const uploadSignature = async (req, res, next) => {
+    const acteur = req.params.acteurId;
+    const typedoc_intitule = "signature";
+    const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
+        if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
+        await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
+            return response(res, 200, `Uploads terminé`, document);
+        }).catch(err => next(err));
+    }).catch(err => next(err));
+}
+
+const createPassword = async (req, res, next) => {
+    const acteur_id = req.params.acteurId;
+    const mdp = req.body.mdp;
+    await Acteur.findById(acteur_id).then(async acteur => {
+        console.log(`Hashage du mot de passe`);
+        await bcrypt.hash(mdp, 10).then(async hash => {
+            console.log(hash);
+            await Acteur.updatePassword(acteur.r_i, hash).then(async result => {
+                if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
+                return response(res, 200, `Création de mot de passe terminé`);
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+    }).catch(err => next(err));
 }
 
 module.exports = {
     getAllTypeActeurs,
     createParticulier,
     createEntreprise,
-    createRepresentant
+    createRepresentant,
+    uploadPhotoProfil,
+    uploadSignature,
+    createPassword,
 }

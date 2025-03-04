@@ -8,7 +8,7 @@ const moyenPaiementController = require('../controllers/moyen_paiement_controlle
 
 router.get('/', app_auth, session_verify, moyenPaiementController.getAllMoyPaiementActeur);
 router.post('/', app_auth, session_verify, moyenPaiementController.saveMoyPaiementActeur);
-router.get('/valeur/:val', app_auth, session_verify, moyenPaiementController.getMoyPaiementActeur);
-router.put('/:id', app_auth, session_verify, moyenPaiementController.updateMoyPaiementActeur);
+router.get('/valeur/:valeur', app_auth, session_verify, moyenPaiementController.getMoyPaiementActeur);
+router.put('/:mpId', app_auth, session_verify, moyenPaiementController.updateMoyPaiementActeur);
 
 module.exports = router;

@@ -52,7 +52,7 @@ const Acteur = {
           telephone, 
           null, 
           adresse, 
-          1, 
+          0, 
           create_date, 
           create_date, 
           type_acteur, 
@@ -139,6 +139,16 @@ const Acteur = {
       WHERE agt.e_profil=$1`, [profil]);
     return res.rows;
   },
+
+  async findByParticulierId(particulier_id) {
+    const res = await db.query(`SELECT * FROM ${this.tableName} WHERE e_particulier=$1`, [particulier_id]);
+    return res.rows[0];
+  },
+  
+  async findByEntrepriseId(entreprise_id) {
+    const res = await db.query(`SELECT * FROM ${this.tableName} WHERE e_entreprise=$1`, [entreprise_id]);
+    return res.rows[0];
+  },
   
   async update(id, {civilite, nom, prenom}) {
     const queryString = `UPDATE ${this.tableName} SET ... WHERE r_i=$4 RETURNING r_civilite, r_nom, r_prenom`;
@@ -212,6 +222,12 @@ const Acteur = {
         profil_investisseur,
         r_langue`;
     const res = await db.query(queryString, [representant_id, acteur_id])
+    return res.rows[0];
+  },
+
+  async updatePassword(acteur_id, mdp) {
+    const queryString = `UPDATE ${this.tableName} SET r_mdp=$1 WHERE r_i=$2 RETURNING r_mdp`;
+    const res = await db.query(queryString, [mdp, acteur_id])
     return res.rows[0];
   }
 

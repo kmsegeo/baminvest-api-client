@@ -41,7 +41,7 @@ const saveMoyPaiementActeur = async (req, res, next) => {
 }
 
 const getMoyPaiementActeur = async (req, res, next) => {
-    const valeur = req.params.val;
+    const valeur = req.params.valeur;
     await MoyPaiementActeur.findByValeur(valeur).then(moyPaiement => {
         if (!moyPaiement) return response(res, 404, `Moyen de paiement introuvable !`);
         return response(res, 200, `Chargement du moyen de paiement`, moyPaiement);
@@ -50,7 +50,7 @@ const getMoyPaiementActeur = async (req, res, next) => {
 
 const updateMoyPaiementActeur = async (req, res, next) => {
     console.log(`Mises à jour de paiement..`)
-    const id = req.params.id;
+    const mpId = req.params.mpId;
     const {session_ref, type_mp_code, valeur, intitule} = req.body;
     console.log(`Vérification des paramètres`)
     Utils.expectedParameters({session_ref, type_mp_code, valeur, intitule}).then(async () => {
@@ -60,7 +60,7 @@ const updateMoyPaiementActeur = async (req, res, next) => {
             await TypeMoyenPaiement.findByCode(type_mp_code).then(async typemp => {
                 if (!typemp) return response(res, 404, `Type moyen de paiement non trouvé !`);
                 console.log(`Mises à jour du moyen de paiement`)
-                await MoyPaiementActeur.update(id, typemp.r_i, {valeur, intitule})
+                await MoyPaiementActeur.update(mpId, typemp.r_i, {valeur, intitule})
                     .then(paiement => response(res, 201, `Mises à jour du moyen de paiement acteur`, paiement))
                     .catch(err => next(err));
             }).catch(err => next(err));
