@@ -585,12 +585,12 @@
         }
       }
     },
-    "/v1/acteurs/entreprise/{id}/kyc": {
+    "/v1/acteurs/entreprise/{entrepriseId}/kyc": {
       "post": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "entrepriseId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -626,7 +626,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "entrepriseId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -659,12 +659,12 @@
         }
       }
     },
-    "/v1/acteurs/entreprise/{id}/representant": {
+    "/v1/acteurs/entreprise/{entrepriseId}/representant": {
       "post": {
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "entrepriseId",
             "in": "path",
             "required": true,
             "type": "string"

@@ -22,10 +22,10 @@ router.get('/particulier/:particulierId/profilrisque/terminer', app_auth, campag
 // ONBORDING: ENTREPRISE
 
 router.post('/entreprise', app_auth, clientController.createEntreprise);
-router.post('/entreprise/:id/kyc', app_auth, kycController.createEntrepriseKYC);
-router.get('/entreprise/:id/kyc', app_auth, kycController.getEntrepriseKYC);
+router.post('/entreprise/:entrepriseId/kyc', app_auth, kycController.createEntrepriseKYC);
+router.get('/entreprise/:entrepriseId/kyc', app_auth, kycController.getEntrepriseKYC);
 
-router.post('/entreprise/:id/representant', app_auth, clientController.createRepresentant);
+router.post('/entreprise/:entrepriseId/representant', app_auth, clientController.createRepresentant);
 
 // ONBORDING: COMMUNS
 
