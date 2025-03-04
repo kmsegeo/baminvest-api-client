@@ -31,7 +31,7 @@ router.post('/entreprise/:entrepriseId/representant', app_auth, clientController
 
 router.post('/:acteurId/fichiers/photoprofil', app_auth, upload.single('file'), clientController.uploadPhotoProfil);
 router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), clientController.uploadSignature);
-router.post('/:acteurId/motdepasse/active', app_auth, clientController.createPassword);
+router.post('/:acteurId/motdepasse/activer', app_auth, clientController.createPassword);
 
 // SESSION ACTIVE
 
@@ -41,5 +41,8 @@ router.get('/sessions', app_auth, session_verify, sessionController.loadActiveSs
 router.delete('/sessions/:ref', app_auth, session_verify, sessionController.destroySession);
 
 router.get('/operations', app_auth, session_verify, operationController.getAllActeurOperations);
+router.post('/operations/souscription', app_auth, session_verify, operationController.opSouscription);
+router.post('/operations/rachat', app_auth, session_verify, operationController.opRachat);
+router.post('/operations/transfert', app_auth, session_verify, operationController.opTransfert);
 
 module.exports = router;
