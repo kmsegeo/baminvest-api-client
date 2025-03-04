@@ -226,10 +226,33 @@ const Acteur = {
   },
 
   async updatePassword(acteur_id, mdp) {
-    const queryString = `UPDATE ${this.tableName} SET r_mdp=$1 WHERE r_i=$2 RETURNING r_mdp`;
+    const queryString = `UPDATE ${this.tableName} SET r_mdp=$1  WHERE r_i=$2 RETURNING r_mdp`;
     const res = await db.query(queryString, [mdp, acteur_id])
     return res.rows[0];
-  }
+  },
+
+  async activeCompte(acteur_id) {
+    const queryString = `UPDATE ${this.tableName} SET r_statut=$1, r_date_activation=$2 WHERE r_i=$3 RETURNING r_i,
+        r_nom_complet, 
+        r_email, 
+        r_telephone_prp, 
+        r_telephone_scd, 
+        r_adresse, 
+        r_statut,
+        r_date_creer, 
+        r_date_modif, 
+        r_date_activation,
+        e_type_acteur,
+        e_signataire,
+        e_entreprise,
+        e_represantant,
+        e_particulier,
+        r_rib, 
+        profil_investisseur,
+        r_langue`;
+    const res = await db.query(queryString, [1, new Date(), acteur_id])
+    return res.rows[0];
+  },
 
 }
 

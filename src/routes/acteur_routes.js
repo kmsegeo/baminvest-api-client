@@ -31,7 +31,7 @@ router.post('/entreprise/:entrepriseId/representant', app_auth, clientController
 
 router.post('/:acteurId/fichiers/photoprofil', app_auth, upload.single('file'), clientController.uploadPhotoProfil);
 router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), clientController.uploadSignature);
-router.post('/:acteurId/motdepasse', app_auth, clientController.createPassword);
+router.post('/:acteurId/motdepasse/active', app_auth, clientController.createPassword);
 
 // SESSION ACTIVE
 

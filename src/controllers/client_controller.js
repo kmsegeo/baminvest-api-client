@@ -179,7 +179,7 @@ const uploadPhotoProfil = async (req, res, next) => {
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
         await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
-            return response(res, 200, `Uploads terminé`, document);
+            return response(res, 201, `Uploads terminé`, document);
         }).catch(err => next(err));
     }).catch(err => next(err));
 }
@@ -191,7 +191,7 @@ const uploadSignature = async (req, res, next) => {
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
         await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
-            return response(res, 200, `Uploads terminé`, document);
+            return response(res, 201, `Uploads terminé`, document);
         }).catch(err => next(err));
     }).catch(err => next(err));
 }
@@ -200,11 +200,14 @@ const createPassword = async (req, res, next) => {
     const acteur_id = req.params.acteurId;
     const mdp = req.body.mdp;
     await Acteur.findById(acteur_id).then(async acteur => {
+        if (!acteur) return response(res, 404, `Acteur introuvable !`);
+        if (acteur.r_statut!=0) return response(res, 400, `Se compte semble déjà actif !`)
         console.log(`Hashage du mot de passe`);
         await bcrypt.hash(mdp, 10).then(async hash => {
             console.log(hash);
-            await Acteur.updatePassword(acteur.r_i, hash).then(async result => {
-                if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
+            await Acteur.updatePassword(acteur_id, hash).then(async result => {
+                if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`, acteur);
+                await Acteur.activeCompte(acteur_id).catch(err => next(err));
                 return response(res, 200, `Création de mot de passe terminé`);
             }).catch(err => next(err));
         }).catch(err => next(err));
