@@ -213,6 +213,13 @@ const createPersonEmergency = async (req, res, next) => {
     }).catch(error => response(res, 400, error));
 }
 
+const getAllPersonEmergency = async (req, res, next) => { 
+    const particulier_id = req.params.particulierId;
+    await PersonEmergency.findAllByParticulier(particulier_id)
+        .then(async personnes => response(res, 200, `Chargement des prosonnes à concater`, personnes))
+        .catch(err => next(err));
+}
+
 const createPassword = async (req, res, next) => {
     const acteur_id = req.params.acteurId;
     const mdp = req.body.mdp;
@@ -239,5 +246,6 @@ module.exports = {
     uploadPhotoProfil,
     uploadSignature,
     createPersonEmergency,
+    getAllPersonEmergency,
     createPassword,
 }
