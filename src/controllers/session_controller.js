@@ -4,7 +4,15 @@ const Session = require('../models/Session');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Utils = require('../utils/utils.methods');
-const { Particulier, Entreprise } = require('../models/Client');
+const { Particulier, Entreprise, TypeActeur } = require('../models/Client');
+const PersonEmergency = require('../models/PersonEmergency');
+const Document = require('../models/Document');
+const Signataire = require('../models/Signataire');
+const Representant = require('../models/Representant');
+const PersonnelEntreprise = require('../models/PersonnelEntreprise');
+
+const type_piece = [``, `cni`,`Passport`,`permis`];
+const type_compte = [``, `Compte Individuel`, `Compte indivis`, `Compte conjoint`];
 
 const login = async (req, res, next) => {
 
@@ -23,7 +31,6 @@ const login = async (req, res, next) => {
         console.log(`Chargement de l'acteur`)
         await Acteur.findByEmail(req.body.email).then(acteur => {
             if (!acteur) return response(res, 401, `Login ou mot de passe incorrect !`);
-            console.log(acteur)
             if (acteur.e_agent && acteur.e_agent!=0) return response(res, 401, `Ce compte n'est pas enregistré en tant que client`);
             console.log(`Vérification de mot de passe`)
             bcrypt.compare(req.body.mdp, acteur.r_mdp).then(async valid => {
@@ -40,17 +47,65 @@ const login = async (req, res, next) => {
                     let acteur = null;
                     await Acteur.findById(session.e_acteur).then(async result => {
                         if (!result) return response(res, 400, `Une erreur s'est produite à la récupération de l'acteur !`);
+
+                        console.log(`Chargement du type acteur`);
+                        await TypeActeur.findById(result.e_type_acteur).then(async type_acteur => {
+                            result['type_acteur'] = type_acteur;
+                        }).catch(err => next(err));
+
                         if (result.e_entreprise==0 && result.e_particulier!=0) {            // Particulier
+                            
                             await Particulier.findById(result.e_particulier).then(async particulier => {
                                 if (!particulier) return response(res, 400, `Une erreur s'est produite à la récupération du compte client !`);
+                            
+                                console.log(`Chargement des personnes à contacter`);
+                                await PersonEmergency.findAllByParticulier(particulier.r_i).then(async personnes => {
+                                    particulier['personnes_contacter'] = personnes;
+                                }).catch(err => next(err));
+
+                                if (particulier) {
+                                    particulier['type_piece_intitule'] = type_piece[particulier.r_type_piece];
+                                    particulier['type_compte_intitule'] = type_compte[particulier.r_type_compte];
+                                }
+                                
                                 result['particulier'] = particulier;
                             }).catch(err => next(err));
+
                         } else if (result.e_entreprise!=0 && result.e_particulier==0) {     // Entreprise
+
                             await Entreprise.findById(result.e_entreprise).then(async entreprise => {
                                 if (!entreprise) return response(res, 400, `Une erreur s'est produite à la récupération du compte client !`);
                                 result['entreprise'] = entreprise;
                             }).catch(err => next(err));
+
+                            console.log(`Chargement des mebmbres du personnel`);
+                            await PersonnelEntreprise.findByEntrepriseId(result.e_entreprise).then(async personnels => {
+                                result['personnels'] = personnels;
+                            }).catch(err => next(err));
                         }
+
+                        console.log(`Chargement des documents de l'acteur`)
+                        await Document.findAllByActeurId(session.e_acteur).then(async documents => {
+                            console.log(documents)
+                            result['documents'] = documents;
+                        }).catch(err => next(err));
+
+                        console.log(`Chargement des signataires`);
+                        await Signataire.findById(result.e_signataire).then(async signataire => {
+                            result['signataire'] = signataire;
+                        }).catch(err => next(err));
+
+                        console.log(`Chargement des représentants`);
+                        await Representant.findById(result.e_represantant).then(async representant => {
+                            result['representant'] = representant;
+                        }).catch(err => next(err));
+
+                        delete result.e_type_acteur;
+                        delete result.e_particulier;
+                        delete result.e_entreprise;
+                        delete result.e_signataire;
+                        delete result.e_represantant;
+
                         acteur = result;
                     }).catch(err => next(err));
                     return response(res, 200, 'Ouverture de session', {

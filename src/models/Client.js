@@ -8,6 +8,12 @@ const TypeActeur = {
         const query_string = `SELECT r_code, r_intitule, r_description FROM ${this.table_name}`;
         const res = await db.query(query_string);
         return res.rows;
+    },
+
+    async findById(id) {
+        const query_string = `SELECT r_code, r_intitule, r_description FROM ${this.table_name} WHERE r_i=$1`;
+        const res = await db.query(query_string, [id]);
+        return res.rows[0];
     }
 }
 
@@ -88,7 +94,7 @@ const Entreprise = {
 
     async findById(id) {
         const query_string = `SELECT * FROM ${this.table_name} WHERE r_i=$1`;
-        const res =  await db.query(query_string, [id]);
+        const res = await db.query(query_string, [id]);
         return res.rows[0];
     },
 
