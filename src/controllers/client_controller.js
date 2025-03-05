@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const Representant = require('../models/Representant');
 const Document = require('../models/Document');
 const TypeDocument = require('../models/TypeDocument');
+const PersonEmergency = require('../models/PersonEmergency');
 
 const getAllTypeActeurs = async (req, res, next) => {
     console.log(`Récupération des types acteur..`);
@@ -195,6 +196,23 @@ const uploadSignature = async (req, res, next) => {
     }).catch(err => next(err));
 }
 
+const createPersonEmergency = async (req, res, next) => {
+    
+    console.log(`Créer personne à contacter..`)
+    const particulier_id = req.params.particulierId;
+
+    const {nom_prenom, intitule, telephone_fixe, telephone_mobile, email} = req.body;
+    await Utils.expectedParameters({nom_prenom, intitule, telephone_mobile}).then(async () => {
+        await Client.Particulier.findById(particulier_id).then(async particulier => {
+            if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
+            await PersonEmergency.create(particulier.r_i, { ...req.body }).then( async person => {
+                if (!person) return response(res, 400, `Une erreur s'est produite à l'ajout de personne à contacter`);
+                return response(res, 201, `Ajout de personne à contacter terminé`, person);
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+    }).catch(error => response(res, 400, error));
+}
+
 const createPassword = async (req, res, next) => {
     const acteur_id = req.params.acteurId;
     const mdp = req.body.mdp;
@@ -220,5 +238,6 @@ module.exports = {
     createRepresentant,
     uploadPhotoProfil,
     uploadSignature,
+    createPersonEmergency,
     createPassword,
 }

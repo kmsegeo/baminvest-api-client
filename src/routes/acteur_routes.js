@@ -19,6 +19,9 @@ router.post('/particulier/:particulierId/profilrisque/reponse', app_auth, campag
 router.get('/particulier/:particulierId/profilrisque/recap', app_auth, campagneController.recapProfilRisqueResponses);
 router.get('/particulier/:particulierId/profilrisque/terminer', app_auth, campagneController.buildProfilRisqueResponses);
 
+router.post('/particulier/:particulierId/personne_contacter', app_auth, clientController.createPersonEmergency);
+
+
 // ONBORDING: ENTREPRISE
 
 router.post('/entreprise', app_auth, clientController.createEntreprise);

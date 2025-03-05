@@ -288,10 +288,13 @@
                 "type_compte": {
                   "example": "any"
                 },
-                "rib": {
+                "langue": {
                   "example": "any"
                 },
-                "langue": {
+                "compte_titre": {
+                  "example": "any"
+                },
+                "compte_espece": {
                   "example": "any"
                 }
               }
@@ -508,6 +511,68 @@
         }
       }
     },
+    "/v1/acteurs/particulier/{particulierId}/personne_contacter": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "particulierId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nom_prenom": {
+                  "example": "any"
+                },
+                "intitule": {
+                  "example": "any"
+                },
+                "telephone_fixe": {
+                  "example": "any"
+                },
+                "telephone_mobile": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/v1/acteurs/entreprise": {
       "post": {
         "description": "",
@@ -568,10 +633,13 @@
                 "type_acteur": {
                   "example": "any"
                 },
-                "rib": {
+                "langue": {
                   "example": "any"
                 },
-                "langue": {
+                "compte_titre": {
+                  "example": "any"
+                },
+                "compte_espece": {
                   "example": "any"
                 }
               }
