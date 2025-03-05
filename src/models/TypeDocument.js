@@ -21,14 +21,14 @@ const TypeDocument = {
 
     async findByCode(code) {
         const queryString = `
-            SELECT * FROM ${this.tableName} WHERE r_code=$1`;
+            SELECT r_i, r_code, r_intitule, r_description, r_format FROM ${this.tableName} WHERE r_code=$1`;
         const res = db.query(queryString, [code]);
         return (await res).rows[0];
     },
 
     async findByIntitule(intitule) {
         const queryString = `
-            SELECT * FROM ${this.tableName} WHERE r_intitule=$1`;
+            SELECT r_i, r_code, r_intitule, r_description, r_format FROM ${this.tableName} WHERE r_intitule=$1`;
         const res = db.query(queryString, [intitule]);
         return (await res).rows[0];
     },

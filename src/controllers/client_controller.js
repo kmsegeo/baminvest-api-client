@@ -179,6 +179,8 @@ const uploadPhotoProfil = async (req, res, next) => {
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
         await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
+            document['type_document'] = typedoc.r_intitule;
+            delete document.e_type_document
             return response(res, 201, `Uploads terminé`, document);
         }).catch(err => next(err));
     }).catch(err => next(err));
@@ -191,6 +193,8 @@ const uploadSignature = async (req, res, next) => {
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
         await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
+            document['type_document'] = typedoc.r_intitule;
+            delete document.e_type_document
             return response(res, 201, `Uploads terminé`, document);
         }).catch(err => next(err));
     }).catch(err => next(err));
@@ -207,6 +211,7 @@ const createPersonEmergency = async (req, res, next) => {
             if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
             await PersonEmergency.create(particulier.r_i, { ...req.body }).then( async person => {
                 if (!person) return response(res, 400, `Une erreur s'est produite à l'ajout de personne à contacter`);
+                delete person.e_particulier;
                 return response(res, 201, `Ajout de personne à contacter terminé`, person);
             }).catch(err => next(err));
         }).catch(err => next(err));
@@ -216,7 +221,10 @@ const createPersonEmergency = async (req, res, next) => {
 const getAllPersonEmergency = async (req, res, next) => { 
     const particulier_id = req.params.particulierId;
     await PersonEmergency.findAllByParticulier(particulier_id)
-        .then(async personnes => response(res, 200, `Chargement des prosonnes à concater`, personnes))
+        .then(async personnes => {
+            for (let person of personnes) delete person.e_particulier;
+            return response(res, 200, `Chargement des prosonnes à concater`, personnes);
+        })
         .catch(err => next(err));
 }
 

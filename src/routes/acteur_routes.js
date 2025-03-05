@@ -22,7 +22,6 @@ router.get('/particulier/:particulierId/profilrisque/terminer', app_auth, campag
 router.post('/particulier/:particulierId/personne_contacter', app_auth, clientController.createPersonEmergency);
 router.get('/particulier/:particulierId/personne_contacter', app_auth, clientController.getAllPersonEmergency);
 
-
 // ONBORDING: ENTREPRISE
 
 router.post('/entreprise', app_auth, clientController.createEntreprise);
