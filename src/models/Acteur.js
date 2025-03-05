@@ -4,12 +4,11 @@ const Acteur = {
 
   tableName: 't_acteur',
 
-  async create({nom_complet, email, telephone, adresse, type_acteur, mdp, signataire, entreprise, represantant, particulier, rib, langue}) {
-
-    console.log(nom_complet, email, telephone, adresse, type_acteur, mdp, signataire, entreprise, represantant, particulier, rib, langue);
+  async create({nom_complet, email, telephone, adresse, type_acteur, mdp, signataire, entreprise, represantant, particulier, langue}) {
     
     const queryString = `
       INSERT INTO ${this.tableName} (
+        r_i,
         r_nom_complet,
         r_email,
         r_telephone_prp,
@@ -24,9 +23,8 @@ const Acteur = {
         e_entreprise,
         e_represantant,
         e_particulier,
-        r_rib,
         r_langue) 
-      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
       RETURNING 
         r_nom_complet, 
         r_email, 
@@ -41,7 +39,6 @@ const Acteur = {
         e_entreprise,
         e_represantant
         e_particulier,
-        r_rib,
         r_langue`;
 
         const create_date = new Date();
@@ -61,7 +58,6 @@ const Acteur = {
           entreprise, 
           represantant, 
           particulier, 
-          rib, 
           langue]);
 
       return res.rows[0];
@@ -85,7 +81,6 @@ const Acteur = {
           e_entreprise,
           e_represantant,
           e_particulier,
-          r_rib, 
           profil_investisseur,
           r_langue
         FROM ${this.tableName} 
@@ -114,7 +109,6 @@ const Acteur = {
         e_entreprise,
         e_represantant,
         e_particulier,
-        r_rib, 
         profil_investisseur,
         r_langue,
         r_mdp 
@@ -172,7 +166,6 @@ const Acteur = {
         e_entreprise,
         e_represantant,
         e_particulier,
-        r_rib, 
         profil_investisseur,
         r_langue`;
     const res = await db.query(queryString, [profil, acteur_id])
@@ -195,7 +188,6 @@ const Acteur = {
         e_entreprise,
         e_represantant,
         e_particulier,
-        r_rib, 
         profil_investisseur,
         r_langue`;
     const res = await db.query(queryString, [status, acteur_id])
@@ -218,7 +210,6 @@ const Acteur = {
         e_entreprise,
         e_represantant,
         e_particulier,
-        r_rib, 
         profil_investisseur,
         r_langue`;
     const res = await db.query(queryString, [representant_id, acteur_id])
@@ -247,7 +238,6 @@ const Acteur = {
         e_entreprise,
         e_represantant,
         e_particulier,
-        r_rib, 
         profil_investisseur,
         r_langue`;
     const res = await db.query(queryString, [1, new Date(), acteur_id])

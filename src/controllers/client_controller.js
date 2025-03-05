@@ -40,12 +40,12 @@ const createParticulier = async (req, res, next) => {
         type_piece, 
         num_piece, 
         type_compte, 
-        rib, 
-        langue} = req.body;
+        langue,
+        compte_titre,
+        compte_espece} = req.body;
 
     console.log(`Vérification des paramètres`);
-    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, type_acteur, type_compte})
-    .then(async () => {
+    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, type_acteur, type_compte}).then(async () => {
         console.log(`Vérification de l'existance du compte`);
         await Acteur.findByEmail(email).then(async result => {
             if (result) return response(res, 409, `Ce compte existe déjà !`);
@@ -53,7 +53,7 @@ const createParticulier = async (req, res, next) => {
             await TypeActeur.findByCode(type_acteur).then(async type_acteur => {
                 console.log(type_acteur);
                 console.log(`Création du profil particulier`);
-                await Client.Particulier.create({civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte})
+                await Client.Particulier.create({civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece})
                 .then(async particulier => {
                     if (!particulier) return response(res, 400, `Une erreur s'est produite !`);
                     console.log(particulier)
@@ -71,7 +71,6 @@ const createParticulier = async (req, res, next) => {
                             entreprise: 0, 
                             represantant: 0,
                             particulier: particulier.r_i, 
-                            rib: rib, 
                             langue: langue
                         }).then(async acteur => {
                             particulier['acteur'] = acteur;
@@ -107,8 +106,9 @@ const createEntreprise = async (req, res, next) => {
         adresse, 
         telephone, 
         type_acteur, 
-        rib, 
-        langue} = req.body;
+        langue,
+        compte_titre,
+        compte_espece} = req.body;
 
     console.log(`Vérification des paramètres`);
     await Utils.expectedParameters({raison_sociale, forme_juridique, capital_social, siege_social, compte_contribuable, registre_com})
@@ -120,7 +120,7 @@ const createEntreprise = async (req, res, next) => {
             await TypeActeur.findByCode(type_acteur).then(async type_acteur => {
                 console.log(type_acteur);
                 console.log(`Création du profil entreprise`);
-                await Client.Entreprise.create({raison_sociale, forme_juridique, capital_social, siege_social, compte_contribuable, registre_com})
+                await Client.Entreprise.create({raison_sociale, forme_juridique, capital_social, siege_social, compte_contribuable, registre_com, compte_titre, compte_espece})
                 .then(async entreprise => {
                     if (!entreprise) return response(res, 400, `Une erreur s'est produite !`);
                     console.log(entreprise)
@@ -138,7 +138,6 @@ const createEntreprise = async (req, res, next) => {
                             entreprise: entreprise.r_i, 
                             represantant: 0,
                             particulier: 0, 
-                            rib: rib, 
                             langue: langue}).then(acteur => {
                                 entreprise['acteur'] = acteur;
                                 // await Acteur.updateStatus(acteur.r_i, 1).catch(err => next(err));

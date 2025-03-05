@@ -15,11 +15,11 @@ const Particulier = {
 
     table_name: 't_particulier',
 
-    async create({civilite, nom, nom_jeune_fille, prenom, date_naissance,  nationalite, type_piece, num_piece, type_compte}) {
+    async create({civilite, nom, nom_jeune_fille, prenom, date_naissance,  nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece}) {
         
-        const query_string = `INSERT INTO ${this.table_name} 
-            (
-                r_civilite,
+        const query_string = `
+            INSERT INTO ${this.table_name} 
+                (r_civilite,
                 r_nom,
                 r_nom_jeune_fille,
                 r_prenom,
@@ -27,12 +27,13 @@ const Particulier = {
                 r_nationalite,
                 r_type_piece,
                 r_num_piece,
-                r_type_compte
-            ) 
-            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+                r_type_compte,
+                r_ncompte_titre,
+                r_ncompte_espece) 
+            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
             RETURNING *`;
         
-        const res = await db.query(query_string, [civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte]);
+        const res = await db.query(query_string, [civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece]);
         return res.rows[0];
     },
 
@@ -66,7 +67,7 @@ const Entreprise = {
 
     table_name: 't_entreprise',
 
-    async create({raison_sociale, forme_juridique, capital_social, siege_social, compte_contribuable, registre_com}) {
+    async create({raison_sociale, forme_juridique, capital_social, siege_social, compte_contribuable, registre_com, compte_titre, compte_espece}) {
         
         const query_string = `INSERT INTO ${this.table_name} 
             (
@@ -76,11 +77,12 @@ const Entreprise = {
                 r_siege_social,
                 r_compte_contribuable,
                 r_registre_com
-            ) 
-            VALUES($1, $2, $3, $4, $5, $6)
+                r_ncompte_titre,
+                r_ncompte_espece) 
+            VALUES($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING *`;
 
-        const res = await db.query(query_string, [raison_sociale, forme_juridique, capital_social, siege_social, compte_contribuable, registre_com]);
+        const res = await db.query(query_string, [raison_sociale, forme_juridique, capital_social, siege_social, compte_contribuable, registre_com, compte_titre, compte_espece]);
         return res.rows[0];
     },
 
