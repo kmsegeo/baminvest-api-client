@@ -8,7 +8,6 @@ const Acteur = {
     
     const queryString = `
       INSERT INTO ${this.tableName} (
-        r_i,
         r_nom_complet,
         r_email,
         r_telephone_prp,
@@ -26,6 +25,7 @@ const Acteur = {
         r_langue) 
       VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
       RETURNING 
+        r_i,
         r_nom_complet, 
         r_email, 
         r_telephone_prp, 
