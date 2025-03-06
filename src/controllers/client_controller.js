@@ -206,7 +206,7 @@ const createPersonEmergency = async (req, res, next) => {
     const particulier_id = req.params.particulierId;
 
     const {nom_prenom, intitule, telephone_fixe, telephone_mobile, email} = req.body;
-    await Utils.expectedParameters({nom_prenom, intitule, telephone_mobile}).then(async () => {
+    await Utils.expectedParameters({nom_prenom, telephone_mobile}).then(async () => {
         await Client.Particulier.findById(particulier_id).then(async particulier => {
             if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
             await PersonEmergency.create(particulier.r_i, { ...req.body }).then( async person => {

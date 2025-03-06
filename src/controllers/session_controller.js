@@ -53,51 +53,52 @@ const login = async (req, res, next) => {
                             result['type_acteur'] = type_acteur;
                         }).catch(err => next(err));
 
+                        console.log(`Chargement des documents de l'acteur`);
+                        await Document.findAllByActeurId(session.e_acteur).then(async documents => {
+                            result['documents'] = documents;
+                        }).catch(err => next(err));
+
                         if (result.e_entreprise==0 && result.e_particulier!=0) {            // Particulier
                             
                             await Particulier.findById(result.e_particulier).then(async particulier => {
                                 if (!particulier) return response(res, 400, `Une erreur s'est produite à la récupération du compte client !`);
                             
-                                console.log(`Chargement des personnes à contacter`);
-                                await PersonEmergency.findAllByParticulier(particulier.r_i).then(async personnes => {
-                                    particulier['personnes_contacter'] = personnes;
-                                }).catch(err => next(err));
-
                                 if (particulier) {
                                     particulier['type_piece_intitule'] = type_piece[particulier.r_type_piece];
                                     particulier['type_compte_intitule'] = type_compte[particulier.r_type_compte];
                                 }
-                                
+
+                                console.log(`Chargement des personnes à contacter`);
+                                await PersonEmergency.findAllByParticulier(result.e_particulier).then(async personnes => {
+                                    particulier['personnes_contacter'] = personnes;
+                                }).catch(err => next(err));
+
                                 result['particulier'] = particulier;
                             }).catch(err => next(err));
 
                         } else if (result.e_entreprise!=0 && result.e_particulier==0) {     // Entreprise
 
+                            console.log(`Chargement des données entreprise`)
                             await Entreprise.findById(result.e_entreprise).then(async entreprise => {
                                 if (!entreprise) return response(res, 400, `Une erreur s'est produite à la récupération du compte client !`);
-                                result['entreprise'] = entreprise;
-                            }).catch(err => next(err));
 
-                            console.log(`Chargement des mebmbres du personnel`);
-                            await PersonnelEntreprise.findByEntrepriseId(result.e_entreprise).then(async personnels => {
-                                result['personnels'] = personnels;
+                                console.log(`Chargement des mebmbres du personnel`);
+                                await PersonnelEntreprise.findByEntrepriseId(entreprise.r_i).then(async personnels => {
+                                    entreprise['personnels'] = personnels;
+                                }).catch(err => next(err));
+
+                                result['entreprise'] = entreprise;
                             }).catch(err => next(err));
                         }
 
-                        console.log(`Chargement des documents de l'acteur`)
-                        await Document.findAllByActeurId(session.e_acteur).then(async documents => {
-                            console.log(documents)
-                            result['documents'] = documents;
-                        }).catch(err => next(err));
-
                         console.log(`Chargement des signataires`);
                         await Signataire.findById(result.e_signataire).then(async signataire => {
-                            result['signataire'] = signataire;
+                            result['signataire'] = signataire ? signataire : {};
                         }).catch(err => next(err));
 
                         console.log(`Chargement des représentants`);
                         await Representant.findById(result.e_represantant).then(async representant => {
-                            result['representant'] = representant;
+                            result['representant'] = representant ? representant : {};
                         }).catch(err => next(err));
 
                         delete result.e_type_acteur;
