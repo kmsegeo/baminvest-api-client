@@ -6,6 +6,7 @@ module.exports = async (req, res, next) => {
     await Systeme.findByTag('atsgo_api_key').then(async apikey => {
 
         req.apikey = apikey;
+        console.log('current apikey :', apikey.r_valeur)
         
         if (new Date(apikey.r_description) < new Date()) {
 
@@ -29,6 +30,7 @@ module.exports = async (req, res, next) => {
                     description: data.payLoad.expirationDate
                 }).then(async apikey => {
                     req.apikey = apikey;
+                    console.log('new apikey :', apikey.r_valeur)
                 })
             });
         }

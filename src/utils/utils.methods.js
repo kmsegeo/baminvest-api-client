@@ -24,6 +24,12 @@ const Utils = {
         return prefix + spliter + (n_surfix<10 ? '00' + n_surfix : n_surfix<100 ? '0' + n_surfix : n_surfix);
     },
 
+    async sleep(ms) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        });
+    },
+
     async expectedParameters(expected) {
         for (const [key, value] of Object.entries(expected)) {
             if (!value) throw `Le paramètre - ${key} - attendu est absent !`;

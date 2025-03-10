@@ -19,6 +19,8 @@ router.post('/particulier/:particulierId/profilrisque/reponse', app_auth, campag
 router.get('/particulier/:particulierId/profilrisque/recap', app_auth, campagneController.recapProfilRisqueResponses);
 router.get('/particulier/:particulierId/profilrisque/terminer', app_auth, campagneController.buildProfilRisqueResponses);
 
+router.post('/particulier/:particulierId/profilrisque/reponses', app_auth, campagneController.saveAllResponses);
+
 router.post('/particulier/:particulierId/personne_contacter', app_auth, clientController.createPersonEmergency);
 router.get('/particulier/:particulierId/personne_contacter', app_auth, clientController.getAllPersonEmergency);
 
@@ -33,6 +35,7 @@ router.post('/entreprise/:entrepriseId/representant', app_auth, clientController
 // ONBORDING: COMMUNS
 
 router.post('/:acteurId/fichiers/photoprofil', app_auth, upload.single('file'), clientController.uploadPhotoProfil);
+router.post('/:acteurId/fichiers/domiciliation', app_auth, upload.single('file'), clientController.uploadDomiciliation);
 router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), clientController.uploadSignature);
 router.post('/:acteurId/motdepasse/activer', app_auth, clientController.createPassword);
 
