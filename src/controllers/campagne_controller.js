@@ -145,10 +145,9 @@ const recapProfilRisqueResponses = async (req, res, next) => {
 
 const saveAllResponses = async (req, res, next) => {
     
-    const prsps = req.body;
     const particulier_id = req.params.particulierId;
 
-    for (let pr of prsps) {
+    for (let pr of req.body) {
         const question_ref = pr.question_ref;
         const reponse_ref = pr.reponse_ref;
         Utils.expectedParameters({question_ref, reponse_ref}).then(async () => {

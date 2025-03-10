@@ -11,6 +11,6 @@ router.get('/type-acteurs', app_auth, clientController.getAllTypeActeurs);
 router.get('/type-operations', app_auth, session_verify, operationController.getAllTypeOperations);
 router.get('/type-moy-paiements', app_auth, session_verify, moyenPaiementController.getAllTypeMoypaiement);
 
-router.get('/campagne/profilrisque/questions', app_auth, session_verify, campagneController.getProfilRisqueQuestions);
+router.get('/campagne/profilrisque/questions', app_auth, campagneController.getProfilRisqueQuestions);
 
 module.exports = router;

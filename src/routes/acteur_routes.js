@@ -15,9 +15,9 @@ router.post('/particulier', app_auth, clientController.createParticulier);
 router.post('/particulier/:particulierId/kyc', app_auth, kycController.createParticulierKYC);
 router.get('/particulier/:particulierId/kyc', app_auth, kycController.getParticulierKYC);
 
-router.post('/particulier/:particulierId/profilrisque/reponse', app_auth, campagneController.saveResponse);
-router.get('/particulier/:particulierId/profilrisque/recap', app_auth, campagneController.recapProfilRisqueResponses);
-router.get('/particulier/:particulierId/profilrisque/terminer', app_auth, campagneController.buildProfilRisqueResponses);
+// router.post('/particulier/:particulierId/profilrisque/reponse', app_auth, campagneController.saveResponse);
+// router.get('/particulier/:particulierId/profilrisque/recap', app_auth, campagneController.recapProfilRisqueResponses);
+// router.get('/particulier/:particulierId/profilrisque/terminer', app_auth, campagneController.buildProfilRisqueResponses);
 
 router.post('/particulier/:particulierId/profilrisque/reponses', app_auth, campagneController.saveAllResponses);
 
