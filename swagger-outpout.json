@@ -406,6 +406,21 @@
             "name": "timestamp",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "question_ref": {
+                  "example": "any"
+                },
+                "reponse_ref": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
