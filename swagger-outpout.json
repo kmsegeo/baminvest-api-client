@@ -430,6 +430,44 @@
         }
       }
     },
+    "/v1/acteurs/particulier/{particulierId}/profilrisque/reponses/recap": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "particulierId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/v1/acteurs/particulier/{particulierId}/personne_contacter": {
       "post": {
         "description": "",
@@ -907,6 +945,56 @@
               "type": "object",
               "properties": {
                 "mdp": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/acteurs/{acteurId}/otp/verifier": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "acteurId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code_otp": {
                   "example": "any"
                 }
               }

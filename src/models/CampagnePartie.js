@@ -6,7 +6,7 @@ const CampagnePartie = {
 
     async findById(id) {
         const queryString = `
-            SELECT r_i, r_reference, r_intitule, r_ordre, r_description, r_points_totale , e_campagne
+            SELECT r_i, r_reference, r_intitule, r_ordre, r_description, r_points_totale, e_campagne
             FROM ${this.tableName} 
             WHERE r_i=$1 AND r_statut=$2`;
         const res = db.query(queryString, [id, 1]);

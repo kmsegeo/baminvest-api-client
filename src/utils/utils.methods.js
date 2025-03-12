@@ -60,8 +60,21 @@ const Utils = {
             profil = 'Audacieux';
 
         return profil;
+    },
+
+    async genearteOTP_Msgid() {
+        const res = await db.query(`SELECT * FROM t_otp ORDER BY r_i DESC LIMIT 1`, []);
+        const row = res.rows[0];
+
+        if (!row) return `BAM1000000000`;
+
+        const prefix = "BAM";
+        const msgid = row["r_msgid"];
+        const surfix = msgid.split(prefix)[1];
+        const n_surfix = parseInt(surfix) + 1;
+        
+        return prefix + n_surfix;
     }
-    
 }
 
 module.exports = Utils;

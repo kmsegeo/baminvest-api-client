@@ -107,21 +107,21 @@ const saveResponse = async (req, res, next) => {
 
 const recapProfilRisqueResponses = async (req, res, next) => {
     
-    const code = 'CAMP-001';        // A dynamiser
     const particulier_id = req.params.particulierId;
 
-    await Acteur.findByParticulierId(particulier_id).then(async acteur => {
-        await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
+    await Campagne.findByintitule('profil_risque').then(async campagne => {
 
-            let point_total = 0;
-            let profil_investisseur = null;
-            let i = 0;
+        await Acteur.findByParticulierId(particulier_id).then(async acteur => {
+            await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
 
-            for (let reponse of reponses) {
-                await CampagneQuestion.findById(reponse.e_risques_questions).then(async question => {
-                    await CampagnePartie.findById(question.e_profil_partie).then(async partie => {
-                        await Campagne.findById(partie.e_campagne).then(async campagne => {
-                            if (campagne.r_code==code) {
+                let point_total = 0;
+                let profil_investisseur = null;
+                let i = 0;
+
+                for (let reponse of reponses) {
+                    await CampagneQuestion.findById(reponse.e_risques_questions).then(async question => {
+                        await CampagnePartie.findById(question.e_profil_partie).then(async partie => {
+                            if (!campagne || partie.e_campagne==campagne.r_i) {
                                 point_total += Number(reponse.r_points);
                                 reponse['question'] = question
                                 await CampagneReponse.findById(reponse.e_risque_reponse).then(async suggestion => {
@@ -134,12 +134,15 @@ const recapProfilRisqueResponses = async (req, res, next) => {
                             }
                         }).catch(err => next(err));
                     }).catch(err => next(err));
-                }).catch(err => next(err));
-                i+=1;
-            }
-            profil_investisseur = await Utils.calculProflInvestisseur(point_total);
-            return response(res, 200, `Reponses de l'acteur`, reponses, { point_total, profil_investisseur });
+                    i+=1;
+                }
+                
+                profil_investisseur = await Utils.calculProflInvestisseur(point_total);    
+                return response(res, 200, `Reponses de l'acteur`, reponses, { point_total, profil_investisseur });
+                
+            }).catch(err => next(err));
         }).catch(err => next(err));
+
     }).catch(err => next(err));
 }
 
@@ -147,85 +150,57 @@ const saveAllResponses = async (req, res, next) => {
     
     const {question_ref, reponse_ref} = req.body;
     const particulier_id = req.params.particulierId;
-    
+
     for (let pr of req.body) {
+
         const question_ref = pr.question_ref;
         const reponse_ref = pr.reponse_ref;
+
         Utils.expectedParameters({question_ref, reponse_ref}).then(async () => {
-            console.log(question_ref)
             await CampagneQuestion.findByRef(question_ref).then(async question => {
-                console.log('question ', question.r_i);
                 await CampagneReponse.findAllByLineColumn(question.r_i).then(async suggestions => {
                     let reponse = undefined
                     for (let suggestion of suggestions)
                         if (suggestion.r_reference==reponse_ref) {
                             reponse=suggestion;
-                            console.log(reponse.r_details)
                         }
                     if (!reponse) return response(res, 400, `La reponse ${reponse.r_reference} ne correspond pas à la question ${question.r_reference} !`);
-                    await Acteur.findByParticulierId(particulier_id).then(async acteur => {
-                        console.log('acteur ', acteur.r_i);
-                        
+                    await Acteur.findByParticulierId(particulier_id).then(async acteur => {                        
                         await ProfilRisqueReponse.findByQuestionId(acteur.r_i, question.r_i).then(async exists => {
-                            if (!exists) {     // Si la question est pas deja repondu
+                            if (!exists) {      // Si la question est pas deja repondu
                                 await ProfilRisqueReponse.create(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
                             } else {            // Sinon
                                 await ProfilRisqueReponse.update(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
                             }
-                            // reponses.push(reponse);  
                         }).catch(err => next(err));
                     }).catch(err => next(err));
                 }).catch(err => next(err));
             }).catch(err => next(err));
         }).catch(err => response(res, 400, err));
+        
         await Utils.sleep(1000)
     }
+
     buildProfilRisqueResponses(req, res, next);
 }
 
 const buildProfilRisqueResponses = async (req, res, next) => {
        
-    const code = 'CAMP-001';        // A dynamiser
     const particulier_id = req.params.particulierId;
 
-    // await Acteur.findByParticulierId(particulier_id).then(async acteur => {
-    //     await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
-    //         let point_total = 0;
-    //         let profil_investisseur = null;
-    //         for (let reponse of reponses) {
-    //             await CampagneQuestion.findById(reponse.e_risques_questions).then(async question => {
-    //                 await CampagnePartie.findById(question.e_profil_partie).then(async partie => {
-    //                     await Campagne.findById(partie.e_campagne).then(async campagne => {
-    //                         if (campagne.r_code==code) {
-    //                             point_total += Number(reponse.r_points);
-    //                         }  
-    //                     }).catch(err => next(err));
-    //                 }).catch(err => next(err));
-    //             }).catch(err => next(err));
-    //         }
-            
-    //         profil_investisseur = await Utils.calculProflInvestisseur(profil_investisseur);
-    //         await Acteur.updateProfilInvestisseur(acteur.r_i, profil_investisseur).catch(err => next(err));
+    await Campagne.findByintitule('profil_risque').then(async campagne => {
 
-    //         console.log(`Mise à jour du status de l'acteur`)
-    //         // await Acteur.updateStatus(acteur.r_i, 3).catch(err => next(err));
+        await Acteur.findByParticulierId(particulier_id).then(async acteur => {
+            await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
 
-    //         return response(res, 200, `Profil investisseur de l'acteur définit`, { point_total, profil_investisseur });
-    //     }).catch(err => next(err));
-    // }).catch(err => next(err));
+                let point_total = 0;
+                let profil_investisseur = null;
+                let i = 0;
 
-    await Acteur.findByParticulierId(particulier_id).then(async acteur => {
-        await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
-
-            let point_total = 0;
-            let profil_investisseur = null;
-            let i = 0;
-
-            for (let reponse of reponses) {
-                await CampagneQuestion.findById(reponse.e_risques_questions).then(async question => {
-                    await CampagnePartie.findById(question.e_profil_partie).then(async partie => {
-                        await Campagne.findById(partie.e_campagne).then(async campagne => {
-                            if (campagne.r_code==code) {
+                for (let reponse of reponses) {
+                    await CampagneQuestion.findById(reponse.e_risques_questions).then(async question => {
+                        await CampagnePartie.findById(question.e_profil_partie).then(async partie => {
+                            if (!campagne || partie.e_campagne==campagne.r_i) {
                                 point_total += Number(reponse.r_points);
                                 reponse['question'] = question
                                 await CampagneReponse.findById(reponse.e_risque_reponse).then(async suggestion => {
@@ -238,17 +213,19 @@ const buildProfilRisqueResponses = async (req, res, next) => {
                             }
                         }).catch(err => next(err));
                     }).catch(err => next(err));
-                }).catch(err => next(err));
-                i+=1;
-            }
-            
-            profil_investisseur = await Utils.calculProflInvestisseur(point_total);
-            await Acteur.updateProfilInvestisseur(acteur.r_i, profil_investisseur).catch(err => next(err));
-
-            return response(res, 200, `Reponses de l'acteur`, reponses, { point_total, profil_investisseur });
-            
+                    i+=1;
+                }
+                
+                profil_investisseur = await Utils.calculProflInvestisseur(point_total);
+                await Acteur.updateProfilInvestisseur(acteur.r_i, profil_investisseur).catch(err => next(err));
+    
+                return response(res, 200, `Reponses de l'acteur`, reponses, { point_total, profil_investisseur });
+                
+            }).catch(err => next(err));
         }).catch(err => next(err));
+
     }).catch(err => next(err));
+
 }
 
 module.exports = {

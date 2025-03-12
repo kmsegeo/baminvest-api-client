@@ -8,6 +8,7 @@ const Representant = require('../models/Representant');
 const Document = require('../models/Document');
 const TypeDocument = require('../models/TypeDocument');
 const PersonEmergency = require('../models/PersonEmergency');
+const OTP = require('../models/OTP');
 
 const getAllTypeActeurs = async (req, res, next) => {
     console.log(`Récupération des types acteur..`);
@@ -252,10 +253,53 @@ const createPassword = async (req, res, next) => {
         await bcrypt.hash(mdp, 10).then(async hash => {
             console.log(hash);
             await Acteur.updatePassword(acteur_id, hash).then(async result => {
-                if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`, acteur);
-                await Acteur.activeCompte(acteur_id).catch(err => next(err));
-                return response(res, 200, `Création de mot de passe terminé`);
+                if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
+                if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
+                
+                const url = "https://sms.sms-ci.com/SELFGATE_WEB/FR/data.awp"
+
+                const min = Math.ceil(1000);
+                const max = Math.floor(9999);
+                const code_otp = Math.floor(Math.random() * (max - min)) + min;
+
+                await Utils.genearteOTP_Msgid().then(async msgid => {
+                    await OTP.create(3, {msgid, code_otp}).then(async otp => {
+                        await fetch(url, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                identify: "test@mediasoftci.com",
+                                pwd: "12345",
+                                fromad: "BAM CI",
+                                toad: acteur.r_telephone_prp,
+                                msgid: otp.msgid,
+                                text: `Votre code de vérification est : ${code_otp}`
+                            })
+                        }).then(res => res.json())
+                        .then(data => {
+                            if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
+                            return response(res, 200, `Création de mot de passe terminé`, otp);
+                        })
+                    }).catch(err => next(err)); 
+                }).catch(err => next(err));
+
             }).catch(err => next(err));
+        }).catch(err => next(err));
+    }).catch(err => next(err));
+}
+
+const verifierOtp = async (req, res, next) => {
+    const acteur_id = req.params.acteurId;
+    const code_otp = req.body.code_otp;
+
+    await Acteur.findById(acteur_id).then(async acteur => {
+        if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
+        await OTP.findByActeurId(acteur_id).then(async otp => {
+            if (code_otp!=otp.r_code_otp)  return response(res, 400, `Vérification echoué !`);
+            await Acteur.activeCompte(acteur_id).catch(err => next(err));
+            return response(res, 200, `Vérification terminé avec succes`, otp);
         }).catch(err => next(err));
     }).catch(err => next(err));
 }
@@ -271,4 +315,5 @@ module.exports = {
     createPersonEmergency,
     getAllPersonEmergency,
     createPassword,
+    verifierOtp,
 }

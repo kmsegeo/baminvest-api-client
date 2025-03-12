@@ -15,11 +15,8 @@ router.post('/particulier', app_auth, clientController.createParticulier);
 router.post('/particulier/:particulierId/kyc', app_auth, kycController.createParticulierKYC);
 router.get('/particulier/:particulierId/kyc', app_auth, kycController.getParticulierKYC);
 
-// router.post('/particulier/:particulierId/profilrisque/reponse', app_auth, campagneController.saveResponse);
-// router.get('/particulier/:particulierId/profilrisque/recap', app_auth, campagneController.recapProfilRisqueResponses);
-// router.get('/particulier/:particulierId/profilrisque/terminer', app_auth, campagneController.buildProfilRisqueResponses);
-
 router.post('/particulier/:particulierId/profilrisque/reponses', app_auth, campagneController.saveAllResponses);
+router.get('/particulier/:particulierId/profilrisque/reponses/recap', app_auth, campagneController.recapProfilRisqueResponses);
 
 router.post('/particulier/:particulierId/personne_contacter', app_auth, clientController.createPersonEmergency);
 router.get('/particulier/:particulierId/personne_contacter', app_auth, clientController.getAllPersonEmergency);
@@ -37,7 +34,9 @@ router.post('/entreprise/:entrepriseId/representant', app_auth, clientController
 router.post('/:acteurId/fichiers/photoprofil', app_auth, upload.single('file'), clientController.uploadPhotoProfil);
 router.post('/:acteurId/fichiers/domiciliation', app_auth, upload.single('file'), clientController.uploadDomiciliation);
 router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), clientController.uploadSignature);
+
 router.post('/:acteurId/motdepasse/activer', app_auth, clientController.createPassword);
+router.post('/:acteurId/otp/verifier', app_auth, clientController.verifierOtp);
 
 // SESSION ACTIVE
 
