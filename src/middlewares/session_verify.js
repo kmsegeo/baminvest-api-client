@@ -9,7 +9,7 @@ module.exports = async (req, res, next) => {
         let decodedToken = null;
         
         try {
-            
+
             const token = req.headers.authorization.split(' ')[1];
             decodedToken = jwt.verify(token, process.env.SESSION_KEY);
 
@@ -25,8 +25,7 @@ module.exports = async (req, res, next) => {
         } 
         
         console.log(`Vérification de session`)
-        await Session.findByRef(decodedToken.session)
-        .then(session => {
+        await Session.findByRef(decodedToken.session).then(session => {
             if (!session) throw `Erreur de session !`;
             if (session.r_statut==0) throw `Session inactive, connexion requise !`;
             req.session = session;

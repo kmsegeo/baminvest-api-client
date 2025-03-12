@@ -9,7 +9,7 @@ const OTP = {
     //     return res.rows[0];
     // },
 
-    async create(acteur, {msgid, code_otp}) {
+    async create(acteur, {msgid, code_otp, operation}) {
 
         const date = new Date();
 
@@ -20,8 +20,9 @@ const OTP = {
                 r_statut, 
                 r_date_creer, 
                 r_date_modif,
-                e_acteur)
-            VALUES($1,$2,$3,$4,$5,$6) RETURNING *`, [msgid, code_otp, 0, date, date, acteur]);
+                e_acteur,
+                r_operation)
+            VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *`, [msgid, code_otp, 0, date, date, acteur, operation]);
         return res.rows[0];
     },
     
@@ -30,21 +31,21 @@ const OTP = {
         return res.rows[0];
     },
     
-    async confirm(acteurId) {
+    async confirm(acteurId, otp_id) {
         const res = await db.query(`
             UPDATE ${this.tableName} 
             SET r_statut=$1,
                 r_date_modif=$2
-            WHERE e_acteur=$3`, [1, new Date(), acteurId]);
+            WHERE e_acteur=$3 AND r_i=$4`, [1, new Date(), acteurId, otp_id]);
         return res.rows[0];
     },
 
-    async clean(acteur_id) {
+    async clean(acteur_id, operation) {
         const res = await db.query(`
             UPDATE ${this.tableName} 
             SET r_statut=$1,
                 r_date_modif=$2
-            WHERE e_acteur=$3`, [2, new Date(), acteur_id]);
+            WHERE e_acteur=$3 AND r_statut=$4 AND r_operation=$5`, [2, new Date(), acteur_id, 0, operation]);
         return res.rows;
     }
 

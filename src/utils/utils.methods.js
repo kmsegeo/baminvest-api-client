@@ -74,6 +74,12 @@ const Utils = {
         const n_surfix = parseInt(surfix) + 1;
         
         return prefix + n_surfix;
+    },
+
+    async aleatoireOTP() {
+        const min = Math.ceil(1000);
+        const max = Math.floor(9999);
+        return Math.floor(Math.random() * (max - min)) + min;
     }
 }
 
