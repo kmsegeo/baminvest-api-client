@@ -1008,6 +1008,44 @@
         }
       }
     },
+    "/v1/acteurs/{acteurId}/otp/renvoyer": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "acteurId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/v1/acteurs/connexion": {
       "post": {
         "description": "",

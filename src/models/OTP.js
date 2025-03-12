@@ -26,7 +26,7 @@ const OTP = {
     },
     
     async findByActeurId(acteurId) {
-        const res = await db.query(`SELECT * FROM ${this.tableName} WHERE e_acteur=$1 ORDER BY r_i DESC`, [acteurId]);
+        const res = await db.query(`SELECT * FROM ${this.tableName} WHERE e_acteur=$1 AND r_statut=$2 ORDER BY r_i DESC`, [acteurId, 0]);
         return res.rows[0];
     },
     
@@ -37,6 +37,15 @@ const OTP = {
                 r_date_modif=$2
             WHERE e_acteur=$3`, [1, new Date(), acteurId]);
         return res.rows[0];
+    },
+
+    async clean(acteur_id) {
+        const res = await db.query(`
+            UPDATE ${this.tableName} 
+            SET r_statut=$1,
+                r_date_modif=$2
+            WHERE e_acteur=$3`, [2, new Date(), acteur_id]);
+        return res.rows;
     }
 
 }

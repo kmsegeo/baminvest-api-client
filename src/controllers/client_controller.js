@@ -256,6 +256,8 @@ const createPassword = async (req, res, next) => {
                 if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
                 if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
                 
+                await OTP.clean(acteur_id).catch(err => next(err));     
+
                 const url = "https://sms.sms-ci.com/SELFGATE_WEB/FR/data.awp"
 
                 const min = Math.ceil(1000);
@@ -263,7 +265,7 @@ const createPassword = async (req, res, next) => {
                 const code_otp = Math.floor(Math.random() * (max - min)) + min;
 
                 await Utils.genearteOTP_Msgid().then(async msgid => {
-                    await OTP.create(3, {msgid, code_otp}).then(async otp => {
+                    await OTP.create(acteur_id, {msgid, code_otp}).then(async otp => {
                         await fetch(url, {
                             method: "POST",
                             headers: {
@@ -280,7 +282,7 @@ const createPassword = async (req, res, next) => {
                         }).then(res => res.json())
                         .then(data => {
                             if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
-                            return response(res, 200, `Création de mot de passe terminé`, otp);
+                            return response(res, 200, `Message de vérification envoyé`);
                         })
                     }).catch(err => next(err)); 
                 }).catch(err => next(err));
@@ -297,9 +299,53 @@ const verifierOtp = async (req, res, next) => {
     await Acteur.findById(acteur_id).then(async acteur => {
         if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
         await OTP.findByActeurId(acteur_id).then(async otp => {
+            if (!otp) return response(res, 400, `Pas de OTP en cours de validité !`);
             if (code_otp!=otp.r_code_otp)  return response(res, 400, `Vérification echoué !`);
             await Acteur.activeCompte(acteur_id).catch(err => next(err));
-            return response(res, 200, `Vérification terminé avec succes`, otp);
+            return response(res, 200, `Vérification terminé avec succès`, otp);
+        }).catch(err => next(err));
+    }).catch(err => next(err));
+}
+
+const renvoiOtp = async (req, res, next) => {
+    const acteur_id = req.params.acteurId;
+    
+    await Acteur.findById(acteur_id).then(async acteur => {
+        if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
+        await OTP.findByActeurId(acteur_id).then(async otp => {
+            if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
+                
+                await OTP.clean(acteur_id).catch(err => next(err));     
+
+                const url = "https://sms.sms-ci.com/SELFGATE_WEB/FR/data.awp"
+
+                const min = Math.ceil(1000);
+                const max = Math.floor(9999);
+                const code_otp = Math.floor(Math.random() * (max - min)) + min;
+
+                await Utils.genearteOTP_Msgid().then(async msgid => {
+                    await OTP.create(acteur_id, {msgid, code_otp}).then(async otp => {
+                        await fetch(url, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                identify: "test@mediasoftci.com",
+                                pwd: "12345",
+                                fromad: "BAM CI",
+                                toad: acteur.r_telephone_prp,
+                                msgid: otp.msgid,
+                                text: `Votre code de vérification est : ${code_otp}`
+                            })
+                        }).then(res => res.json())
+                        .then(data => {
+                            if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
+                                return response(res, 200, `Message otp renvoyé avec succès`, otp);
+                        })
+                    }).catch(err => next(err)); 
+                }).catch(err => next(err));
+            
         }).catch(err => next(err));
     }).catch(err => next(err));
 }
@@ -316,4 +362,5 @@ module.exports = {
     getAllPersonEmergency,
     createPassword,
     verifierOtp,
+    renvoiOtp
 }

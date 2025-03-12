@@ -37,6 +37,7 @@ router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), cl
 
 router.post('/:acteurId/motdepasse/activer', app_auth, clientController.createPassword);
 router.post('/:acteurId/otp/verifier', app_auth, clientController.verifierOtp);
+router.get('/:acteurId/otp/renvoyer', app_auth, clientController.renvoiOtp);
 
 // SESSION ACTIVE
 
