@@ -958,16 +958,10 @@
         }
       }
     },
-    "/v1/acteurs/{acteurId}/otp/verifier": {
+    "/v1/acteurs/motdepasse/reinitialiser": {
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "acteurId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "appauth",
             "in": "header",
@@ -994,7 +988,60 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code_otp": {
+                "identifiant": {
+                  "example": "any"
+                },
+                "telephone": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/acteurs/motdepasse/modifier": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "identifiant": {
+                  "example": "any"
+                },
+                "cur_mdp": {
+                  "example": "any"
+                },
+                "new_mdp": {
                   "example": "any"
                 }
               }
@@ -1042,6 +1089,56 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/acteurs/{acteurId}/otp/verifier": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "acteurId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code_otp": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }

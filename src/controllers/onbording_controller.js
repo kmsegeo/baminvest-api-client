@@ -331,24 +331,24 @@ const renvoiOtp = async (req, res, next) => {
             await Utils.aleatoireOTP().then(async code_otp => {
                 await Utils.genearteOTP_Msgid().then(async msgid => {
                     await OTP.create(acteur_id, {msgid, code_otp, operation}).then(async otp => {
-                        // await fetch(url, {
-                        //     method: "POST",
-                        //     headers: {
-                        //         "Content-Type": "application/json",
-                        //     },
-                        //     body: JSON.stringify({
-                        //         identify: "test@mediasoftci.com",
-                        //         pwd: "12345",
-                        //         fromad: "BAM CI",
-                        //         toad: acteur.r_telephone_prp,
-                        //         msgid: msgid,
-                        //         text: `Votre code de vérification est : ${otp.r_code_otp}`
-                        //     })
-                        // }).then(res => res.json())
-                        // .then(data => {
-                        //     if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
+                        await fetch(url, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                identify: "test@mediasoftci.com",
+                                pwd: "12345",
+                                fromad: "BAM CI",
+                                toad: acteur.r_telephone_prp,
+                                msgid: msgid,
+                                text: `Votre code de vérification est : ${otp.r_code_otp}`
+                            })
+                        }).then(res => res.json())
+                        .then(data => {
+                            if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
                                 return response(res, 200, `Message otp renvoyé avec succès`, otp);
-                        // })
+                        })
                     }).catch(err => next(err)); 
                 }).catch(err => next(err));
             }).catch(err => next(err));
