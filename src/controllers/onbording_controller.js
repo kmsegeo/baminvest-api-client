@@ -9,6 +9,7 @@ const Document = require('../models/Document');
 const TypeDocument = require('../models/TypeDocument');
 const PersonEmergency = require('../models/PersonEmergency');
 const OTP = require('../models/OTP');
+const uuid = require('uuid');
 
 const getAllTypeActeurs = async (req, res, next) => {
     console.log(`Récupération des types acteur..`);
@@ -273,8 +274,8 @@ const createPassword = async (req, res, next) => {
                                     pwd: "12345",
                                     fromad: "BAM CI",
                                     toad: acteur.r_telephone_prp,
-                                    msgid: otp.msgid,
-                                    text: `Votre code de vérification est : ${code_otp}`
+                                    msgid: msgid,
+                                    text: `Votre code de vérification est : ${otp.r_code_otp}`
                                 })
                             }).then(res => res.json())
                             .then(data => {
@@ -297,8 +298,17 @@ const verifierOtp = async (req, res, next) => {
         await OTP.findByActeurId(acteur_id).then(async otp => {
             if (!otp) return response(res, 400, `Pas de OTP en cours de validité !`);
             if (code_otp!=otp.r_code_otp)  return response(res, 400, `Vérification echoué !`);
+
+            if (otp.r_operation==1) {
+                await Acteur.activeCompte(acteur_id).catch(err => next(err));
+            } else if (otp.r_operation==2) {
+                const default_mdp = uuid.v4().split('-')[0];
+                await bcrypt.hash(default_mdp, 10).then(async hash => {
+                    await Acteur.updatePassword(acteur_id, hash).catch(err => next(err));
+                    otp['default_mdp'] = default_mdp;
+                }).catch(err => next(err));
+            }
             await OTP.confirm(acteur_id, otp.r_i).catch(err => next(err));     
-            await Acteur.activeCompte(acteur_id).catch(err => next(err));
             return response(res, 200, `Vérification terminé avec succès`, otp);
         }).catch(err => next(err));
     }).catch(err => next(err));
@@ -314,7 +324,7 @@ const renvoiOtp = async (req, res, next) => {
             if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
             
             const operation = otp.r_operation;
-            await OTP.clean(acteur_id, 1).catch(err => next(err));                          // Operation: 1: activation, 2: reinitialisation
+            await OTP.clean(acteur_id).catch(err => next(err));                          // Operation: 1: activation, 2: reinitialisation
 
             const url = "https://sms.sms-ci.com/SELFGATE_WEB/FR/data.awp"
             
@@ -331,8 +341,8 @@ const renvoiOtp = async (req, res, next) => {
                         //         pwd: "12345",
                         //         fromad: "BAM CI",
                         //         toad: acteur.r_telephone_prp,
-                        //         msgid: otp.msgid,
-                        //         text: `Votre code de vérification est : ${code_otp}`
+                        //         msgid: msgid,
+                        //         text: `Votre code de vérification est : ${otp.r_code_otp}`
                         //     })
                         // }).then(res => res.json())
                         // .then(data => {
