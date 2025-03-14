@@ -26,7 +26,8 @@ const CampagneQuestion = {
         const queryString = `
             SELECT r_i, r_reference, r_intitule, r_ordre, r_description, r_points_totale, r_avec_colonne  
             FROM ${this.tableName} 
-            WHERE e_profil_partie=$1 AND r_statut=$2`;
+            WHERE e_profil_partie=$1 AND r_statut=$2
+            ORDER BY r_i ASC`;
         const res = db.query(queryString, [partie, 1]);
         return (await res).rows;
     },

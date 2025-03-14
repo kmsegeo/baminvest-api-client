@@ -296,11 +296,11 @@ const verifierOtp = async (req, res, next) => {
     await Acteur.findById(acteur_id).then(async acteur => {
         if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
         await OTP.findByActeurId(acteur_id).then(async otp => {
+            
             if (!otp) return response(res, 400, `Pas de OTP en cours de validité !`);
             if (code_otp!=otp.r_code_otp)  return response(res, 400, `Vérification echoué !`);
-
+            
             const data = {};
-
             if (otp.r_operation==1) {
                 await Acteur.activeCompte(acteur_id).catch(err => next(err));
             } else if (otp.r_operation==2) {
@@ -310,8 +310,10 @@ const verifierOtp = async (req, res, next) => {
                 }).catch(err => next(err));
                 data['reset_mdp'] = default_mdp;
             }
+
             await OTP.confirm(acteur_id, otp.r_i).catch(err => next(err)); 
             return response(res, 200, `Vérification terminé avec succès`, data);
+
         }).catch(err => next(err));
     }).catch(err => next(err));
 }

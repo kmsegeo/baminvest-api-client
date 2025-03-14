@@ -12,7 +12,7 @@ const CampagneRepMatrice = {
     },
 
     async findAllByQuestion(question) {
-        const queryString = `SELECT r_i, r_reference, r_type, r_intitule, r_ordre, r_details FROM ${this.tableName} WHERE e_risques_questions=$1`;
+        const queryString = `SELECT r_i, r_reference, r_type, r_intitule, r_ordre, r_details FROM ${this.tableName} WHERE e_risques_questions=$1 ORDER BY r_i ASC`;
         const res = db.query(queryString, [question]);
         return (await res).rows;
     }

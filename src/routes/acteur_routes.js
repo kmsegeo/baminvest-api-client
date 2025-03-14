@@ -52,7 +52,6 @@ router.post('/connexion', app_auth, sessionController.login);
 router.get('/sessions', app_auth, session_verify, sessionController.loadActiveSsessions);
 router.delete('/sessions/:ref', app_auth, session_verify, sessionController.destroySession);
 
-
 router.get('/operations', app_auth, session_verify, operationController.getAllActeurOperations);
 router.post('/operations/souscription', app_auth, session_verify, operationController.opSouscription);
 router.post('/operations/rachat', app_auth, session_verify, operationController.opRachat);
