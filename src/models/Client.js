@@ -82,7 +82,7 @@ const Entreprise = {
                 r_capital_social,
                 r_siege_social,
                 r_compte_contribuable,
-                r_registre_com
+                r_registre_com,
                 r_ncompte_titre,
                 r_ncompte_espece) 
             VALUES($1, $2, $3, $4, $5, $6, $7, $8)
