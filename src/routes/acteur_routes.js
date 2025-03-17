@@ -8,6 +8,7 @@ const kycController = require('../controllers/kyc_controller');
 const operationController = require('../controllers/operation_controller')
 const campagneController = require('../controllers/campagne_controller')
 const upload = require('../middlewares/multer-config');
+const atsgo_auth = require('../middlewares/atsgo_auth');
 const router = express.Router();
 
 // ONBORDING: PARTICULIER
@@ -56,5 +57,8 @@ router.get('/operations', app_auth, session_verify, operationController.getAllAc
 router.post('/operations/souscription', app_auth, session_verify, operationController.opSouscription);
 router.post('/operations/rachat', app_auth, session_verify, operationController.opRachat);
 router.post('/operations/transfert', app_auth, session_verify, operationController.opTransfert);
+
+// SOMMAIRE
+router.get('/resume', app_auth, session_verify, atsgo_auth, clientController.getActeurResumes);
 
 module.exports = router;

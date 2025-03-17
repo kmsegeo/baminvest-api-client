@@ -267,7 +267,7 @@ const createPassword = async (req, res, next) => {
                 
                 await OTP.clean(acteur_id, 1).catch(err => next(err)); 
 
-                const url = "https://sms.sms-ci.com/SELFGATE_WEB/FR/data.awp"
+                const url = process.env.ML_SMSCI_URL;
                 
                 await Utils.aleatoireOTP().then(async code_otp => {
                     await Utils.genearteOTP_Msgid().then(async msgid => {
@@ -338,7 +338,7 @@ const renvoiOtp = async (req, res, next) => {
             const operation = otp.r_operation;
             await OTP.clean(acteur_id).catch(err => next(err));                          // Operation: 1: activation, 2: reinitialisation
 
-            const url = "https://sms.sms-ci.com/SELFGATE_WEB/FR/data.awp"
+            const url = process.env.ML_SMSCI_URL;
             
             await Utils.aleatoireOTP().then(async code_otp => {
                 await Utils.genearteOTP_Msgid().then(async msgid => {
