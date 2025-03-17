@@ -999,8 +999,8 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -1434,6 +1434,43 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/v1/acteurs/resume": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
