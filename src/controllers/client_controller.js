@@ -61,7 +61,7 @@ const getActeurResumes = async (req, res, next) => {
             results['valeur_liquidatives'] = data.payLoad;
         })
 
-        return response(res, 200, `Chargement des fonds`, results)
+        return response(res, 200, `Resumé des informations du client`, results)
 
     // }).catch(err => next(err));
 }
