@@ -9,6 +9,11 @@ const ProfilRisqueReponse = {
         return res.rows;
     },
 
+    async cleanActeurReponse(acteur_id) {
+        await db.query(`DELETE FROM ${this.tableName} WHERE e_acteur=$1`, [acteur_id]);
+        return null;
+    },
+
     async create(points, acteur_id, {question_id, reponse_id}) {
         
         const date = new Date();

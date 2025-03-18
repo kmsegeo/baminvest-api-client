@@ -180,42 +180,37 @@ const recapProfilRisqueResponses = async (req, res, next) => {
 const saveAllResponses = async (req, res, next) => {
     
     const particulier_id = req.params.particulierId;
-    
-    for (let pr of req.body) {
 
-        const question_ref = pr.question_ref;
-        const reponse_ref = pr.reponse_ref;
+    console.log(`Vérification de l'utilisateur`)
+    await Acteur.findByParticulierId(particulier_id).then(async acteur => {
+        if (!acteur) return response(res, 400, `Acteur non trouvé !`);
+        
+        await ProfilRisqueReponse.cleanActeurReponse(acteur.r_i).then(async () => {
 
-        // console.log(question_ref, reponse_ref)
+            for (let pr of req.body) {
 
-        await Utils.expectedParameters({question_ref, reponse_ref}).then(async () => {
-            await CampagneQuestion.findByRef(question_ref).then(async question => {
-                await CampagneRepMatrice.findAllByQuestion(question.r_i).then(async matrices => {
-                    // console.log(matrices);
-                    for (let matrice of matrices) {
-                        console.log("matrice", matrice.r_i)
-                        await CampagneReponse.findAllByLineColumn(matrice.r_i).then(async suggestions => {
-                            let reponse = undefined
-                            for (let suggestion of suggestions) {
-                                if (suggestion.r_reference==reponse_ref) reponse=suggestion;
-                            }
-                            if (reponse)
-                            await Acteur.findByParticulierId(particulier_id).then(async acteur => {                        
-                                await ProfilRisqueReponse.findByQuestionId(acteur.r_i, question.r_i).then(async exists => {
-                                    if (!exists) {      // Si la question est pas deja repondu
+                const question_ref = pr.question_ref;
+                const reponse_ref = pr.reponse_ref;
+
+                await Utils.expectedParameters({question_ref, reponse_ref}).then(async () => {
+                    await CampagneQuestion.findByRef(question_ref).then(async question => {
+                        await CampagneRepMatrice.findAllByQuestion(question.r_i).then(async matrices => {
+                            for (let matrice of matrices) {
+                                await CampagneReponse.findAllByLineColumn(matrice.r_i).then(async suggestions => {
+                                    let reponse = null;
+                                    for (let suggestion of suggestions)
+                                        if (suggestion.r_reference==reponse_ref) reponse=suggestion;
+                                    if (reponse)
                                         await ProfilRisqueReponse.create(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
-                                    } else {            // Sinon
-                                        await ProfilRisqueReponse.update(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
-                                    }
                                 }).catch(err => next(err));
-                            }).catch(err => next(err));
+                            }
                         }).catch(err => next(err));
-                    }
-                }).catch(err => next(err));
-            }).catch(err => next(err));
-        }).catch(err => response(res, 400, err));
-        await Utils.sleep(1000);
-    }
+                    }).catch(err => next(err));
+                }).catch(err => response(res, 400, err));
+                await Utils.sleep(1000);
+            }
+        }).catch(err => next(err));
+    }).catch(err => next(err));
 
     await buildProfilRisqueResponses(req, res, next);
 }
