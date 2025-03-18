@@ -189,26 +189,28 @@ const saveAllResponses = async (req, res, next) => {
 
         Utils.expectedParameters({question_ref, reponse_ref}).then(async () => {
             await CampagneQuestion.findByRef(question_ref).then(async question => {
-                await CampagneReponse.findAllByLineColumn(question.r_i).then(async suggestions => {
-                    let reponse = undefined
-                    for (let suggestion of suggestions)
-                        if (suggestion.r_reference==reponse_ref) {
-                            reponse=suggestion;
-                        }
-                    if (!reponse) return response(res, 400, `La reponse ${reponse.r_reference} ne correspond pas à la question ${question.r_reference} !`);
-                    await Acteur.findByParticulierId(particulier_id).then(async acteur => {                        
-                        await ProfilRisqueReponse.findByQuestionId(acteur.r_i, question.r_i).then(async exists => {
-                            if (!exists) {      // Si la question est pas deja repondu
-                                await ProfilRisqueReponse.create(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
-                            } else {            // Sinon
-                                await ProfilRisqueReponse.update(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
-                            }
+                await CampagneRepMatrice.findAllByQuestion().then(async matrices => {
+                    for (let matrice of matrices) {
+                        await CampagneReponse.findAllByLineColumn(matrice.r_i).then(async suggestions => {
+                            let reponse = undefined
+                            for (let suggestion of suggestions) 
+                                if (suggestion.r_reference==reponse_ref) reponse=suggestion;
+                                
+                            if (!reponse) return response(res, 400, `La reponse ${reponse.r_reference} ne correspond pas à la question ${question.r_reference} !`);
+                            await Acteur.findByParticulierId(particulier_id).then(async acteur => {                        
+                                await ProfilRisqueReponse.findByQuestionId(acteur.r_i, question.r_i).then(async exists => {
+                                    if (!exists) {      // Si la question est pas deja repondu
+                                        await ProfilRisqueReponse.create(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
+                                    } else {            // Sinon
+                                        await ProfilRisqueReponse.update(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
+                                    }
+                                }).catch(err => next(err));
+                            }).catch(err => next(err));
                         }).catch(err => next(err));
-                    }).catch(err => next(err));
+                    }
                 }).catch(err => next(err));
             }).catch(err => next(err));
         }).catch(err => response(res, 400, err));
-        
         await Utils.sleep(1000)
     }
 
