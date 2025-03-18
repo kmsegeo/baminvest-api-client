@@ -180,7 +180,7 @@ const recapProfilRisqueResponses = async (req, res, next) => {
 const saveAllResponses = async (req, res, next) => {
     
     const particulier_id = req.params.particulierId;
-
+    
     for (let pr of req.body) {
 
         const question_ref = pr.question_ref;
@@ -191,16 +191,15 @@ const saveAllResponses = async (req, res, next) => {
         await Utils.expectedParameters({question_ref, reponse_ref}).then(async () => {
             await CampagneQuestion.findByRef(question_ref).then(async question => {
                 await CampagneRepMatrice.findAllByQuestion(question.r_i).then(async matrices => {
-                    console.log(matrices);
+                    // console.log(matrices);
                     for (let matrice of matrices) {
-                        // console.log("matrice", matrice.r_reference)
+                        console.log("matrice", matrice.r_i)
                         await CampagneReponse.findAllByLineColumn(matrice.r_i).then(async suggestions => {
                             let reponse = undefined
                             for (let suggestion of suggestions) {
-                                // console.log("suggestion", suggestion.r_reference)
                                 if (suggestion.r_reference==reponse_ref) reponse=suggestion;
                             }
-                            if (!reponse) console.log(`La reponse ${reponse.r_reference} ne correspond pas à la question ${question.r_reference} !`);
+                            if (reponse)
                             await Acteur.findByParticulierId(particulier_id).then(async acteur => {                        
                                 await ProfilRisqueReponse.findByQuestionId(acteur.r_i, question.r_i).then(async exists => {
                                     if (!exists) {      // Si la question est pas deja repondu
@@ -215,10 +214,10 @@ const saveAllResponses = async (req, res, next) => {
                 }).catch(err => next(err));
             }).catch(err => next(err));
         }).catch(err => response(res, 400, err));
-        await Utils.sleep(3000);
+        await Utils.sleep(1000);
     }
 
-    buildProfilRisqueResponses(req, res, next);
+    await buildProfilRisqueResponses(req, res, next);
 }
 
 const buildProfilRisqueResponses = async (req, res, next) => {
