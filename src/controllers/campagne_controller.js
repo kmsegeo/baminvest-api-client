@@ -187,15 +187,19 @@ const saveAllResponses = async (req, res, next) => {
         const question_ref = pr.question_ref;
         const reponse_ref = pr.reponse_ref;
 
+        console.log(question_ref, reponse_ref)
+
         Utils.expectedParameters({question_ref, reponse_ref}).then(async () => {
             await CampagneQuestion.findByRef(question_ref).then(async question => {
-                await CampagneRepMatrice.findAllByQuestion().then(async matrices => {
+                await CampagneRepMatrice.findAllByQuestion(question.r_i).then(async matrices => {
                     for (let matrice of matrices) {
+                        console.log("matrice", matrice.r_reference)
                         await CampagneReponse.findAllByLineColumn(matrice.r_i).then(async suggestions => {
                             let reponse = undefined
-                            for (let suggestion of suggestions) 
+                            for (let suggestion of suggestions) {
+                                console.log("suggestion", suggestion.r_reference)
                                 if (suggestion.r_reference==reponse_ref) reponse=suggestion;
-                                
+                            }
                             if (!reponse) return response(res, 400, `La reponse ${reponse.r_reference} ne correspond pas à la question ${question.r_reference} !`);
                             await Acteur.findByParticulierId(particulier_id).then(async acteur => {                        
                                 await ProfilRisqueReponse.findByQuestionId(acteur.r_i, question.r_i).then(async exists => {
