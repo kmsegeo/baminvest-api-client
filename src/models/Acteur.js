@@ -293,6 +293,16 @@ const Acteur = {
     return res.rows[0];
   },
 
+  async updateEmail(email, acteur_id) {
+    const res = await db.query(`UPDATE ${this.tableName} SET r_email=$1 WHERE r_i=$2 RETURNING r_email`, [email, acteur_id]);
+    return res.rows[0];
+  },
+
+  async updateTelephone(telephone, acteur_id) {
+    const res = await db.query(`UPDATE ${this.tableName} SET r_telephone_prp=$1 WHERE r_i=$2 RETURNING r_telephone_prp`, [telephone, acteur_id]);
+    return res.rows[0];
+  }
+
 }
 
 module.exports = Acteur;

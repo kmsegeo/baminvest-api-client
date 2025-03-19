@@ -104,14 +104,29 @@ const updateParticulier = async (req, res, next) => {
         prenom, 
         date_naissance, 
         nationalite, 
+        email, 
         adresse, 
+        telephone, 
         type_piece, 
         num_piece, 
         langue} = req.body;
 
     await Acteur.findByParticulierId(particulier_id).then(async acteur => {
         if (!acteur) return response(res, 404, `Client nom trouvé`);
-    
+
+        if (email!=acteur.r_email)
+            await Acteur.findByEmail(email).then(async result => {
+                if (result) return response(res, 409, `Cette adresse email existe déjà !`);
+                await Acteur.updateEmail(email, acteur.r_i).catch(err => next(err));
+            }).catch(error => next(error));
+
+
+        if (telephone!=acteur.r_telephone_prp) 
+            await Acteur.findByTelephone(telephone).then(async result => {
+                if (result) return response(res, 409, `Ce numéro de téléphone existe déjà !`);
+                await Acteur.updateTelephone(telephone, acteur.r_i).catch(err => next(err));
+            }).catch(error => next(error));
+
         console.log(`Vérification des paramètres`);
         await Utils.expectedParameters({civilite, nom, prenom, date_naissance}).then(async () => {
             
