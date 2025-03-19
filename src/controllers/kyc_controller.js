@@ -27,7 +27,9 @@ const createParticulierKYC = async (req, res, next) => {
 const updateParticulierKYC = async (req, res, next) => {
 
     console.log(`MAJ des paramètres KYC du client..`);
+    
     const particulier_id = req.params.particulierId;
+    const {autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, lien_parente_sgo, civilite, nom_prenom_titulaire, date_naissance, pays_naissance, pays_residence, situation_matrimoniale, telephone, email, situation_habitat, categorie_professionnelle, autres_categorie_prof, profession, employeur, nbr_enfants, langue_preferee, instrument_paiement_privilige, origine_ressources_investies, autres_origines_ressources, tranche_revenus, autres_actifs, autres_actifs_preciser, autres_comptes_bridge, comptes_bridges, banques_relations, activites_politiques, preciser_activite_politiq, proche_politicien, preciser_proche_politicien} = req.body
     
     await Particulier.findById(particulier_id).then(async particulier => {
         if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
@@ -39,11 +41,11 @@ const updateParticulierKYC = async (req, res, next) => {
             console.log(`Début de mise à jour du KYC`);
             await KYC.Particulier.update(particulier.r_i, {...req.body}).then(async kyc_updated => {
                 if (!kyc) return response(res, 400, `Une erreur s'est produite !`);
-                return response(res, 200, `Mise à jour du KYC terminé`, kyc_updated);
+                const newLocal = `Mise à jour du KYC terminé`;
+                return response(res, 200, newLocal, kyc_updated);
             }).catch(err => next(err));
 
         }).catch(err => next(err));
-
     }).catch(err => next(err));  
 
 }

@@ -481,6 +481,114 @@
             "name": "timestamp",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "autres_contexte_ouv": {
+                  "example": "any"
+                },
+                "contexte_ouverture_compte": {
+                  "example": "any"
+                },
+                "raisons_ouverture_compte": {
+                  "example": "any"
+                },
+                "ouverture_compte": {
+                  "example": "any"
+                },
+                "lien_parente_sgo": {
+                  "example": "any"
+                },
+                "civilite": {
+                  "example": "any"
+                },
+                "nom_prenom_titulaire": {
+                  "example": "any"
+                },
+                "date_naissance": {
+                  "example": "any"
+                },
+                "pays_naissance": {
+                  "example": "any"
+                },
+                "pays_residence": {
+                  "example": "any"
+                },
+                "situation_matrimoniale": {
+                  "example": "any"
+                },
+                "telephone": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "situation_habitat": {
+                  "example": "any"
+                },
+                "categorie_professionnelle": {
+                  "example": "any"
+                },
+                "autres_categorie_prof": {
+                  "example": "any"
+                },
+                "profession": {
+                  "example": "any"
+                },
+                "employeur": {
+                  "example": "any"
+                },
+                "nbr_enfants": {
+                  "example": "any"
+                },
+                "langue_preferee": {
+                  "example": "any"
+                },
+                "instrument_paiement_privilige": {
+                  "example": "any"
+                },
+                "origine_ressources_investies": {
+                  "example": "any"
+                },
+                "autres_origines_ressources": {
+                  "example": "any"
+                },
+                "tranche_revenus": {
+                  "example": "any"
+                },
+                "autres_actifs": {
+                  "example": "any"
+                },
+                "autres_actifs_preciser": {
+                  "example": "any"
+                },
+                "autres_comptes_bridge": {
+                  "example": "any"
+                },
+                "comptes_bridges": {
+                  "example": "any"
+                },
+                "banques_relations": {
+                  "example": "any"
+                },
+                "activites_politiques": {
+                  "example": "any"
+                },
+                "preciser_activite_politiq": {
+                  "example": "any"
+                },
+                "proche_politicien": {
+                  "example": "any"
+                },
+                "preciser_proche_politicien": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
