@@ -49,22 +49,21 @@ const Particulier = {
         return res.rows[0];
     },
 
-    async update(id, {civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte}) {
+    async update(id, {civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece}) {
 
         const query_string = `UPDATE ${this.table_name} 
-            SET civilite=$1, 
-                nom=$2, 
-                nom_jeune_fille=$3, 
-                prenom=$4, 
-                date_naissance=$5, 
-                nationalite=$6, 
-                type_piece=$7, 
-                num_piece=$8, 
-                type_compte=$9  
-            WHERE r_i=$10
+            SET r_civilite=$1, 
+                r_nom=$2, 
+                r_nom_jeune_fille=$3, 
+                r_prenom=$4, 
+                r_date_naissance=$5, 
+                r_nationalite=$6, 
+                r_type_piece=$7, 
+                r_num_piece=$8 
+            WHERE r_i=$9
             RETURNING *`;
 
-        const res = await db.query(query_string, [civilite, nom, nom_jeune_fille, prenom, date_naissance,  nationalite, type_piece, num_piece, type_compte, id]);
+        const res = await db.query(query_string, [civilite, nom, nom_jeune_fille, prenom, date_naissance,  nationalite, type_piece, num_piece, id]);
         return res.rows[0];
     }
 }

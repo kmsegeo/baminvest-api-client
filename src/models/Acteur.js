@@ -173,9 +173,29 @@ const Acteur = {
     return res.rows[0];
   },
   
-  async update(id, {civilite, nom, prenom}) {
-    const queryString = `UPDATE ${this.tableName} SET ... WHERE r_i=$4 RETURNING r_civilite, r_nom, r_prenom`;
-    const res = await db.query(queryString, [civilite, nom, prenom, id])
+  async update(id, {nom_complet, adresse, langue}) {
+    const queryString = `UPDATE ${this.tableName} SET 
+      r_nom_complet=$1,
+      r_adresse=$2,
+      r_date_modif=$3,
+      r_langue=$4
+    WHERE r_i=$5 
+    RETURNING r_i,
+        r_nom_complet, 
+        r_email, 
+        r_telephone_prp, 
+        r_telephone_scd, 
+        r_adresse, 
+        r_statut, 
+        r_date_creer, 
+        r_date_modif,
+        e_type_acteur,
+        e_signataire,
+        e_entreprise,
+        e_represantant
+        e_particulier,
+        r_langue`;
+    const res = await db.query(queryString, [nom_complet, adresse, new Date(),langue, id])
     return res.rows[0];
   },
 

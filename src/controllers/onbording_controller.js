@@ -91,6 +91,52 @@ const createParticulier = async (req, res, next) => {
     }).catch(error => response(res, 400, error));
 }
 
+const updateParticulier = async (req, res, next) => {
+
+    console.log(`Modification d'un compte particulier..`);
+
+    const particulier_id = req.params.particulierId;
+    
+    const {
+        civilite, 
+        nom, 
+        nom_jeune_fille, 
+        prenom, 
+        date_naissance, 
+        nationalite, 
+        adresse, 
+        type_piece, 
+        num_piece, 
+        langue} = req.body;
+
+    await Acteur.findByParticulierId(particulier_id).then(async acteur => {
+        if (!acteur) return response(res, 404, `Client nom trouvé`);
+    
+        console.log(`Vérification des paramètres`);
+        await Utils.expectedParameters({civilite, nom, prenom, date_naissance}).then(async () => {
+            
+            console.log(`Mise à jour du profil particulier`);
+            await Client.Particulier.update(particulier_id, {civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece})
+            .then(async particulier_updated => {
+                if (!particulier_updated) return response(res, 400, `Une erreur s'est produite !`);
+                await Acteur.update(acteur.r_i, {
+                    nom_complet: particulier_updated.r_nom + ' ' + particulier_updated.r_prenom,
+                    adresse: adresse,
+                    langue: langue
+                }).then(async acteur_updated => {
+                    particulier_updated['acteur'] = acteur_updated;
+                    return response(res, 200, `Compte particulier mise à jour`, particulier_updated);
+                }).catch(error => next(error));
+            }).catch(error => next(error));
+            
+        }).catch(error => response(res, 400, error));
+    }).catch(err => next(err))
+}
+
+const updateEntreprise = async (req, res, next) => {
+
+}
+
 const createEntreprise = async (req, res, next) => {
     /**
      * [x] Vérifier que les paramètres attendu sont bien reçu, ainsi que ceux obligatoires
@@ -371,7 +417,9 @@ const renvoiOtp = async (req, res, next) => {
 module.exports = {
     getAllTypeActeurs,
     createParticulier,
+    updateParticulier,
     createEntreprise,
+    updateEntreprise,
     createRepresentant,
     uploadPhotoProfil,
     uploadDomiciliation,

@@ -181,7 +181,6 @@ const saveAllResponses = async (req, res, next) => {
     
     const particulier_id = req.params.particulierId;
 
-    console.log(`Vérification de l'utilisateur`)
     await Acteur.findByParticulierId(particulier_id).then(async acteur => {
         if (!acteur) return response(res, 400, `Acteur non trouvé !`);
         
@@ -209,6 +208,7 @@ const saveAllResponses = async (req, res, next) => {
                 }).catch(err => response(res, 400, err));
                 await Utils.sleep(1000);
             }
+
         }).catch(err => next(err));
     }).catch(err => next(err));
 
@@ -251,7 +251,7 @@ const buildProfilRisqueResponses = async (req, res, next) => {
                 await Acteur.updateProfilInvestisseur(acteur.r_i, profil_investisseur).catch(err => next(err));
     
                 return response(res, 200, `Reponses de l'acteur`, reponses, { point_total, profil_investisseur });
-                
+
             }).catch(err => next(err));
         }).catch(err => next(err));
 

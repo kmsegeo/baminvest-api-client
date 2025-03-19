@@ -14,6 +14,8 @@ const router = express.Router();
 // ONBORDING: PARTICULIER
 
 router.post('/particulier', app_auth, onbordingController.createParticulier);
+router.put('/particulier/:particulierId', app_auth, onbordingController.updateParticulier);
+
 router.post('/particulier/:particulierId/kyc', app_auth, kycController.createParticulierKYC);
 router.get('/particulier/:particulierId/kyc', app_auth, kycController.getParticulierKYC);
 
