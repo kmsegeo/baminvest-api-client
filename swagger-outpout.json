@@ -108,6 +108,38 @@
         }
       }
     },
+    "/v1/ressources/campagne/profilrisque/questions": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/v1/ressources/type-operations": {
       "get": {
         "description": "",
@@ -171,38 +203,6 @@
           },
           {
             "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/v1/ressources/campagne/profilrisque/questions": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
             "in": "header",
             "type": "string"
           }
@@ -290,6 +290,83 @@
                   "example": "any"
                 },
                 "compte_espece": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/acteurs/particulier/{particulierId}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "particulierId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "civilite": {
+                  "example": "any"
+                },
+                "nom": {
+                  "example": "any"
+                },
+                "nom_jeune_fille": {
+                  "example": "any"
+                },
+                "prenom": {
+                  "example": "any"
+                },
+                "date_naissance": {
+                  "example": "any"
+                },
+                "nationalite": {
+                  "example": "any"
+                },
+                "adresse": {
+                  "example": "any"
+                },
+                "type_piece": {
+                  "example": "any"
+                },
+                "num_piece": {
+                  "example": "any"
+                },
+                "langue": {
                   "example": "any"
                 }
               }
@@ -406,21 +483,6 @@
             "name": "timestamp",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "question_ref": {
-                  "example": "any"
-                },
-                "reponse_ref": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
