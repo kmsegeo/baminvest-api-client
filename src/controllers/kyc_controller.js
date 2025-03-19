@@ -24,6 +24,30 @@ const createParticulierKYC = async (req, res, next) => {
     }).catch(err => next(err));    
 }
 
+const updateParticulierKYC = async (req, res, next) => {
+
+    console.log(`MAJ des paramètres KYC du client..`);
+    const particulier_id = req.params.particulierId;
+    
+    await Particulier.findById(particulier_id).then(async particulier => {
+        if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
+
+        console.log(`Vérification de l'existance du KYC du client`);
+        await KYC.Particulier.findByParticulierId(particulier.r_i).then(async kyc => {
+            if(!kyc) return response(res, 409, `KYC pas encore enregistré !`);
+
+            console.log(`Début de mise à jour du KYC`);
+            await KYC.Particulier.update(particulier.r_i, {...req.body}).then(async kyc_updated => {
+                if (!kyc) return response(res, 400, `Une erreur s'est produite !`);
+                return response(res, 200, `Mise à jour du KYC terminé`, kyc_updated);
+            }).catch(err => next(err));
+
+        }).catch(err => next(err));
+
+    }).catch(err => next(err));  
+
+}
+
 const getParticulierKYC = async (req, res, next) => {
     const particulier_id = req.params.particulierId;
     await KYC.Particulier.findByParticulierId(particulier_id).then(kyc => {
@@ -62,9 +86,15 @@ const getEntrepriseKYC = async (req, res, next) => {
     }).catch(err => next(err));
 }
 
+const updateEntrepriseKYC = async (req, res, next) => {
+
+}
+
 module.exports = {
     createParticulierKYC,
+    updateParticulierKYC,
     getParticulierKYC,
     createEntrepriseKYC,
-    getEntrepriseKYC
+    getEntrepriseKYC,
+    updateEntrepriseKYC
 }

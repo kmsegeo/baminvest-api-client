@@ -18,6 +18,7 @@ router.put('/particulier/:particulierId', app_auth, onbordingController.updatePa
 
 router.post('/particulier/:particulierId/kyc', app_auth, kycController.createParticulierKYC);
 router.get('/particulier/:particulierId/kyc', app_auth, kycController.getParticulierKYC);
+router.put('/particulier/:particulierId/kyc', app_auth, kycController.updateParticulierKYC);
 
 router.post('/particulier/:particulierId/profilrisque/reponses', app_auth, campagneController.saveAllResponses);
 router.get('/particulier/:particulierId/profilrisque/reponses/recap', app_auth, campagneController.recapProfilRisqueResponses);
