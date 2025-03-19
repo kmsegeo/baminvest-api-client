@@ -56,28 +56,6 @@ const getProfilRisqueQuestions = async (req, res, next) => {
         console.log(`Chargement des parties de la campagne`)
         await CampagnePartie.findAllByCampgagne(campagne.r_i).then(async parties => {
             console.log(`Charger les question de chaque parties`);
-            // for(let partie of parties) {
-            //     await CampagneQuestion.findAllByPartie(partie.r_i).then(async questions => {
-            //         for (let question of questions) {
-            //             await CampagneReponse.findAllByLineColumn(question.r_i).then(async reponses => {
-            //                 if (question.r_avec_colonne==1) {       // Matrice
-            //                     await CampagneRepMatrice.findAllByQuestion(question.r_i).then(async matrices => {
-            //                         console.log(reponses)
-
-            //                         for (let matrice of matrices) {
-            //                         }
-            //                         question['matrice'] = matrices
-            //                     }).catch(err => next(err));
-            //                 } else {                                // Reponses simple
-            //                     question['proposition_reponses'] = reponses;
-            //                 }
-            //             }).catch(err => next(err));
-            //         }
-            //         partie['questions'] = questions;
-            //     }).catch(err => next(err));
-            // }
-
-            console.log(`Charger les question de chaque parties`);
             for(let partie of parties) {
                 await CampagneQuestion.findAllByPartie(partie.r_i).then(async questions => {
                     for (let question of questions) {
@@ -169,7 +147,7 @@ const recapProfilRisqueResponses = async (req, res, next) => {
                 }
                 
                 profil_investisseur = await Utils.calculProflInvestisseur(point_total);    
-                return response(res, 200, `Reponses de l'acteur`, reponses, { point_total, profil_investisseur });
+                return response(res, 200, `Reponses de l'acteur`, reponses, profil_investisseur);
                 
             }).catch(err => next(err));
         }).catch(err => next(err));
@@ -250,7 +228,7 @@ const buildProfilRisqueResponses = async (req, res, next) => {
                 profil_investisseur = await Utils.calculProflInvestisseur(point_total);
                 await Acteur.updateProfilInvestisseur(acteur.r_i, profil_investisseur).catch(err => next(err));
     
-                return response(res, 200, `Reponses de l'acteur`, reponses, { point_total, profil_investisseur });
+                return response(res, 200, `Reponses de l'acteur`, reponses, profil_investisseur);
 
             }).catch(err => next(err));
         }).catch(err => next(err));

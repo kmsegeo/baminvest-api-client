@@ -46,20 +46,36 @@ const Utils = {
         return operation;
     },
 
-    async calculProflInvestisseur(points) {
+    async calculProflInvestisseur(point_total) {
 
-        let profil = null;
+        let profil_investisseur = null;
+        let souhait = null;
+        let inconvenient = null;
+        let recommandation = null;
 
-        if (points >= 0 && points <= 20)
-            profil = 'Prudent';
-        else if (points >= 21 && points <= 29)
-            profil = 'Équilibré';
-        else if (points >= 30 && points <= 39)
-            profil = 'Dynamique';
-        else if (points >= 40 )
-            profil = 'Audacieux';
+        if (point_total >= 0 && point_total <= 20) {
+            profil_investisseur = 'Prudent';
+            souhait = 'Protection de votre capital avec une faible prise de risques.';
+            inconvenient = 'La valeur de vos investissements évoluera faiblement.';
+            recommandation = 'FCP BRIDGE OBLIGATIONS';
+        } else if (point_total >= 21 && point_total <= 29) {
+            profil_investisseur = 'Équilibré';
+            souhait = 'Croissance de vos investissements sur le moyen et le long terme, avec une prise de risques modérée.';
+            inconvenient = 'La valeur de vos investissements pourrait diminuer.';
+            recommandation = 'FCP BRIDGE EQUILIBRE';
+        } else if (point_total >= 30 && point_total <= 39) {
+            profil_investisseur = 'Dynamique';
+            souhait = 'Croissance de vos investissements sur le long terme, avec une prise de risques élevée.';
+            inconvenient = 'La valeur de vos investissements pourrait diminuer.';
+            recommandation = 'FCP BRIDGE DIVERSIFIE CROISSANCE';
+        } else if (point_total >= 40 ) {
+            profil_investisseur = 'Audacieux';
+            souhait = 'Maximiser la croissance de vos investissements sur le long terme, avec une prise de risques très élevée.';
+            inconvenient = 'La valeur de votre investissement initial pourrait fortement diminuer.';
+            recommandation = 'PORTEFEUILLE ACTIONS BRIDGE SECURITIES';
+        } 
 
-        return profil;
+        return {point_total, profil_investisseur, souhait, inconvenient, recommandation} ;
     },
 
     async genearteOTP_Msgid() {

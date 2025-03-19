@@ -29,7 +29,7 @@ const updateParticulierKYC = async (req, res, next) => {
     console.log(`MAJ des paramètres KYC du client..`);
     
     const particulier_id = req.params.particulierId;
-    const {autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, lien_parente_sgo, civilite, nom_prenom_titulaire, date_naissance, pays_naissance, pays_residence, situation_matrimoniale, telephone, email, situation_habitat, categorie_professionnelle, autres_categorie_prof, profession, employeur, nbr_enfants, langue_preferee, instrument_paiement_privilige, origine_ressources_investies, autres_origines_ressources, tranche_revenus, autres_actifs, autres_actifs_preciser, autres_comptes_bridge, comptes_bridges, banques_relations, activites_politiques, preciser_activite_politiq, proche_politicien, preciser_proche_politicien} = req.body
+    const {autres_contexte_ouv: string, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, lien_parente_sgo, civilite, nom_prenom_titulaire, date_naissance, pays_naissance, pays_residence, situation_matrimoniale, telephone, email, situation_habitat, categorie_professionnelle, autres_categorie_prof, profession, employeur, nbr_enfants, langue_preferee, instrument_paiement_privilige, origine_ressources_investies, autres_origines_ressources, tranche_revenus, autres_actifs, autres_actifs_preciser, autres_comptes_bridge, comptes_bridges, banques_relations, activites_politiques, preciser_activite_politiq, proche_politicien, preciser_proche_politicien} = req.body
     
     await Particulier.findById(particulier_id).then(async particulier => {
         if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
