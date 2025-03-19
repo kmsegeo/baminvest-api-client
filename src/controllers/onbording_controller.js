@@ -104,9 +104,7 @@ const updateParticulier = async (req, res, next) => {
         prenom, 
         date_naissance, 
         nationalite, 
-        email, 
         adresse, 
-        telephone, 
         type_piece, 
         num_piece, 
         langue} = req.body;
@@ -123,8 +121,6 @@ const updateParticulier = async (req, res, next) => {
                 if (!particulier_updated) return response(res, 400, `Une erreur s'est produite !`);
                 await Acteur.update(acteur.r_i, {
                     nom_complet: particulier_updated.r_nom + ' ' + particulier_updated.r_prenom,
-                    email: email,
-                    telephone: telephone,
                     adresse: adresse,
                     langue: langue
                 }).then(async acteur_updated => {
