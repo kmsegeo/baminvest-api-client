@@ -173,13 +173,15 @@ const Acteur = {
     return res.rows[0];
   },
   
-  async update(id, {nom_complet, adresse, langue}) {
+  async update(id, {nom_complet, email, telephone, adresse, langue}) {
     const queryString = `UPDATE ${this.tableName} SET 
       r_nom_complet=$1,
-      r_adresse=$2,
-      r_date_modif=$3,
-      r_langue=$4
-    WHERE r_i=$5 
+      r_email=$2,
+      r_telephone_prp=$3,
+      r_adresse=$4,
+      r_date_modif=$5,
+      r_langue=$6
+    WHERE r_i=$7 
     RETURNING r_i,
         r_nom_complet, 
         r_email, 
@@ -195,7 +197,7 @@ const Acteur = {
         e_represantant
         e_particulier,
         r_langue`;
-    const res = await db.query(queryString, [nom_complet, adresse, new Date(),langue, id])
+    const res = await db.query(queryString, [nom_complet, email, telephone, adresse, new Date(), langue, id])
     return res.rows[0];
   },
 
