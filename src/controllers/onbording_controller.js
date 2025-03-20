@@ -80,9 +80,10 @@ const createParticulier = async (req, res, next) => {
                     }).catch(error => next(error));
             }).catch(error => next(error));
         }).catch(error => next(error));
-        }).catch(error => response(res, 400, error));
         }).catch(error => next(error));
-    }).catch(error => next(error));
+        }).catch(error => next(error));
+    }).catch(error => response(res, 400, error));
+
 }
 
 const updateParticulier = async (req, res, next) => {

@@ -7,12 +7,12 @@ const Encryption = require("../utils/encryption.methods");
 module.exports = async (req, res, next) => {
 
     try {
-        console.log(`Authentification application..`);
+        console.log(`Authentification de la requête..`);
         const app_hash = req.headers.appauth;
         const req_hash = await appVerifyer(req.headers.app_id, req.headers.op_code, req.headers.timestamp)
         console.log(`Vérification du hash`)
         if (app_hash!=req_hash) 
-            throw `Authentification de l'application à échoué !`;
+            throw `Authentification de la requête à échoué !`;
         next(); 
     } catch(error) {
         return response(res, 401, error);
