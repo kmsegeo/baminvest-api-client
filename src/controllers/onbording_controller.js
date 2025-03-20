@@ -274,7 +274,7 @@ const uploadDomiciliation = async (req, res, next) => {
 }
 
 const uploadSignature = async (req, res, next) => {
-    console.log(`Chargememnt de fichier de signature..`)
+    console.log(`Chargememnt de fichier de signature..`);
     console.log(`----------------------------------`);
     const acteur = req.params.acteurId;
     const typedoc_intitule = "signature";
@@ -291,7 +291,8 @@ const uploadSignature = async (req, res, next) => {
 
 const createPersonEmergency = async (req, res, next) => {
     
-    console.log(`Créer personne à contacter..`)
+    console.log(`Créer personne à contacter..`);
+    console.log(`----------------------------------`);
     const particulier_id = req.params.particulierId;
 
     const {nom_prenom, intitule, telephone_fixe, telephone_mobile, email} = req.body;
@@ -366,6 +367,8 @@ const createPassword = async (req, res, next) => {
 }
 
 const verifierOtp = async (req, res, next) => {
+    console.log(`Vérification OTP..`);
+    console.log(`----------------------------------`);
     const acteur_id = req.params.acteurId;
     const code_otp = req.body.code_otp;
     await Acteur.findById(acteur_id).then(async acteur => {
@@ -394,7 +397,8 @@ const verifierOtp = async (req, res, next) => {
 }
 
 const renvoiOtp = async (req, res, next) => {
-    
+    console.log(`Renvoi du message OTP..`);
+    console.log(`----------------------------------`);
     const acteur_id = req.params.acteurId;
     
     await Acteur.findById(acteur_id).then(async acteur => {
