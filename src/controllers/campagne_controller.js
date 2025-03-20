@@ -214,7 +214,7 @@ const buildProfilRisqueResponses = async (req, res, next) => {
             await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
 
                 let point_total = 0;
-                let investisseur = null;
+                let profil_investisseur = null;
                 let i = 0;
 
                 for (let reponse of reponses) {
@@ -237,10 +237,11 @@ const buildProfilRisqueResponses = async (req, res, next) => {
                 }
                 
                 console.log(`Determination du profil investisseur`)
-                investisseur = await Utils.calculProflInvestisseur(point_total);
-                await Acteur.updateProfilInvestisseur(acteur.r_i, investisseur.profil_investisseur).catch(err => next(err));
-    
-                return response(res, 200, `Reponses de l'acteur`, reponses, investisseur);
+                profil_investisseur = await Utils.calculProflInvestisseur(point_total);
+                await Acteur.updateProfilInvestisseur(acteur.r_i, profil_investisseur.profil_investisseur).catch(err => next(err));
+                
+                console.log(profil_investisseur);
+                return response(res, 200, `Reponses de l'acteur`, reponses, profil_investisseur);
 
             }).catch(err => next(err));
         }).catch(err => next(err));
