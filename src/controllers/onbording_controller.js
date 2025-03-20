@@ -9,13 +9,218 @@ const Document = require('../models/Document');
 const TypeDocument = require('../models/TypeDocument');
 const PersonEmergency = require('../models/PersonEmergency');
 const OTP = require('../models/OTP');
+const KYC = require('../models/KYC');
 const uuid = require('uuid');
+const ProfilRisqueReponse = require('../models/ProfilRisqueReponse');
+const CampagneQuestion = require('../models/CampagneQuestion');
+const CampagneRepMatrice = require('../models/CampagneRepMatrice');
+const CampagneReponse = require('../models/CampagneReponse');
+const CampagnePartie = require('../models/CampagnePartie');
+const Campagne = require('../models/Campagne');
 
 const getAllTypeActeurs = async (req, res, next) => {
     console.log(`Récupération des types acteur..`);
     await Client.TypeActeur.findAll()
         .then(types => response(res, 200, `Liste des acteurs`, types))
         .catch(error => next(error));
+}
+
+const onbordingParticulier = async (req, res, next) => {
+
+    console.log(`Création d'un compte particulier..`);
+    console.log(`----------------------------------`);
+
+    const {
+        civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, adresse, telephone, type_acteur, type_piece, num_piece,
+        type_compte, langue,compte_titre,compte_espece,  autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, 
+        lien_parente_sgo, nom_prenom_titulaire, pays_naissance, pays_residence, situation_matrimoniale, situation_habitat, categorie_professionnelle, 
+        autres_categorie_prof, profession, employeur, nbr_enfants, langue_preferee, instrument_paiement_privilige, origine_ressources_investies, 
+        autres_origines_ressources, tranche_revenus, autres_actifs, autres_actifs_preciser, autres_comptes_bridge, comptes_bridges, banques_relations,
+        activites_politiques, preciser_activite_politiq, proche_politicien, preciser_proche_politicien, contact_nom_prenom, contact_telephone_mobile,
+        contact_telephone_fixe, contact_intitule, contact_email, profil_reponses
+    } = req.body;
+
+    console.log(req.body);
+
+    console.log(`Vérification des paramètres`);
+    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_acteur, type_compte, profil_reponses}).then(async () => {
+        
+        console.log(`Vérification de l'existance du compte`);
+        await Acteur.findByEmail(email).then(async exists_email => {
+            if (exists_email) return response(res, 409, `Cette adresse email existe déjà !`);
+            
+        await Acteur.findByTelephone(telephone).then(async exists_phone => {
+            if (exists_phone) return response(res, 409, `Ce numéro de téléphone existe déjà !`);
+    
+        console.log(`Récupération de l'id du type acteur`);
+        await TypeActeur.findByCode(type_acteur).then(async type_acteur => {
+            console.log(`Création du profil particulier`);
+            await Client.Particulier.create({civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece})
+            .then(async particulier => {
+                if (!particulier) return response(res, 400, `Une erreur s'est produite !`);
+                await Acteur.create({
+                    nom_complet: particulier.r_nom + ' ' + particulier.r_prenom, 
+                    email: email, 
+                    telephone: telephone, 
+                    adresse: adresse, 
+                    type_acteur: type_acteur.r_i, 
+                    signataire: 0, 
+                    entreprise: 0, 
+                    represantant: 0,
+                    particulier: particulier.r_i, 
+                    langue: langue
+                }).then(async acteur => {
+                    particulier['acteur'] = acteur;
+                    console.log(`Compte particulier créé avec succès`)
+                    console.log(`----------------------------------`);
+
+                    console.log(`Ajout des paramètres KYC du client..`);
+                    console.log(`----------------------------------`);
+                    
+                    if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
+                    
+                    console.log(`Début de création du KYC`);
+                    await KYC.Particulier.create(particulier.r_i, {
+                        autres_contexte_ouv,
+                        contexte_ouverture_compte,
+                        raisons_ouverture_compte,
+                        ouverture_compte,
+                        lien_parente_sgo,
+                        civilite,
+                        nom_prenom_titulaire,
+                        date_naissance,
+                        pays_naissance,
+                        pays_residence,
+                        situation_matrimoniale,
+                        telephone,
+                        email,
+                        situation_habitat,
+                        categorie_professionnelle,
+                        autres_categorie_prof,
+                        profession,
+                        employeur,
+                        nbr_enfants,
+                        langue_preferee,
+                        instrument_paiement_privilige,
+                        origine_ressources_investies,
+                        autres_origines_ressources,
+                        tranche_revenus,
+                        autres_actifs,
+                        autres_actifs_preciser,
+                        autres_comptes_bridge,
+                        comptes_bridges,
+                        banques_relations,
+                        activites_politiques,
+                        preciser_activite_politiq,
+                        proche_politicien,
+                        preciser_proche_politicien
+                    }).then(async kyc => {
+                        if (!kyc) return response(res, 400, `Une erreur s'est produite !`);
+                        console.log(`Ajout de KYC terminé`);
+                        console.log(`----------------------------------`);
+
+                        console.log(`Créer personne à contacter..`);
+                        console.log(`----------------------------------`);
+
+                        if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
+
+                        await PersonEmergency.create(particulier.r_i, { 
+                            nom_prenom: contact_nom_prenom, 
+                            intitule: contact_intitule, 
+                            telephone_fixe: contact_telephone_fixe, 
+                            telephone_mobile: contact_telephone_mobile, 
+                            email: contact_email
+                            }).then( async person => {
+                            if (!person) return response(res, 400, `Une erreur s'est produite`);
+                            delete person.e_particulier;
+                            console.log(`Ajout de personne à contacter terminé`);
+                            console.log(`----------------------------------`);
+                            
+                            console.log(`Traitement du profil risque..`);
+                            console.log(`----------------------------------`);
+                                
+                            console.log(`Initialisation des reponses`)
+                            await ProfilRisqueReponse.cleanActeurReponse(acteur.r_i).then(async () => {
+
+                                for (let pr of profil_reponses) {
+
+                                    const question_ref = pr.question_ref;
+                                    const reponse_ref = pr.reponse_ref;
+
+                                    console.log(`Verification des informations`);
+                                    await Utils.expectedParameters({question_ref, reponse_ref}).then(async () => {
+
+                                        console.log(`Chargement de la question ${question_ref}`)
+                                        await CampagneQuestion.findByRef(question_ref).then(async question => {
+                                            await CampagneRepMatrice.findAllByQuestion(question.r_i).then(async matrices => {
+                                                for (let matrice of matrices) {
+                                                    await CampagneReponse.findAllByLineColumn(matrice.r_i).then(async suggestions => {
+                                                        let reponse = null;
+                                                        for (let suggestion of suggestions)
+                                                            if (suggestion.r_reference==reponse_ref) reponse=suggestion;
+                                                        if (reponse) {
+                                                            console.log(`Enregistrement de la reponse ${reponse_ref}`)
+                                                            await ProfilRisqueReponse.create(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
+                                                        }
+                                                    }).catch(err => next(err));
+                                                }
+                                            }).catch(err => next(err));
+                                        }).catch(err => next(err));
+                                    }).catch(err => response(res, 400, err));
+                                    await Utils.sleep(1000);
+                                }
+                            }).catch(err => next(err));
+                            
+                            console.log(`----------------------------------`);
+                            console.log(`Calcul des points collectées..`)
+                            console.log(`----------------------------------`);
+
+                            await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
+
+                                let point_total = 0;
+                                let investisseur = null;
+                                let i = 0;
+                                await Campagne.findByintitule('profil_risque').then(async campagne => {
+                                    for (let reponse of reponses) {
+                                        await CampagneQuestion.findById(reponse.e_risques_questions).then(async question => {
+                                            await CampagnePartie.findById(question.e_profil_partie).then(async partie => {
+                                                if (!campagne || partie.e_campagne==campagne.r_i) {
+                                                    point_total += Number(reponse.r_points);
+                                                    reponse['question'] = question
+                                                    await CampagneReponse.findById(reponse.e_risque_reponse).then(async suggestion => {
+                                                        reponse['reponse'] = suggestion
+                                                    }).catch(err => next(err));
+                                                    delete reponse.e_risque_reponse
+                                                    delete reponse.e_risques_questions
+                                                } else {
+                                                    delete reponses[i];
+                                                }
+                                            }).catch(err => next(err));
+                                        }).catch(err => next(err));
+                                        i+=1;
+                                    }
+                                }).catch(err => next(err));
+                                    
+                                console.log(`Détermination du profil investisseur`)
+
+                                investisseur = await Utils.calculProflInvestisseur(point_total);
+                                await Acteur.updateProfilInvestisseur(acteur.r_i, investisseur.profil_investisseur).catch(err => next(err));
+                                
+                                console.log(investisseur);
+                                return response(res, 200, `Reponses de l'acteur`, null, investisseur);
+
+                            }).catch(err => next(err));
+
+                        }).catch(err => next(err));
+
+                    }).catch(err => next(err));
+                }).catch(error => next(error));
+            }).catch(error => next(error));
+        }).catch(error => next(error));
+        }).catch(error => next(error));
+        }).catch(error => next(error));
+    }).catch(error => response(res, 400, error));
+
 }
 
 const createParticulier = async (req, res, next) => {
@@ -440,6 +645,7 @@ const renvoiOtp = async (req, res, next) => {
 }
 
 module.exports = {
+    onbordingParticulier,
     getAllTypeActeurs,
     createParticulier,
     updateParticulier,

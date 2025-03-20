@@ -214,6 +214,200 @@
         }
       }
     },
+    "/v1/acteurs/particulier/onbording": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "civilite": {
+                  "example": "any"
+                },
+                "nom": {
+                  "example": "any"
+                },
+                "nom_jeune_fille": {
+                  "example": "any"
+                },
+                "prenom": {
+                  "example": "any"
+                },
+                "date_naissance": {
+                  "example": "any"
+                },
+                "nationalite": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "adresse": {
+                  "example": "any"
+                },
+                "telephone": {
+                  "example": "any"
+                },
+                "type_acteur": {
+                  "example": "any"
+                },
+                "type_piece": {
+                  "example": "any"
+                },
+                "num_piece": {
+                  "example": "any"
+                },
+                "type_compte": {
+                  "example": "any"
+                },
+                "langue": {
+                  "example": "any"
+                },
+                "compte_titre": {
+                  "example": "any"
+                },
+                "compte_espece": {
+                  "example": "any"
+                },
+                "autres_contexte_ouv": {
+                  "example": "any"
+                },
+                "contexte_ouverture_compte": {
+                  "example": "any"
+                },
+                "raisons_ouverture_compte": {
+                  "example": "any"
+                },
+                "ouverture_compte": {
+                  "example": "any"
+                },
+                "lien_parente_sgo": {
+                  "example": "any"
+                },
+                "nom_prenom_titulaire": {
+                  "example": "any"
+                },
+                "pays_naissance": {
+                  "example": "any"
+                },
+                "pays_residence": {
+                  "example": "any"
+                },
+                "situation_matrimoniale": {
+                  "example": "any"
+                },
+                "situation_habitat": {
+                  "example": "any"
+                },
+                "categorie_professionnelle": {
+                  "example": "any"
+                },
+                "autres_categorie_prof": {
+                  "example": "any"
+                },
+                "profession": {
+                  "example": "any"
+                },
+                "employeur": {
+                  "example": "any"
+                },
+                "nbr_enfants": {
+                  "example": "any"
+                },
+                "langue_preferee": {
+                  "example": "any"
+                },
+                "instrument_paiement_privilige": {
+                  "example": "any"
+                },
+                "origine_ressources_investies": {
+                  "example": "any"
+                },
+                "autres_origines_ressources": {
+                  "example": "any"
+                },
+                "tranche_revenus": {
+                  "example": "any"
+                },
+                "autres_actifs": {
+                  "example": "any"
+                },
+                "autres_actifs_preciser": {
+                  "example": "any"
+                },
+                "autres_comptes_bridge": {
+                  "example": "any"
+                },
+                "comptes_bridges": {
+                  "example": "any"
+                },
+                "banques_relations": {
+                  "example": "any"
+                },
+                "activites_politiques": {
+                  "example": "any"
+                },
+                "preciser_activite_politiq": {
+                  "example": "any"
+                },
+                "proche_politicien": {
+                  "example": "any"
+                },
+                "preciser_proche_politicien": {
+                  "example": "any"
+                },
+                "contact_nom_prenom": {
+                  "example": "any"
+                },
+                "contact_telephone_mobile": {
+                  "example": "any"
+                },
+                "contact_telephone_fixe": {
+                  "example": "any"
+                },
+                "contact_intitule": {
+                  "example": "any"
+                },
+                "contact_email": {
+                  "example": "any"
+                },
+                "profil_reponses": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/v1/acteurs/particulier": {
       "post": {
         "description": "",
@@ -357,7 +551,13 @@
                 "nationalite": {
                   "example": "any"
                 },
+                "email": {
+                  "example": "any"
+                },
                 "adresse": {
+                  "example": "any"
+                },
+                "telephone": {
                   "example": "any"
                 },
                 "type_piece": {
@@ -598,82 +798,6 @@
         }
       }
     },
-    "/v1/acteurs/particulier/{particulierId}/profilrisque/reponses": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "particulierId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/v1/acteurs/particulier/{particulierId}/profilrisque/reponses/recap": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "particulierId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/v1/acteurs/particulier/{particulierId}/personne_contacter": {
       "post": {
         "description": "",
@@ -735,6 +859,82 @@
           }
         }
       },
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "particulierId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/acteurs/particulier/{particulierId}/profilrisque/reponses": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "particulierId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/acteurs/particulier/{particulierId}/profilrisque/reponses/recap": {
       "get": {
         "description": "",
         "parameters": [

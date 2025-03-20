@@ -13,6 +13,8 @@ const router = express.Router();
 
 // ONBORDING: PARTICULIER
 
+router.post('/particulier/onbording', app_auth, onbordingController.onbordingParticulier);
+
 router.post('/particulier', app_auth, onbordingController.createParticulier);
 router.put('/particulier/:particulierId', app_auth, onbordingController.updateParticulier);
 
@@ -20,11 +22,12 @@ router.post('/particulier/:particulierId/kyc', app_auth, kycController.createPar
 router.get('/particulier/:particulierId/kyc', app_auth, kycController.getParticulierKYC);
 router.put('/particulier/:particulierId/kyc', app_auth, kycController.updateParticulierKYC);
 
+router.post('/particulier/:particulierId/personne_contacter', app_auth, onbordingController.createPersonEmergency);
+router.get('/particulier/:particulierId/personne_contacter', app_auth, onbordingController.getAllPersonEmergency);
+
 router.post('/particulier/:particulierId/profilrisque/reponses', app_auth, campagneController.saveAllResponses);
 router.get('/particulier/:particulierId/profilrisque/reponses/recap', app_auth, campagneController.recapProfilRisqueResponses);
 
-router.post('/particulier/:particulierId/personne_contacter', app_auth, onbordingController.createPersonEmergency);
-router.get('/particulier/:particulierId/personne_contacter', app_auth, onbordingController.getAllPersonEmergency);
 
 // ONBORDING: ENTREPRISE
 
