@@ -193,7 +193,7 @@ const saveAllResponses = async (req, res, next) => {
                         }).catch(err => next(err));
                     }).catch(err => next(err));
                 }).catch(err => response(res, 400, err));
-                await Utils.sleep(500);
+                await Utils.sleep(1000);
             }
 
         }).catch(err => next(err));
@@ -237,6 +237,7 @@ const buildProfilRisqueResponses = async (req, res, next) => {
                 }
                 
                 console.log(`Determination du profil investisseur`)
+
                 investisseur = await Utils.calculProflInvestisseur(point_total);
                 await Acteur.updateProfilInvestisseur(acteur.r_i, investisseur.profil_investisseur).catch(err => next(err));
                 
