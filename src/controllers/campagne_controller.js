@@ -157,11 +157,15 @@ const recapProfilRisqueResponses = async (req, res, next) => {
 
 const saveAllResponses = async (req, res, next) => {
     
+    console.log(`Traitement du profil risque..`);
+    console.log(`----------------------------------`);
     const particulier_id = req.params.particulierId;
 
+    console.log(`Vérification du compte particulier`);
     await Acteur.findByParticulierId(particulier_id).then(async acteur => {
         if (!acteur) return response(res, 400, `Acteur non trouvé !`);
         
+        console.log(`Initialisation des reponses`)
         await ProfilRisqueReponse.cleanActeurReponse(acteur.r_i).then(async () => {
 
             for (let pr of req.body) {
@@ -169,16 +173,21 @@ const saveAllResponses = async (req, res, next) => {
                 const question_ref = pr.question_ref;
                 const reponse_ref = pr.reponse_ref;
 
+                console.log(`Verification des informations`);
                 await Utils.expectedParameters({question_ref, reponse_ref}).then(async () => {
+                    console.log(`Chargement de la question ${question_ref}`)
                     await CampagneQuestion.findByRef(question_ref).then(async question => {
+                        console.log(`Chargement de la matrice`)
                         await CampagneRepMatrice.findAllByQuestion(question.r_i).then(async matrices => {
                             for (let matrice of matrices) {
                                 await CampagneReponse.findAllByLineColumn(matrice.r_i).then(async suggestions => {
                                     let reponse = null;
                                     for (let suggestion of suggestions)
                                         if (suggestion.r_reference==reponse_ref) reponse=suggestion;
-                                    if (reponse)
+                                    if (reponse) {
+                                        console.log(`Enregistrement de la reponse ${reponse_ref}`)
                                         await ProfilRisqueReponse.create(reponse.r_points, acteur.r_i, {question_id: question.r_i, reponse_id: reponse.r_i}).catch(err => next(err));
+                                    }
                                 }).catch(err => next(err));
                             }
                         }).catch(err => next(err));
@@ -194,11 +203,13 @@ const saveAllResponses = async (req, res, next) => {
 }
 
 const buildProfilRisqueResponses = async (req, res, next) => {
-       
+    
+    console.log(`Calcul des points collectées..`)
+    console.log(`----------------------------------`);
+
     const particulier_id = req.params.particulierId;
 
     await Campagne.findByintitule('profil_risque').then(async campagne => {
-
         await Acteur.findByParticulierId(particulier_id).then(async acteur => {
             await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
 
@@ -225,6 +236,7 @@ const buildProfilRisqueResponses = async (req, res, next) => {
                     i+=1;
                 }
                 
+                console.log(`Determination du profil investisseur`)
                 investisseur = await Utils.calculProflInvestisseur(point_total);
                 await Acteur.updateProfilInvestisseur(acteur.r_i, investisseur.profil_investisseur).catch(err => next(err));
     

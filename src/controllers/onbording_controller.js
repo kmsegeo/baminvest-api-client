@@ -29,6 +29,8 @@ const createParticulier = async (req, res, next) => {
      */
 
     console.log(`Création d'un compte particulier..`);
+    console.log(`----------------------------------`);
+
     const {
         civilite, 
         nom, 
@@ -220,6 +222,7 @@ const createEntreprise = async (req, res, next) => {
 const createRepresentant = async (req, res, next) => {
 
     console.log(`Création d'un representant..`);
+    console.log(`----------------------------------`);
     const {civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, fonction} = req.body;
     const entreprise_id = req.params.entrepriseId;
 
@@ -239,6 +242,8 @@ const createRepresentant = async (req, res, next) => {
 }
 
 const uploadPhotoProfil = async (req, res, next) => {
+    console.log(`Chargememnt de photo de profil..`)
+    console.log(`----------------------------------`);
     const acteur = req.params.acteurId;
     const typedoc_intitule = "photoprofil";
     const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
@@ -253,6 +258,8 @@ const uploadPhotoProfil = async (req, res, next) => {
 }
 
 const uploadDomiciliation = async (req, res, next) => {
+    console.log(`Chargememnt de fichier de deminicialation..`)
+    console.log(`----------------------------------`);
     const acteur = req.params.acteurId;
     const typedoc_intitule = "domiciliation";
     const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
@@ -267,6 +274,8 @@ const uploadDomiciliation = async (req, res, next) => {
 }
 
 const uploadSignature = async (req, res, next) => {
+    console.log(`Chargememnt de fichier de signature..`)
+    console.log(`----------------------------------`);
     const acteur = req.params.acteurId;
     const typedoc_intitule = "signature";
     const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
@@ -309,6 +318,8 @@ const getAllPersonEmergency = async (req, res, next) => {
 }
 
 const createPassword = async (req, res, next) => {
+    console.log(`Création de mote de passe..`)
+    console.log(`----------------------------------`);
     const acteur_id = req.params.acteurId;
     const mdp = req.body.mdp;
     await Acteur.findById(acteur_id).then(async acteur => {

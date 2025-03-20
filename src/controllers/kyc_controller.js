@@ -7,6 +7,8 @@ const KYC = require('../models/KYC');
 const createParticulierKYC = async (req, res, next) => {
 
     console.log(`Ajout des paramètres KYC du client..`);
+    console.log(`----------------------------------`);
+    
     const particulier_id = req.params.particulierId;
     
     await Particulier.findById(particulier_id).then(async particulier => {
