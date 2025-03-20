@@ -53,10 +53,12 @@ const createParticulier = async (req, res, next) => {
         console.log(`Vérification de l'existance du compte`);
         await Acteur.findByEmail(email).then(async exists_email => {
             if (exists_email) return response(res, 409, `Cette adresse email existe déjà !`);
+        }).catch(error => next(error));
             
         await Acteur.findByTelephone(telephone).then(async exists_phone => {
             if (exists_phone) return response(res, 409, `Ce numéro de téléphone existe déjà !`);
-    
+        }).catch(error => next(error));
+
         console.log(`Récupération de l'id du type acteur`);
         await TypeActeur.findByCode(type_acteur).then(async type_acteur => {
             console.log(`Création du profil particulier`);
@@ -79,8 +81,6 @@ const createParticulier = async (req, res, next) => {
                         return response(res, 201, `Compte particulier créé avec succès`, particulier);
                     }).catch(error => next(error));
             }).catch(error => next(error));
-        }).catch(error => next(error));
-        }).catch(error => next(error));
         }).catch(error => next(error));
     }).catch(error => response(res, 400, error));
 
