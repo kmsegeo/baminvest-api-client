@@ -27,7 +27,7 @@ const getAllFonds = async (req, res, next) => {
             //                 }).then(async fd_new => {
             //                     fonds.push(fd_new);
             //                 }).catch(err => next(err));
-            //                 await Utils.sleep(1000);
+            //                 await Utils.sleep(500);
             //             } else {
             //                 fonds.push(fd);
             //             }
