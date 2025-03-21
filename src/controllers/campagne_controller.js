@@ -158,7 +158,7 @@ const recapProfilRisqueResponses = async (req, res, next) => {
 const saveAllResponses = async (req, res, next) => {
     
     console.log(`Traitement du profil risque..`);
-    console.log(`----------------------------------`);
+    
     const particulier_id = req.params.particulierId;
 
     console.log(`Vérification du compte particulier`);
@@ -205,7 +205,7 @@ const saveAllResponses = async (req, res, next) => {
 const buildProfilRisqueResponses = async (req, res, next) => {
     
     console.log(`Calcul des points collectées..`)
-    console.log(`----------------------------------`);
+    
 
     const particulier_id = req.params.particulierId;
 

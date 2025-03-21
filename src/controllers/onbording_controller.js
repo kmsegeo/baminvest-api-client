@@ -28,7 +28,7 @@ const getAllTypeActeurs = async (req, res, next) => {
 const onbordingParticulier = async (req, res, next) => {
 
     console.log(`Création d'un compte particulier..`);
-    console.log(`----------------------------------`);
+    
 
     const {
         civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, adresse, telephone, type_acteur, type_piece, num_piece,
@@ -72,10 +72,10 @@ const onbordingParticulier = async (req, res, next) => {
                 }).then(async acteur => {
                     particulier['acteur'] = acteur;
                     console.log(`Compte particulier créé avec succès`)
-                    console.log(`----------------------------------`);
+                    
 
                     console.log(`Ajout des paramètres KYC du client..`);
-                    console.log(`----------------------------------`);
+                    
                     
                     if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
                     
@@ -117,10 +117,10 @@ const onbordingParticulier = async (req, res, next) => {
                     }).then(async kyc => {
                         if (!kyc) return response(res, 400, `Une erreur s'est produite !`);
                         console.log(`Ajout de KYC terminé`);
-                        console.log(`----------------------------------`);
+                        
 
                         console.log(`Créer personne à contacter..`);
-                        console.log(`----------------------------------`);
+                        
 
                         if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
 
@@ -134,10 +134,10 @@ const onbordingParticulier = async (req, res, next) => {
                             if (!person) return response(res, 400, `Une erreur s'est produite`);
                             delete person.e_particulier;
                             console.log(`Ajout de personne à contacter terminé`);
-                            console.log(`----------------------------------`);
+                            
                             
                             console.log(`Traitement du profil risque..`);
-                            console.log(`----------------------------------`);
+                            
                                 
                             console.log(`Initialisation des reponses`)
                             await ProfilRisqueReponse.cleanActeurReponse(acteur.r_i).then(async () => {
@@ -171,9 +171,9 @@ const onbordingParticulier = async (req, res, next) => {
                                 }
                             }).catch(err => next(err));
                             
-                            console.log(`----------------------------------`);
+                            
                             console.log(`Calcul des points collectées..`)
-                            console.log(`----------------------------------`);
+                            
 
                             await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
 
@@ -234,7 +234,6 @@ const createParticulier = async (req, res, next) => {
      */
 
     console.log(`Création d'un compte particulier..`);
-    console.log(`----------------------------------`);
 
     const {
         civilite, 
@@ -427,7 +426,7 @@ const createEntreprise = async (req, res, next) => {
 const createRepresentant = async (req, res, next) => {
 
     console.log(`Création d'un representant..`);
-    console.log(`----------------------------------`);
+
     const {civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, fonction} = req.body;
     const entreprise_id = req.params.entrepriseId;
 
@@ -448,7 +447,7 @@ const createRepresentant = async (req, res, next) => {
 
 const uploadPhotoProfil = async (req, res, next) => {
     console.log(`Chargememnt de photo de profil..`)
-    console.log(`----------------------------------`);
+    
     const acteur = req.params.acteurId;
     const typedoc_intitule = "photoprofil";
     const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
@@ -464,7 +463,7 @@ const uploadPhotoProfil = async (req, res, next) => {
 
 const uploadDomiciliation = async (req, res, next) => {
     console.log(`Chargememnt de fichier de deminicialation..`)
-    console.log(`----------------------------------`);
+    
     const acteur = req.params.acteurId;
     const typedoc_intitule = "domiciliation";
     const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
@@ -480,7 +479,7 @@ const uploadDomiciliation = async (req, res, next) => {
 
 const uploadSignature = async (req, res, next) => {
     console.log(`Chargememnt de fichier de signature..`);
-    console.log(`----------------------------------`);
+    
     const acteur = req.params.acteurId;
     const typedoc_intitule = "signature";
     const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
@@ -497,7 +496,7 @@ const uploadSignature = async (req, res, next) => {
 const createPersonEmergency = async (req, res, next) => {
     
     console.log(`Créer personne à contacter..`);
-    console.log(`----------------------------------`);
+    
     const particulier_id = req.params.particulierId;
 
     const {nom_prenom, intitule, telephone_fixe, telephone_mobile, email} = req.body;
@@ -525,7 +524,7 @@ const getAllPersonEmergency = async (req, res, next) => {
 
 const createPassword = async (req, res, next) => {
     console.log(`Création de mote de passe..`)
-    console.log(`----------------------------------`);
+    
     const acteur_id = req.params.acteurId;
     const mdp = req.body.mdp;
     await Acteur.findById(acteur_id).then(async acteur => {
@@ -572,8 +571,9 @@ const createPassword = async (req, res, next) => {
 }
 
 const verifierOtp = async (req, res, next) => {
+    
     console.log(`Vérification OTP..`);
-    console.log(`----------------------------------`);
+    
     const acteur_id = req.params.acteurId;
     const code_otp = req.body.code_otp;
     await Acteur.findById(acteur_id).then(async acteur => {
@@ -603,7 +603,7 @@ const verifierOtp = async (req, res, next) => {
 
 const renvoiOtp = async (req, res, next) => {
     console.log(`Renvoi du message OTP..`);
-    console.log(`----------------------------------`);
+    
     const acteur_id = req.params.acteurId;
     
     await Acteur.findById(acteur_id).then(async acteur => {
