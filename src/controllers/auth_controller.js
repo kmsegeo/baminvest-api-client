@@ -10,13 +10,17 @@ const sha256encode = async (req, res, next) => {
     const algorithm = "SHA256";
     const {op_code, app_id, timestamp, app_mdp} = req.body;
     Utils.expectedParameters({op_code, app_id, timestamp, app_mdp}).then(() => {
+
+        console.log(`Encodage des données de la requête..`)
+
         try {
             const str = op_code + app_id + timestamp + app_mdp;
             const hash = createHash(algorithm).update(str).digest('base64');
-            return response(res, 200, `Encodage SHA256`, {hash: hash})
+            return response(res, 200, `Encodage SHA256 Terminé`, {hash: hash})
         } catch (error) {
             return response(res, 400, `Erreur d'encodage`);
         }
+
     }).catch(err => response(res, 400, err));
 }
 
