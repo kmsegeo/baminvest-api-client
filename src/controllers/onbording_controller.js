@@ -28,7 +28,6 @@ const getAllTypeActeurs = async (req, res, next) => {
 const onbordingParticulier = async (req, res, next) => {
 
     console.log(`Création d'un compte particulier..`);
-    
 
     const {
         civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, adresse, telephone, type_acteur, type_piece, num_piece,
@@ -73,10 +72,7 @@ const onbordingParticulier = async (req, res, next) => {
                     particulier['acteur'] = acteur;
                     console.log(`Compte particulier créé avec succès`)
                     
-
                     console.log(`Ajout des paramètres KYC du client..`);
-                    
-                    
                     if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
                     
                     console.log(`Début de création du KYC`);
@@ -118,10 +114,7 @@ const onbordingParticulier = async (req, res, next) => {
                         if (!kyc) return response(res, 400, `Une erreur s'est produite !`);
                         console.log(`Ajout de KYC terminé`);
                         
-
                         console.log(`Créer personne à contacter..`);
-                        
-
                         if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
 
                         await PersonEmergency.create(particulier.r_i, { 
@@ -134,14 +127,11 @@ const onbordingParticulier = async (req, res, next) => {
                             if (!person) return response(res, 400, `Une erreur s'est produite`);
                             delete person.e_particulier;
                             console.log(`Ajout de personne à contacter terminé`);
-                            
-                            
+                                            
                             console.log(`Traitement du profil risque..`);
-                            
-                                
-                            console.log(`Initialisation des reponses`)
                             await ProfilRisqueReponse.cleanActeurReponse(acteur.r_i).then(async () => {
-
+                                
+                                console.log(`Initialisation des reponses`)
                                 for (let pr of profil_reponses) {
 
                                     const question_ref = pr.question_ref;
@@ -171,9 +161,7 @@ const onbordingParticulier = async (req, res, next) => {
                                 }
                             }).catch(err => next(err));
                             
-                            
                             console.log(`Calcul des points collectées..`)
-                            
 
                             await ProfilRisqueReponse.findAllByActeur(acteur.r_i).then(async reponses => {
 
@@ -207,7 +195,7 @@ const onbordingParticulier = async (req, res, next) => {
                                 await Acteur.updateProfilInvestisseur(acteur.r_i, investisseur.profil_investisseur).catch(err => next(err));
                                 
                                 console.log(investisseur);
-                                return response(res, 200, `Reponses de l'acteur`, null, investisseur);
+                                return response(res, 200, `Reponses de l'acteur`, particulier, investisseur);
 
                             }).catch(err => next(err));
 
