@@ -28,7 +28,6 @@ router.get('/particulier/:particulierId/personne_contacter', app_auth, onbording
 router.post('/particulier/:particulierId/profilrisque/reponses', app_auth, campagneController.saveAllResponses);
 router.get('/particulier/:particulierId/profilrisque/reponses/recap', app_auth, campagneController.recapProfilRisqueResponses);
 
-
 // ONBORDING: ENTREPRISE
 
 router.post('/entreprise', app_auth, onbordingController.createEntreprise);

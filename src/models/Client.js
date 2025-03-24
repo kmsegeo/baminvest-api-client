@@ -65,6 +65,11 @@ const Particulier = {
 
         const res = await db.query(query_string, [civilite, nom, nom_jeune_fille, prenom, date_naissance,  nationalite, type_piece, num_piece, id]);
         return res.rows[0];
+    },
+
+    async cleanAll() {
+        const res = await db.query(`DELETE FROM ${this.table_name} WHERE r_i <> $1 RETURNING r_i`, [1]);
+        return res.rows;
     }
 }
 
@@ -111,7 +116,7 @@ const Entreprise = {
 
         const res = await db.query(query_string, [raison_sociale, forme_juridique, capital_social, siege_social, compte_contribuable, registre_com, id]);
         return res.rows[0];
-    }
+    },
 
 }
 

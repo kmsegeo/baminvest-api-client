@@ -193,7 +193,7 @@ const saveAllResponses = async (req, res, next) => {
                         }).catch(err => next(err));
                     }).catch(err => next(err));
                 }).catch(err => response(res, 400, err));
-                await Utils.sleep(1000);
+                // await Utils.sleep(1000);
             }
 
         }).catch(err => next(err));

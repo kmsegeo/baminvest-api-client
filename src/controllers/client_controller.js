@@ -1,5 +1,6 @@
 const response = require("../middlewares/response");
 const Acteur = require("../models/Acteur");
+const Client = require("../models/Client");
 const OTP = require("../models/OTP");
 const Utils = require("../utils/utils.methods");
 const bcrypt = require('bcryptjs');
@@ -64,6 +65,15 @@ const getActeurResumes = async (req, res, next) => {
         return response(res, 200, `Resumé des informations du client`, results)
 
     // }).catch(err => next(err));
+}
+
+const cleanAllParticulier = async (req, res, next) => {
+    await Client.Particulier.cleanAll().then(async particulier => {
+        if (!particulier) return response(res, 200, `Nettoyage terminé`, null);
+        await Acteur.cleanAll().then(async acteur => {
+            return response(res, 200, `Nettoyage terminé`, null);
+        }).catch(err => next(err)); 
+    }).catch(err => next(err));
 }
 
 const resetPassword = async (req, res, next) => {
@@ -134,6 +144,7 @@ const updatePassword = async (req, res, next) => {
 
 module.exports = {
     getActeurResumes,
+    cleanAllParticulier,
     resetPassword,
     updatePassword
 }

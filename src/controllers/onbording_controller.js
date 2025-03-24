@@ -39,8 +39,6 @@ const onbordingParticulier = async (req, res, next) => {
         contact_telephone_fixe, contact_intitule, contact_email, profil_reponses
     } = req.body;
 
-    console.log(req.body);
-
     console.log(`Vérification des paramètres`);
     await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_acteur, type_compte, profil_reponses}).then(async () => {
         

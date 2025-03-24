@@ -301,8 +301,12 @@ const Acteur = {
   async updateTelephone(telephone, acteur_id) {
     const res = await db.query(`UPDATE ${this.tableName} SET r_telephone_prp=$1 WHERE r_i=$2 RETURNING r_telephone_prp`, [telephone, acteur_id]);
     return res.rows[0];
-  }
+  }, 
 
+  async cleanAll() {
+      const res = await db.query(`DELETE FROM ${this.tableName} WHERE r_i NOT BETWEEN $1 AND $2 RETURNING r_i`, [1, 5]);
+      return res.rows;
+  }
 }
 
 module.exports = Acteur;
