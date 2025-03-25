@@ -194,7 +194,7 @@ const onbordingParticulier = async (req, res, next) => {
                                 await Acteur.updateProfilInvestisseur(acteur.r_i, investisseur.profil_investisseur).catch(err => next(err));
                                 
                                 console.log(investisseur);
-                                return response(res, 200, `Reponses de l'acteur`, particulier, investisseur);
+                                return response(res, 201, `Compte particulier créé avec succès`, particulier, investisseur);
 
                             }).catch(err => next(err));
 
