@@ -271,9 +271,6 @@
                 "telephone": {
                   "example": "any"
                 },
-                "type_acteur": {
-                  "example": "any"
-                },
                 "type_piece": {
                   "example": "any"
                 },
@@ -463,9 +460,6 @@
                   "example": "any"
                 },
                 "telephone": {
-                  "example": "any"
-                },
-                "type_acteur": {
                   "example": "any"
                 },
                 "type_piece": {
@@ -1027,9 +1021,6 @@
                   "example": "any"
                 },
                 "telephone": {
-                  "example": "any"
-                },
-                "type_acteur": {
                   "example": "any"
                 },
                 "langue": {
@@ -2146,6 +2137,38 @@
                 }
               }
             }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/temp/particulier/clean": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
