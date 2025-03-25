@@ -26,6 +26,7 @@ app.use(base_path + '/ressources', ressouceRoutes);
 app.use(base_path + '/acteurs', acteurRoutes); 
 app.use(base_path + '/fonds', fondsRoutes); 
 app.use(base_path + '/moy_paiements', moyenPaiementRoutes); 
+
 app.use(base_path + '/temp', clientRoutes); 
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument)); 

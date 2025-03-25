@@ -30,7 +30,7 @@ const onbordingParticulier = async (req, res, next) => {
     console.log(`Création d'un compte particulier..`);
 
     const {
-        civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, adresse, telephone, type_acteur, type_piece, num_piece,
+        civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, adresse, telephone, type_piece, num_piece,
         type_compte, langue,compte_titre,compte_espece,  autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, 
         lien_parente_sgo, nom_prenom_titulaire, pays_naissance, pays_residence, situation_matrimoniale, situation_habitat, categorie_professionnelle, 
         autres_categorie_prof, profession, employeur, nbr_enfants, langue_preferee, instrument_paiement_privilige, origine_ressources_investies, 
@@ -40,7 +40,7 @@ const onbordingParticulier = async (req, res, next) => {
     } = req.body;
 
     console.log(`Vérification des paramètres`);
-    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_acteur, type_compte, profil_reponses}).then(async () => {
+    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_compte, profil_reponses}).then(async () => {
         
         console.log(`Vérification de l'existance du compte`);
         await Acteur.findByEmail(email).then(async exists_email => {
@@ -50,7 +50,8 @@ const onbordingParticulier = async (req, res, next) => {
             if (exists_phone) return response(res, 409, `Ce numéro de téléphone existe déjà !`);
     
         console.log(`Récupération de l'id du type acteur`);
-        await TypeActeur.findByCode(type_acteur).then(async type_acteur => {
+        await TypeActeur.findByCode("TYAC-003").then(async type_acteur => {
+            if (!type_acteur) return response(res, 400, `Problème survenu lors de la determination du type acteur`);
             console.log(`Création du profil particulier`);
             await Client.Particulier.create({civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece})
             .then(async particulier => {
@@ -155,7 +156,7 @@ const onbordingParticulier = async (req, res, next) => {
                                             }).catch(err => next(err));
                                         }).catch(err => next(err));
                                     }).catch(err => response(res, 400, err));
-                                    await Utils.sleep(1000);
+                                    // await Utils.sleep(200);
                                 }
                             }).catch(err => next(err));
                             
@@ -231,7 +232,6 @@ const createParticulier = async (req, res, next) => {
         email, 
         adresse, 
         telephone, 
-        type_acteur, 
         type_piece, 
         num_piece, 
         type_compte, 
@@ -240,7 +240,7 @@ const createParticulier = async (req, res, next) => {
         compte_espece} = req.body;
 
     console.log(`Vérification des paramètres`);
-    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_acteur, type_compte}).then(async () => {
+    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_compte}).then(async () => {
         
         console.log(`Vérification de l'existance du compte`);
         await Acteur.findByEmail(email).then(async exists_email => {
@@ -250,7 +250,8 @@ const createParticulier = async (req, res, next) => {
             if (exists_phone) return response(res, 409, `Ce numéro de téléphone existe déjà !`);
     
         console.log(`Récupération de l'id du type acteur`);
-        await TypeActeur.findByCode(type_acteur).then(async type_acteur => {
+        await TypeActeur.findByCode("TYAC-003").then(async type_acteur => {
+            if (!type_acteur) return response(res, 400, `Problème survenu lors de la determination du type acteur`);
             console.log(`Création du profil particulier`);
             await Client.Particulier.create({civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece})
             .then(async particulier => {
@@ -360,7 +361,6 @@ const createEntreprise = async (req, res, next) => {
         email, 
         adresse, 
         telephone, 
-        type_acteur, 
         langue,
         compte_titre,
         compte_espece} = req.body;
@@ -379,7 +379,8 @@ const createEntreprise = async (req, res, next) => {
         }).catch(error => next(error));
         
         console.log(`Récupération de l'id du type acteur`);
-        await TypeActeur.findByCode(type_acteur).then(async type_acteur => {
+        await TypeActeur.findByCode("TYAC-002").then(async type_acteur => {
+            if (!type_acteur) return response(res, 400, `Problème survenu lors de la determination du type acteur`);
             console.log(`Création du profil entreprise`);
             await Client.Entreprise.create({raison_sociale, forme_juridique, capital_social, siege_social, compte_contribuable, registre_com, compte_titre, compte_espece})
             .then(async entreprise => {
