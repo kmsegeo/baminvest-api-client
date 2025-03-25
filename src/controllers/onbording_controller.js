@@ -17,6 +17,7 @@ const CampagneRepMatrice = require('../models/CampagneRepMatrice');
 const CampagneReponse = require('../models/CampagneReponse');
 const CampagnePartie = require('../models/CampagnePartie');
 const Campagne = require('../models/Campagne');
+const DataFormat = require('../utils/DataFormat.methods');
 
 const getAllTypeActeurs = async (req, res, next) => {
     console.log(`Récupération des types acteur..`);
@@ -68,6 +69,10 @@ const onbordingParticulier = async (req, res, next) => {
                     particulier: particulier.r_i, 
                     langue: langue
                 }).then(async acteur => {
+                    delete acteur.e_type_acteur;
+                    delete acteur.e_entreprise;
+                    delete acteur.e_signataire;
+                    delete acteur.e_particulier;
                     particulier['acteur'] = acteur;
                     console.log(`Compte particulier créé avec succès`)
                     
@@ -156,7 +161,7 @@ const onbordingParticulier = async (req, res, next) => {
                                             }).catch(err => next(err));
                                         }).catch(err => next(err));
                                     }).catch(err => response(res, 400, err));
-                                    // await Utils.sleep(200);
+                                    // await Utils.sleep(1000);
                                 }
                             }).catch(err => next(err));
                             
@@ -193,8 +198,9 @@ const onbordingParticulier = async (req, res, next) => {
                                 investisseur = await Utils.calculProflInvestisseur(point_total);
                                 await Acteur.updateProfilInvestisseur(acteur.r_i, investisseur.profil_investisseur).catch(err => next(err));
                                 
-                                console.log(investisseur);
-                                return response(res, 201, `Compte particulier créé avec succès`, particulier, investisseur);
+                                console.log(investisseur);                                
+                                const data = DataFormat.replaceIndividualDataNumeriques(particulier);
+                                return response(res, 201, `Compte particulier créé avec succès`, data, investisseur);
 
                             }).catch(err => next(err));
 
@@ -268,8 +274,13 @@ const createParticulier = async (req, res, next) => {
                         particulier: particulier.r_i, 
                         langue: langue
                     }).then(async acteur => {
+                        delete acteur.e_type_acteur;
+                        delete acteur.e_entreprise;
+                        delete acteur.e_signataire;
+                        delete acteur.e_particulier;
                         particulier['acteur'] = acteur;
-                        return response(res, 201, `Compte particulier créé avec succès`, particulier);
+                        const data = DataFormat.replaceIndividualDataNumeriques(particulier)
+                        return response(res, 201, `Compte particulier créé avec succès`, data);
                     }).catch(error => next(error));
             }).catch(error => next(error));
         }).catch(error => next(error));

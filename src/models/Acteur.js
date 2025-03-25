@@ -31,7 +31,6 @@ const Acteur = {
         r_telephone_prp, 
         r_telephone_scd, 
         r_adresse, 
-        r_statut, 
         r_date_creer, 
         r_date_modif,
         e_type_acteur,
