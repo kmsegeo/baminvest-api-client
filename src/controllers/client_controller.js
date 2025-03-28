@@ -22,24 +22,24 @@ const getActeurResumes = async (req, res, next) => {
         
         // HISTORY
 
-        const wallet_history_url  = `${process.env.ATSGO_URL_PORTEFEUILLE_HISTORY}?ApiKey=${apikey}&IdClient=${atsgo_client_id}&DateDebut=${today}&DateFin=${today}`;
-        await fetch(wallet_history_url)
-            .then(res => res.json())
-            .then(async data => {
-            if (data.status!=200) console.log(`Une erreur lors de la récupération de l'historique des portefeuilles !`)
-            results['historiques'] = data.payLoad;
-        })
+        // const wallet_history_url  = `${process.env.ATSGO_URL_PORTEFEUILLE_HISTORY}?ApiKey=${apikey}&IdClient=${atsgo_client_id}&DateDebut=${today}&DateFin=${today}`;
+        // await fetch(wallet_history_url)
+        //     .then(res => res.json())
+        //     .then(async data => {
+        //     if (data.status!=200) console.log(`Une erreur lors de la récupération de l'historique des portefeuilles !`)
+        //     results['historiques'] = data.payLoad;
+        // })
 
         // WALLET ACTIVES
 
-        const wallet_url  = `${process.env.ATSGO_URL_PORTEFEUILLE_BY_CLIENT}?ApiKey=${apikey}&IdClient=${atsgo_client_id}&Date=${today}`;
-        await fetch(wallet_url)
-            .then(res => res.json())
-            .then(async data => {
-            if (data.status!=200) console.log(`Une erreur lors de la récupération des portefeuilles !`)
-            for(let portefeuille of data.payLoad) delete portefeuille.idClient
-            results['portefeuilles'] = data.payLoad;
-        })
+        // const wallet_url  = `${process.env.ATSGO_URL_PORTEFEUILLE_BY_CLIENT}?ApiKey=${apikey}&IdClient=${atsgo_client_id}&Date=${today}`;
+        // await fetch(wallet_url)
+        //     .then(res => res.json())
+        //     .then(async data => {
+        //     if (data.status!=200) console.log(`Une erreur lors de la récupération des portefeuilles !`)
+        //     for(let portefeuille of data.payLoad) delete portefeuille.idClient
+        //     results['portefeuilles'] = data.payLoad;
+        // })
 
         // FONDS
 
@@ -51,16 +51,16 @@ const getActeurResumes = async (req, res, next) => {
             results['fonds'] = data.payLoad;
         })
     
-        // VALEUR LIQUIDATIVE
+        // // VALEUR LIQUIDATIVE
 
-        const valeur_liquidative  = `${process.env.ATSGO_URL_VL_HISTORY}?ApiKey=${apikey}`;
+        // const valeur_liquidative  = `${process.env.ATSGO_URL_VL_HISTORY}?ApiKey=${apikey}`;
     
-        await fetch(valeur_liquidative)
-            .then(res => res.json())
-            .then(data => {
-            if (data.status!=200) console.log(`Une erreur lors de la récupération des VL !`)
-            results['valeur_liquidatives'] = data.payLoad;
-        })
+        // await fetch(valeur_liquidative)
+        //     .then(res => res.json())
+        //     .then(data => {
+        //     if (data.status!=200) console.log(`Une erreur lors de la récupération des VL !`)
+        //     results['valeur_liquidatives'] = data.payLoad;
+        // })
 
         return response(res, 200, `Resumé des informations du client`, results)
 
