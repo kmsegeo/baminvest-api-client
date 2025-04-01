@@ -9,6 +9,8 @@ const operationController = require('../controllers/operation_controller')
 const campagneController = require('../controllers/campagne_controller')
 const upload = require('../middlewares/multer-config');
 const atsgo_auth = require('../middlewares/atsgo_auth');
+const portefeuilleController = require('../controllers/portefeuille_controller');
+
 const router = express.Router();
 
 // ONBORDING: PARTICULIER
@@ -51,12 +53,17 @@ router.put('/motdepasse/modifier', app_auth, clientController.updatePassword);
 router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiOtp);
 router.post('/:acteurId/otp/verifier', app_auth, onbordingController.verifierOtp);
 
-// SESSION ACTIVE
+
+/////////////////////////
+//    SESSION ACTIVE
+/////////////////////////
 
 router.post('/connexion', app_auth, sessionController.login);
 
 router.get('/sessions', app_auth, session_verify, sessionController.loadActiveSsessions);
 router.delete('/sessions/:ref', app_auth, session_verify, sessionController.destroySession);
+
+// OPERATION
 
 router.get('/operations', app_auth, session_verify, operationController.getAllActeurOperations);
 router.post('/operations/souscription', app_auth, session_verify, operationController.opSouscription);
@@ -64,6 +71,14 @@ router.post('/operations/rachat', app_auth, session_verify, operationController.
 router.post('/operations/transfert', app_auth, session_verify, operationController.opTransfert);
 
 // SOMMAIRE
-router.get('/resume', app_auth, session_verify, atsgo_auth, clientController.getActeurResumes);
+// router.get('/resume', app_auth, session_verify, atsgo_auth, clientController.getActeurResumes);
+
+// PORTEFEUILLE
+
+router.get('/portefeuilles', app_auth, session_verify, atsgo_auth, portefeuilleController.getClientProtefeuilles);
+router.get('/portefeuilles/:ref', app_auth, session_verify, atsgo_auth, portefeuilleController.getOnePortefeuille);
+router.get('/portefeuilles/valeur_total', app_auth, session_verify, atsgo_auth, portefeuilleController.getAllPortefeuilleValue);
+router.get('/portefeuilles/evolution/:periode', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
+router.get('/portefeuilles/val_annuel/:periode', app_auth, session_verify, atsgo_auth, portefeuilleController.getAllPortefeuilleAnnualValue)
 
 module.exports = router;

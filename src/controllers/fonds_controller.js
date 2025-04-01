@@ -10,7 +10,7 @@ const getAllFonds = async (req, res, next) => {
     await fetch(url)
         .then(async res => res.json())
         .then(async data => {
-            if (data.status!=200) return response(res, data.status, `Une erreur lors de la récupération des fonds !`)
+            if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
             // let i = 0;
             // let fonds = [];
             // for (let payLoad of data.payLoad) {
