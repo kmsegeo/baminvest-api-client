@@ -5,7 +5,7 @@ const Utils = require('../utils/utils.methods');
 const getAllFonds = async (req, res, next) => {
 
     const apikey = req.apikey.r_valeur;
-    const url  = `${process.env.ATSGO_URL_FONDS}?ApiKey=${apikey}`;
+    const url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
 
     await fetch(url)
         .then(async res => res.json())

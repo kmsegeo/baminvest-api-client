@@ -10,6 +10,7 @@ const campagneController = require('../controllers/campagne_controller')
 const upload = require('../middlewares/multer-config');
 const atsgo_auth = require('../middlewares/atsgo_auth');
 const portefeuilleController = require('../controllers/portefeuille_controller');
+const transactionController = require('../controllers/transaction_controller')
 
 const router = express.Router();
 
@@ -63,22 +64,22 @@ router.post('/connexion', app_auth, sessionController.login);
 router.get('/sessions', app_auth, session_verify, sessionController.loadActiveSsessions);
 router.delete('/sessions/:ref', app_auth, session_verify, sessionController.destroySession);
 
-// OPERATION
-
-router.get('/operations', app_auth, session_verify, operationController.getAllActeurOperations);
-router.post('/operations/souscription', app_auth, session_verify, operationController.opSouscription);
-router.post('/operations/rachat', app_auth, session_verify, operationController.opRachat);
-router.post('/operations/transfert', app_auth, session_verify, operationController.opTransfert);
-
 // SOMMAIRE
 // router.get('/resume', app_auth, session_verify, atsgo_auth, clientController.getActeurResumes);
 
 // PORTEFEUILLE
 
 router.get('/portefeuilles', app_auth, session_verify, atsgo_auth, portefeuilleController.getClientProtefeuilles);
-router.get('/portefeuilles/:ref', app_auth, session_verify, atsgo_auth, portefeuilleController.getOnePortefeuille);
-router.get('/portefeuilles/valeur_total', app_auth, session_verify, atsgo_auth, portefeuilleController.getAllPortefeuilleValue);
 router.get('/portefeuilles/evolution/:periode', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
-router.get('/portefeuilles/val_annuel/:periode', app_auth, session_verify, atsgo_auth, portefeuilleController.getAllPortefeuilleAnnualValue)
+
+router.get('/transactions', app_auth, session_verify, atsgo_auth, transactionController.getTransactionHistorique);
+router.get('/operations', app_auth, session_verify, atsgo_auth, operationController.getAllActeurOperations);
+
+// OPERATION
+
+// router.get('/operations', app_auth, session_verify, operationController.getAllActeurOperations);
+router.post('/operations/souscription', app_auth, session_verify, operationController.opSouscription);
+router.post('/operations/rachat', app_auth, session_verify, operationController.opRachat);
+router.post('/operations/transfert', app_auth, session_verify, operationController.opTransfert);
 
 module.exports = router;

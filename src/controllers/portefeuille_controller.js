@@ -2,13 +2,13 @@ const response = require('../middlewares/response');
 
 const getClientProtefeuilles = async (req, res, next) => {
 
-    console.log('Chargement du du portefeuilleclient...')
+    console.log('Chargement des portefeuilles client...')
 
     const apikey = req.apikey.r_valeur;
     const id_client = 166;
     const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
 
-    const url = process.env.ATSGO_URL_CLIENT_PORTEFEUILLE + '?ApiKey=' + apikey + '&IdClient=' + id_client + '&Date=' + date;
+    const url = process.env.ATSGO_URL + process.env.URI_CLIENT_PORTEFEUILLES + '?ApiKey=' + apikey + '&IdClient=' + id_client + '&Date=' + date;
     console.log(url)
 
     await fetch(url)
@@ -16,6 +16,7 @@ const getClientProtefeuilles = async (req, res, next) => {
         .then(async data => {
             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des portefeuilles !`);
 
+            let result = {};
             let portefeuille_valeur_total = 0;
 
             for(let payLoad of data.payLoad) {
@@ -24,30 +25,32 @@ const getClientProtefeuilles = async (req, res, next) => {
                 delete payLoad.idClient;
             }
 
-            return response(res, 200, 'Chargement du protefeuille terminé', data.payLoad, {portefeuille_valeur_total});
+            let i = 0;
+            let fonds = []
+            for(let payLoad of data.payLoad) {
+                let portefeuille = {}
+                portefeuille['fonds'] = payLoad.libelle
+                portefeuille['montant'] = Number(payLoad.valorisation);
+                portefeuille['pourcentage'] = Number(((Number(payLoad.valorisation) * 100) / portefeuille_valeur_total).toFixed(2));
+                fonds[i] = portefeuille;
+                // for (let actif of payLoad.repartitionClassesActifs) delete actif.libelle
+                // fonds[i].repartition_actifs = payLoad.repartitionClassesActifs;
+                // delete payLoad.repartitionClassesActifs
+                i++;
+            }
+            
+            result.repartition_fonds = fonds;
+            result.portefeuille_valeur_total = portefeuille_valeur_total;
+
+            return response(res, 200, 'Chargement du protefeuille terminé', data.payLoad, result);
         })
 }
 
-const getOnePortefeuille = async (req, res, next) => {
-
-}
-
-const getAllPortefeuilleValue = async (req, res, next) => {
-
-}
-
 const getPortefeuilleEvolution = async (req, res, next) => {
-
-}
-
-const getAllPortefeuilleAnnualValue = async (req, res, next) => {
-
+    return response(res, 200, 'Traitement des évolutions en cours !', null);
 }
 
 module.exports = {
     getClientProtefeuilles,
-    getOnePortefeuille,
-    getAllPortefeuilleValue,
     getPortefeuilleEvolution,
-    getAllPortefeuilleAnnualValue
 }

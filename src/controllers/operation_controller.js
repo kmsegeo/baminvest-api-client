@@ -17,14 +17,37 @@ const getAllTypeOperations = async (req, res, next) => {
 }
 
 const getAllActeurOperations = async (req, res, next) => {
-    const id = req.session.e_acteur;
-    await Acteur.findById(id).then(async acteur => {
-        if (!acteur) return response(res, 404, `Acteur introuvable !`);
-        await Operation.findAllByActeur(id).then(operations => {
+    
+    // const id = req.session.e_acteur;
+    // await Acteur.findById(id).then(async acteur => {
+    //     if (!acteur) return response(res, 404, `Acteur introuvable !`);
+    //     await Operation.findAllByActeur(id).then(operations => {
             
-            return response(res, 200, `Chargement des opérations de l'acteur`, operations)
-        }).catch(err => next(err));
-    }).catch(err => next(err));
+    //         return response(res, 200, `Chargement des opérations de l'acteur`, operations)
+    //     }).catch(err => next(err));
+    // }).catch(err => next(err));
+
+    console.log('Chargement de l\'historique des opération...')
+
+    const apikey = req.apikey.r_valeur;
+    const id_client = 166;
+    const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
+
+    const url = process.env.ATSGO_URL + process.env.URI_CLIENT_OPERATIONS + '?ApiKey=' + apikey + '&IdClient=' + id_client;
+    console.log(url)
+
+    await fetch(url)
+        .then(async res => res.json())
+        .then(async data => {
+            if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
+
+            for(let payLoad of data.payLoad) {
+                delete payLoad.etat;
+                delete payLoad.idClient;
+            }
+
+            return response(res, 200, 'Chargement de l\'historique terminé', data.payLoad);
+    })
 }
 
 const opSouscription = async (req, res, next) => {

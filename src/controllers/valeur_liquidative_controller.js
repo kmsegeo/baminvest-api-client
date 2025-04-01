@@ -3,7 +3,7 @@ const response = require('../middlewares/response');
 const getAllValeurLiquidatives = async (req, res, next) => {
 
     const apikey = req.apikey.r_valeur;
-    const url  = `${process.env.ATSGO_URL_VL_HISTORY}?ApiKey=${apikey}`;
+    const url  = `${process.env.ATSGO_URL + process.env.URI_VLS}?ApiKey=${apikey}`;
 
     fetch(url)
         .then(res => res.json())
