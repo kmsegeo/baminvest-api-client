@@ -1,11 +1,11 @@
 const Systeme = require("../models/Systeme");
+const Utils = require("../utils/utils.methods");
 const response = require("./response");
 
 module.exports = async (req, res, next) => {
     
     await Systeme.findByTag('atsgo_api_key').then(async apikey => {
 
-        req.apikey = apikey;
         console.log('current apikey :', apikey.r_valeur)
         
         if (new Date(apikey.r_description) < new Date()) {
@@ -14,8 +14,10 @@ module.exports = async (req, res, next) => {
                 "userNameOrEmailAddress": "inexa.api.expose",
                 "password": "Api@inexa2025"
             }
+
+            const url = process.env.ATSGO_URL + process.env.URI_AUTHENTICATE
     
-            fetch(process.env.ATSGO_URL_AUTHENTICATE, { 
+            await fetch(url, { 
                 method: "POST",
                 headers: {
                     "Content-Type" : "application/json",
@@ -33,7 +35,10 @@ module.exports = async (req, res, next) => {
                     console.log('new apikey :', apikey.r_valeur)
                 })
             });
+        } else {
+            req.apikey = apikey;
         }
-        next();
+
+        await next();
     })
 }

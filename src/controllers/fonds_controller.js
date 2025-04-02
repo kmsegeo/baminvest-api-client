@@ -7,7 +7,9 @@ const getAllFonds = async (req, res, next) => {
     const apikey = req.apikey.r_valeur;
     const url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
 
-    await fetch(url)
+    console.log('tests', apikey)
+
+    fetch(url)
         .then(async res => res.json())
         .then(async data => {
             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
