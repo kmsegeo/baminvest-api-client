@@ -4,6 +4,7 @@ const Utils = require('../utils/utils.methods');
 
 const getAllFonds = async (req, res, next) => {
 
+    console.log(`Chargement des fonds..`)
     if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
 
     const apikey = req.apikey.r_valeur;
@@ -44,6 +45,9 @@ const getAllFonds = async (req, res, next) => {
 
 const getAllValeurLiquidatives = async (req, res, next) => {
 
+    console.log(`Chargement des valeurs liquidatives..`)
+    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
+
     const apikey = req.apikey.r_valeur;
     const url  = `${process.env.ATSGO_URL + process.env.URI_VLS}?ApiKey=${apikey}`;
 
@@ -51,19 +55,15 @@ const getAllValeurLiquidatives = async (req, res, next) => {
         .then(res => res.json())
         .then(data => {
             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
-
-            for (let payLoad of data.payLoad) {
-                
-            }
-
             return response(res, 200, `Chargement des valeurs liquidatives`, data.payLoad)
         })
 }
 
 const getVlFonds = async (req, res, next) => {
 
-    console.log(`Calcul des valeurs liquidatives de fonds..`)
-    
+    console.log(`Chargement des fonds..`)
+    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
+        
     const apikey = req.apikey.r_valeur;
     const fonds_url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
     const vls_url  = `${process.env.ATSGO_URL + process.env.URI_VLS}?ApiKey=${apikey}`;
@@ -73,6 +73,8 @@ const getVlFonds = async (req, res, next) => {
         const fonds = data.payLoad;
         await fetch(vls_url).then(res => res.json()).then(data => {
             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des valeurs liquidatives !`)
+            
+            console.log(`Calcul des valeurs liquidatives de fonds..`)
             const vls = data.payLoad;
             let result = [];
             let i = 0;
@@ -98,7 +100,7 @@ const getVlFonds = async (req, res, next) => {
                 i++;
             }
 
-            return response(res, 200, `Calcul des valeurs liquidatives des fonds terminé`, fonds, result)
+            return response(res, 200, `Chargement des fonds terminé`, fonds, result)
         })
     })
 }
