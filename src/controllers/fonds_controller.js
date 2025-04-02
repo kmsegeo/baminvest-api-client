@@ -98,10 +98,9 @@ const getVlFonds = async (req, res, next) => {
                 i++;
             }
 
-            return response(res, 200, `Calcul des valeurs liquidatives des fonds terminé`, vls, result)
+            return response(res, 200, `Calcul des valeurs liquidatives des fonds terminé`, fonds, result)
         })
     })
-
 }
 
 module.exports = {
