@@ -8,7 +8,7 @@ const getAllValeurLiquidatives = async (req, res, next) => {
     fetch(url)
         .then(res => res.json())
         .then(data => {
-            if (data.status!=200) return response(res, data.status,`Une erreur lors de la récupération des fonds !`)
+            if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
             return response(res, 200, `Chargement des valeurs liquidatives`, data.payLoad)
         })
 }

@@ -4,45 +4,42 @@ const Utils = require('../utils/utils.methods');
 
 const getAllFonds = async (req, res, next) => {
 
+    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
+
     const apikey = req.apikey.r_valeur;
     const url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
-
-    console.log('tests', apikey)
 
     fetch(url)
         .then(async res => res.json())
         .then(async data => {
             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
-            // let i = 0;
-            // let fonds = [];
-            // for (let payLoad of data.payLoad) {
-            //     await Utils.generateCode(Fonds.codePrefix, Fonds.tableName, Fonds.codeColumn, Fonds.codeSpliter).then(async ref => {
-            //         console.log(`Vérification de la reférence du FCP`);
-            //         await Fonds.findByIntitule(payLoad.code).then(async fd => {
-            //             if (!fd) {
-            //                 console.log(`Début de création du FCP`);
-            //                 await Fonds.create(ref, {
-            //                     intitule: payLoad.code, 
-            //                     description: payLoad.libelle
-            //                     // commission_souscription: , 
-            //                     // commission_sortie: ,
-            //                 }).then(async fd_new => {
-            //                     fonds.push(fd_new);
-            //                 }).catch(err => next(err));
-            //                 await Utils.sleep(500);
-            //             } else {
-            //                 fonds.push(fd);
-            //             }
-            //             i++;
-            //         }).catch(error => next(error));
-            //     }).catch(err => next(err));
-            // }
             return response(res, 200, `Chargement de fonds terminé`, data.payLoad);
         })
     
-    // await Fonds.findAll()
-    //     .then(fonds => response(res, 200, `Chargement des fonds`, fonds))
-    //     .catch(err => next(err));
+        // let i = 0;
+        // let fonds = [];
+        // for (let payLoad of data.payLoad) {
+        //     await Utils.generateCode(Fonds.codePrefix, Fonds.tableName, Fonds.codeColumn, Fonds.codeSpliter).then(async ref => {
+        //         console.log(`Vérification de la reférence du FCP`);
+        //         await Fonds.findByIntitule(payLoad.code).then(async fd => {
+        //             if (!fd) {
+        //                 console.log(`Début de création du FCP`);
+        //                 await Fonds.create(ref, {
+        //                     intitule: payLoad.code, 
+        //                     description: payLoad.libelle
+        //                     // commission_souscription: , 
+        //                     // commission_sortie: ,
+        //                 }).then(async fd_new => {
+        //                     fonds.push(fd_new);
+        //                 }).catch(err => next(err));
+        //                 await Utils.sleep(500);
+        //             } else {
+        //                 fonds.push(fd);
+        //             }
+        //             i++;
+        //         }).catch(error => next(error));
+        //     }).catch(err => next(err));
+        // }
 }
 
 module.exports = {

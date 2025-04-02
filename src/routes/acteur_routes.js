@@ -71,13 +71,10 @@ router.delete('/sessions/:ref', app_auth, session_verify, sessionController.dest
 
 router.get('/portefeuilles', app_auth, session_verify, atsgo_auth, portefeuilleController.getClientProtefeuilles);
 router.get('/portefeuilles/evolution/:periode', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
-
 router.get('/transactions', app_auth, session_verify, atsgo_auth, transactionController.getTransactionHistorique);
-router.get('/operations', app_auth, session_verify, atsgo_auth, operationController.getAllActeurOperations);
 
 // OPERATION
-
-// router.get('/operations', app_auth, session_verify, operationController.getAllActeurOperations);
+router.get('/operations', app_auth, session_verify, atsgo_auth, operationController.getAllActeurOperations);
 router.post('/operations/souscription', app_auth, session_verify, operationController.opSouscription);
 router.post('/operations/rachat', app_auth, session_verify, operationController.opRachat);
 router.post('/operations/transfert', app_auth, session_verify, operationController.opTransfert);

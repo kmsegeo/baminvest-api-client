@@ -3,7 +3,8 @@ const response = require("../middlewares/response");
 const getTransactionHistorique = async (req, res, next) => {
     
     console.log('Chargement de l\'historique des transactions...')
-
+    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
+    
     const apikey = req.apikey.r_valeur;
     const id_client = 166;
     const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
