@@ -39,14 +39,16 @@ const getAllActeurOperations = async (req, res, next) => {
             }
 
             return response(res, 200, 'Chargement de l\'historique terminé', data.payLoad);
-    })
+        })
 }
 
 const opSouscription = async (req, res, next) => {
     console.log(`Opération de souscription..`);
     if (req.headers.op_code!='TYOP-006') return response(res, 403, `Type opération non authorisé !`);
+    
+    
     // Utils.selectTypeOperation('souscription').then(async op_code => {
-        saveOparation('TYOP-006', req, res, next);
+        // saveOparation('TYOP-006', req, res, next);
     // }).catch(err => response(res, 400, err));
 };
 
@@ -54,7 +56,7 @@ const opRachat = async (req, res, next) => {
     console.log(`Opération de rachat..`);
     if (req.headers.op_code!='TYOP-007') return response(res, 403, `Type opération non authorisé !`);
     // Utils.selectTypeOperation('rachat').then(async op_code => {
-        saveOparation('TYOP-007', req, res, next);
+        // saveOparation('TYOP-007', req, res, next);
     // }).catch(err => response(res, 400, err));
 };
 
@@ -62,7 +64,7 @@ const opTransfert = async (req, res, next) => {
     console.log(`Opération de transfert..`);
     if (req.headers.op_code!='TYOP-008') return response(res, 403, `Type opération non authorisé !`);
     // Utils.selectTypeOperation('transfert').then(async op_code => {
-        saveOparation('TYOP-008', req, res, next);
+        // saveOparation('TYOP-008', req, res, next);
     // }).catch(err => response(res, 400, err));
 };
 
