@@ -21,6 +21,11 @@ const PersonEmergency = {
     async findAllByParticulier(particulier) {
         const res = db.query(`SELECT * FROM ${this.tableName} WHERE e_particulier=$1`, [particulier]);
         return (await res).rows;
+    },
+
+    async findOneByParticulier(particulier) {
+        const res = db.query(`SELECT * FROM ${this.tableName} WHERE e_particulier=$1`, [particulier]);
+        return (await res).rows[0];
     }
 }
 

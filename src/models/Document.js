@@ -81,6 +81,20 @@ const Document = {
         return res.rows;
     },
 
+    async findBySpecific(acteur_id, intitule) {
+        const res = await db.query(`
+            SELECT 
+                td.r_i,
+                tt.r_intitule,
+                td.r_reference,
+                td.r_nom_fichier,
+                td.r_date_creer,
+                td.r_date_modif
+            FROM ${this.tableName} As td, t_type_document As tt  
+            WHERE td.e_type_document=tt.r_i AND td.e_acteur=$1 AND td.r_statut=$2 AND tt.r_intitule=$3`, [acteur_id, 1, intitule]);
+        return res.rows[0];
+    },
+
 }
 
 module.exports = Document;

@@ -18,6 +18,7 @@ const CampagneReponse = require('../models/CampagneReponse');
 const CampagnePartie = require('../models/CampagnePartie');
 const Campagne = require('../models/Campagne');
 const DataFormat = require('../utils/DataFormat.methods');
+const Atsgo = require('../utils/atsgo.methods');
 
 const getAllTypeActeurs = async (req, res, next) => {
     console.log(`Récupération des types acteur..`);
@@ -32,7 +33,7 @@ const onbordingParticulier = async (req, res, next) => {
 
     const {
         civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, adresse, telephone, type_piece, num_piece,
-        type_compte, langue,compte_titre,compte_espece,  autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, 
+        type_compte, langue,compte_titre, compte_espece,  autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, 
         lien_parente_sgo, nom_prenom_titulaire, pays_naissance, pays_residence, situation_matrimoniale, situation_habitat, categorie_professionnelle, 
         autres_categorie_prof, profession, employeur, nbr_enfants, langue_preferee, instrument_paiement_privilige, origine_ressources_investies, 
         autres_origines_ressources, tranche_revenus, autres_actifs, autres_actifs_preciser, autres_comptes_bridge, comptes_bridges, banques_relations,
@@ -41,7 +42,7 @@ const onbordingParticulier = async (req, res, next) => {
     } = req.body;
 
     console.log(`Vérification des paramètres`);
-    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_compte, profil_reponses}).then(async () => {
+    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_piece, num_piece, type_compte, profession, profil_reponses}).then(async () => {
         
         console.log(`Vérification de l'existance du compte`);
         await Acteur.findByEmail(email).then(async exists_email => {
@@ -161,7 +162,6 @@ const onbordingParticulier = async (req, res, next) => {
                                             }).catch(err => next(err));
                                         }).catch(err => next(err));
                                     }).catch(err => response(res, 400, err));
-                                    // await Utils.sleep(1000);
                                 }
                             }).catch(err => next(err));
                             
@@ -200,6 +200,7 @@ const onbordingParticulier = async (req, res, next) => {
                                 
                                 console.log(investisseur);                                
                                 const data = DataFormat.replaceIndividualDataNumeriques(particulier);
+
                                 return response(res, 201, `Compte particulier créé avec succès`, data, investisseur);
 
                             }).catch(err => next(err));
@@ -213,7 +214,6 @@ const onbordingParticulier = async (req, res, next) => {
         }).catch(error => next(error));
         }).catch(error => next(error));
     }).catch(error => response(res, 400, error));
-
 }
 
 const createParticulier = async (req, res, next) => {
@@ -295,7 +295,6 @@ const updateParticulier = async (req, res, next) => {
     console.log(`Modification d'un compte particulier..`);
 
     const particulier_id = req.params.particulierId;
-    
     const {
         civilite, 
         nom, 
@@ -443,12 +442,22 @@ const createRepresentant = async (req, res, next) => {
     }).catch(error => response(res, 400, error));
 }
 
+const getActeurFiles = async (req, res, next) => {
+    const acteurId = req.params.acteurId;
+    Document.findAllByActeurId(acteurId).then(async photos => {
+        return response(res, 200, `Chargement terminé`, photos);
+    }).catch(err => next(err));
+}
+
+
 const uploadPhotoProfil = async (req, res, next) => {
+
     console.log(`Chargememnt de photo de profil..`)
-    
+
     const acteur = req.params.acteurId;
     const typedoc_intitule = "photoprofil";
     const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
         await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
@@ -456,15 +465,24 @@ const uploadPhotoProfil = async (req, res, next) => {
             delete document.e_type_document
             return response(res, 201, `Uploads terminé`, document);
         }).catch(err => next(err));
+    }).catch(err => next(err));
+}
+
+const getPhotoProfil = async (req, res, next) => {
+    const acteurId = req.params.acteurId;
+    Document.findBySpecific(acteurId, 'photoprofil').then(async photo => {
+        return response(res, 200, `Chargement terminé`, photo);
     }).catch(err => next(err));
 }
 
 const uploadDomiciliation = async (req, res, next) => {
+
     console.log(`Chargememnt de fichier de deminicialation..`)
-    
+
     const acteur = req.params.acteurId;
     const typedoc_intitule = "domiciliation";
     const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
         await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
@@ -472,15 +490,24 @@ const uploadDomiciliation = async (req, res, next) => {
             delete document.e_type_document
             return response(res, 201, `Uploads terminé`, document);
         }).catch(err => next(err));
+    }).catch(err => next(err));
+}
+
+const getDomiciliation = async (req, res, next) => {
+    const acteurId = req.params.acteurId;
+    Document.findBySpecific(acteurId, 'domiciliation').then(async photo => {
+        return response(res, 200, `Chargement terminé`, photo);
     }).catch(err => next(err));
 }
 
 const uploadSignature = async (req, res, next) => {
+
     console.log(`Chargememnt de fichier de signature..`);
-    
+
     const acteur = req.params.acteurId;
     const typedoc_intitule = "signature";
     const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
         await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
@@ -491,13 +518,20 @@ const uploadSignature = async (req, res, next) => {
     }).catch(err => next(err));
 }
 
+const getSignature = async (req, res, next) => {
+    const acteurId = req.params.acteurId;
+    Document.findBySpecific(acteurId, 'signature').then(async photo => {
+        return response(res, 200, `Chargement terminé`, photo);
+    }).catch(err => next(err));
+}
+
 const createPersonEmergency = async (req, res, next) => {
-    
+
     console.log(`Créer personne à contacter..`);
     
     const particulier_id = req.params.particulierId;
-
     const {nom_prenom, intitule, telephone_fixe, telephone_mobile, email} = req.body;
+
     await Utils.expectedParameters({nom_prenom, telephone_mobile}).then(async () => {
         await Client.Particulier.findById(particulier_id).then(async particulier => {
             if (!particulier) return response(res, 404, `Compte particulier inexistant !`);
@@ -521,10 +555,12 @@ const getAllPersonEmergency = async (req, res, next) => {
 }
 
 const createPassword = async (req, res, next) => {
+
     console.log(`Création de mote de passe..`)
     
     const acteur_id = req.params.acteurId;
     const mdp = req.body.mdp;
+
     await Acteur.findById(acteur_id).then(async acteur => {
         if (!acteur) return response(res, 404, `Acteur introuvable !`);
         if (acteur.r_statut!=0) return response(res, 400, `Se compte semble déjà actif !`)
@@ -535,21 +571,84 @@ const createPassword = async (req, res, next) => {
                 if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
                 if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
                 
-                await OTP.clean(acteur_id, 1).catch(err => next(err)); 
+                await Client.Particulier.findById(acteur.e_particulier).then(async particulier => {
+                    if (!particulier) return response(res, 403, `Compte particulier introuvable !`)
+                    await KYC.Particulier.findByParticulierId(acteur.e_particulier).then(async kyc => {
+                        if (!kyc) return response(res, 403, `KYC particulier introuvable !`)
+                        await PersonEmergency.findOneByParticulier(acteur.e_particulier).then(async personne => {
+                            
+                            let persNom = personne.r_nom_prenom ? personne.r_nom_prenom.split(' ')[0] : "";
+                            let persPrenom = personne.r_nom_prenom ? personne.r_nom_prenom.split(' ')[1] : "";
 
-                const url = process.env.ML_SMSCI_URL;
+                            await Document.findAllByActeurId(acteur_id).then(async files => {
+                                
+                                // Save to atsgo
+
+                                let photo = null;
+                                let signature = null;
+
+                                files.forEach(file => {
+                                    
+                                    if (file.r_intitule == 'photoprofil') 
+                                        photo = file.r_nom_fichier;
+
+                                    if (file.r_intitule == 'signature') 
+                                        signature = file.r_nom_fichier;
+                                })
+
+                                const apikey = req.apikey.r_valeur;
+
+                                await Atsgo.onbording(res, apikey, {
+                                    "nom": particulier.r_nom,
+                                    "prenom": particulier.r_prenom,
+                                    "dateNaissance": particulier.r_date_naissance,
+                                    "tel": acteur.r_telephone_prp,
+                                    "telMobile": acteur.r_telephone_prp,
+                                    "adresse": acteur.r_adresse,
+                                    "email": acteur.r_email,
+                                    "fonction": kyc.r_profession,
+                                    "idTypeClient": 8,
+                                    "photo": photo,
+                                    "numeroPiece": particulier.r_num_piece,
+                                    "idTypePiece" : 7,
+                                    "dateValidite": "2031-04-19",
+                                    "observations": "",
+                                    "sexe": particulier.r_civilite!=1?"Feminin":"Masculin",
+                                    "signature": signature,
+                                    "nomMandataire": "",
+                                    "prenomsMandataire": "",
+                                    "adresseMandataire": "",
+                                    "ppe": false,
+                                    "lienPPE": false,
+                                    "idCategorieFATCA": 1,
+                                    "majKyc": new Date(),
+                                    "idCategorieClient": 1,
+                                    "nomBanque": kyc.r_banques_relations,
+                                    "idCategorieCompte": 1,    
+                                    "idTypeCompte": 1
+                                }).catch(async err => response(res, 400, err));
+
+                            }).catch(err => next(err));
+                        }).catch(err => next(err));
+
+                    }).catch(err => next(err));
+                }).catch(err => next(err));
+
+                await OTP.clean(acteur_id, 1).catch(err => next(err)); 
                 
                 await Utils.aleatoireOTP().then(async code_otp => {
                     await Utils.genearteOTP_Msgid().then(async msgid => {
                         await OTP.create(acteur_id, {msgid, code_otp, operation: 1}).then(async otp => { 
-                            await fetch(url, {
+                            const smsId = "test@mediasoftci.com";
+                            const smsPwd = "12345";
+                            await fetch(process.env.ML_SMSCI_URL, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
                                 },
                                 body: JSON.stringify({
-                                    identify: "test@mediasoftci.com",
-                                    pwd: "12345",
+                                    identify: smsId,
+                                    pwd: smsPwd,
                                     fromad: "BAM CI",
                                     toad: acteur.r_telephone_prp,
                                     msgid: msgid,
@@ -563,6 +662,7 @@ const createPassword = async (req, res, next) => {
                         }).catch(err => next(err)); 
                     }).catch(err => next(err));
                 }).catch(err => next(err));
+
             }).catch(err => next(err));
         }).catch(err => next(err));
     }).catch(err => next(err));
@@ -650,9 +750,13 @@ module.exports = {
     createEntreprise,
     updateEntreprise,
     createRepresentant,
+    getActeurFiles,
     uploadPhotoProfil,
+    getPhotoProfil,
     uploadDomiciliation,
+    getDomiciliation,
     uploadSignature,
+    getSignature,
     createPersonEmergency,
     getAllPersonEmergency,
     createPassword,

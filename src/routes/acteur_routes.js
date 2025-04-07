@@ -42,10 +42,17 @@ router.post('/entreprise/:entrepriseId/representant', app_auth, onbordingControl
 // ONBORDING: COMMUNS
 
 router.post('/:acteurId/fichiers/photoprofil', app_auth, upload.single('file'), onbordingController.uploadPhotoProfil);
-router.post('/:acteurId/fichiers/domiciliation', app_auth, upload.single('file'), onbordingController.uploadDomiciliation);
-router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), onbordingController.uploadSignature);
+router.get('/:acteurId/fichiers/photoprofil', app_auth, onbordingController.getPhotoProfil);
 
-router.post('/:acteurId/motdepasse/activer', app_auth, onbordingController.createPassword);
+router.post('/:acteurId/fichiers/domiciliation', app_auth, upload.single('file'), onbordingController.uploadDomiciliation);
+router.get('/:acteurId/fichiers/domiciliation', app_auth, onbordingController.getDomiciliation);
+
+router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), onbordingController.uploadSignature);
+router.get('/:acteurId/fichiers/signature', app_auth, onbordingController.getSignature);
+
+router.get('/:acteurId/fichiers', app_auth, onbordingController.getActeurFiles);
+
+router.post('/:acteurId/motdepasse/activer', app_auth, atsgo_auth, onbordingController.createPassword);
 router.post('/motdepasse/reinitialiser', app_auth, clientController.resetPassword);
 router.put('/motdepasse/modifier', app_auth, clientController.updatePassword);
 
