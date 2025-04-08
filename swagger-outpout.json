@@ -1972,6 +1972,24 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idFcp": {
+                  "example": "any"
+                },
+                "libelle": {
+                  "example": "any"
+                },
+                "montant": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -2009,6 +2027,24 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idFcp": {
+                  "example": "any"
+                },
+                "libelle": {
+                  "example": "any"
+                },
+                "montant": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {

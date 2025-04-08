@@ -56,22 +56,28 @@ const opSouscription = async (req, res, next) => {
     
     console.log(`Opération de souscription..`);
     if (req.headers.op_code!='TYOP-006') return response(res, 403, `Type opération non authorisé !`);
-    saveAtsgoOperation('Souscription', req, res, next);
 
-    // Utils.selectTypeOperation('souscription').then(async op_code => {
-        // saveOparation('TYOP-006', req, res, next);
-    // }).catch(err => response(res, 400, err));
+    const apikey = req.apikey.r_valeur;
+    const {idFcp, libelle, montant} = req.body;
+    const acteur_id = req.session.e_acteur;
+
+    Utils.expectedParameters({idFcp, montant}).then(async () => {
+        saveAtsgoOperation('Souscription', acteur_id, {apikey, idFcp, libelle, montant, res, next});
+    }).catch(err => response(res, 400, err));
 };
 
 const opRachat = async (req, res, next) => {
 
     console.log(`Opération de rachat..`);
     if (req.headers.op_code!='TYOP-007') return response(res, 403, `Type opération non authorisé !`);
-    saveAtsgoOperation('Rachat', req, res, next);
     
-    // Utils.selectTypeOperation('rachat').then(async op_code => {
-        // saveOparation('TYOP-007', req, res, next);
-    // }).catch(err => response(res, 400, err));
+    const apikey = req.apikey.r_valeur;
+    const {idFcp, libelle, montant} = req.body;
+    const acteur_id = req.session.e_acteur;
+
+    Utils.expectedParameters({idFcp, montant}).then(async () => {
+        saveAtsgoOperation('Rachat', acteur_id, {apikey, idFcp, libelle, montant, res, next});
+    }).catch(err => response(res, 400, err));
 };
 
 // const opTransfert = async (req, res, next) => {
@@ -82,38 +88,32 @@ const opRachat = async (req, res, next) => {
 //     // }).catch(err => response(res, 400, err));
 // };
 
-async function saveAtsgoOperation(type, req, res, next) {
+async function saveAtsgoOperation(type, acteur_id, {apikey, idFcp, libelle, montant, res, next}) {
 
-    const apikey = req.apikey.r_valeur;
-    const {idFcp, libelle, montant} = req.body;
+    console.log(`Recupération des données client`)
+    await Acteur.findById(acteur_id).then(async acteur => {
+        await Particulier.findById(acteur.e_particulier).then(async particulier => {
+            
+            const date = new Date();
+            const idClient = particulier.r_ncompte_titre;
 
-    Utils.expectedParameters({idFcp, montant}).then(async () => {
+            console.log(`Envoi de l'operation à ATSGO`);
 
-        console.log(`Recupération des données client`)
-        await Acteur.findById(req.session.e_acteur).then(async acteur => {
-            await Particulier.findById(acteur.e_particulier).then(async particulier => {
-                
-                const date = new Date();
-                const idClient = particulier.r_ncompte_titre;
-
-                console.log(`Envoi de l'operation à ATSGO`);
-
-                Atsgo.saveOperation(apikey, {
-                    idFcp, 
-                    idClient, 
-                    referenceOperation: "string", 
-                    idTypeOperation: 2, 
-                    libelle, 
-                    dateValeur: date, 
-                    idModePaiement: 2, 
-                    montant
-                }).then(async () => {
-                    return response(res, 200, `Operation de ${type} terminé`);
-                }).catch(err => next(err));
-
+            Atsgo.saveOperation(apikey, {
+                idFcp, 
+                idClient, 
+                referenceOperation: "string", 
+                idTypeOperation: 2, 
+                libelle, 
+                dateValeur: date, 
+                idModePaiement: 2, 
+                montant
+            }).then(async () => {
+                return response(res, 200, `Operation de ${type} terminé`);
             }).catch(err => next(err));
+
         }).catch(err => next(err));
-    }).catch(err => response(res, 400, err));
+    }).catch(err => next(err));
 
 }
 
