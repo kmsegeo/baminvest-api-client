@@ -588,7 +588,6 @@ const createPassword = async (req, res, next) => {
                                 let signature = null;
 
                                 files.forEach(file => {
-                                    
                                     if (file.r_intitule == 'photoprofil') 
                                         photo = file.r_nom_fichier;
 
@@ -598,7 +597,7 @@ const createPassword = async (req, res, next) => {
 
                                 const apikey = req.apikey.r_valeur;
 
-                                await Atsgo.onbording(res, apikey, {
+                                await Atsgo.onbording(apikey, {
                                     "nom": particulier.r_nom,
                                     "prenom": particulier.r_prenom,
                                     "dateNaissance": particulier.r_date_naissance,
@@ -654,7 +653,8 @@ const createPassword = async (req, res, next) => {
                                     msgid: msgid,
                                     text: `Votre code de vérification est : ${otp.r_code_otp}`
                                 })
-                            }).then(res => res.json())
+                            })
+                            .then(res => res.json())
                             .then(data => {
                                 if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
                                 return response(res, 200, `Message de vérification envoyé`);
