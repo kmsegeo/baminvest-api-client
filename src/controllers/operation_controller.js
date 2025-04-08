@@ -9,6 +9,8 @@ const Fonds = require('../models/Fonds');
 const CircuitValidation = require('../models/CircuitValidation');
 const CircuitEtape = require('../models/CircuitEtape');
 const CircuitAffectation = require('../models/CircuitAffectation');
+const Atsgo = require('../utils/atsgo.methods');
+const { Particulier } = require('../models/Client');
 
 const getAllTypeOperations = async (req, res, next) => {
     await TypeOperation.findAll()
@@ -19,54 +21,101 @@ const getAllTypeOperations = async (req, res, next) => {
 const getAllActeurOperations = async (req, res, next) => {
 
     console.log('Chargement de l\'historique des opération...')
-    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
+    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`); 
 
     const apikey = req.apikey.r_valeur;
-    const id_client = 166;
     const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
 
-    const url = process.env.ATSGO_URL + process.env.URI_CLIENT_OPERATIONS + '?ApiKey=' + apikey + '&IdClient=' + id_client;
-    console.log(url)
+    console.log(`Recupération des données client`)
+    await Acteur.findById(req.session.e_acteur).then(async acteur => {
+        await Particulier.findById(acteur.e_particulier).then(async particulier => {
+            
+            const idClient = particulier.r_ncompte_titre;
 
-    await fetch(url)
-        .then(async res => res.json())
-        .then(async data => {
-            if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
+            const url = process.env.ATSGO_URL + process.env.URI_CLIENT_OPERATIONS + '?ApiKey=' + apikey + '&IdClient=' + idClient;
+            console.log(url);
 
-            for(let payLoad of data.payLoad) {
-                delete payLoad.etat;
-                delete payLoad.idClient;
-            }
+            await fetch(url)
+            .then(async res => res.json())
+            .then(async data => {
+                if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
 
-            return response(res, 200, 'Chargement de l\'historique terminé', data.payLoad);
-        })
+                for(let payLoad of data.payLoad) {
+                    delete payLoad.idClient;
+                    // delete payLoad.etat;
+                }
+
+                return response(res, 200, 'Chargement de l\'historique terminé', data.payLoad);
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+    }).catch(err => next(err));
+    
 }
 
 const opSouscription = async (req, res, next) => {
+    
     console.log(`Opération de souscription..`);
     if (req.headers.op_code!='TYOP-006') return response(res, 403, `Type opération non authorisé !`);
-    
-    
+    saveAtsgoOperation('Souscription', req, res, next);
+
     // Utils.selectTypeOperation('souscription').then(async op_code => {
         // saveOparation('TYOP-006', req, res, next);
     // }).catch(err => response(res, 400, err));
 };
 
 const opRachat = async (req, res, next) => {
+
     console.log(`Opération de rachat..`);
     if (req.headers.op_code!='TYOP-007') return response(res, 403, `Type opération non authorisé !`);
+    saveAtsgoOperation('Rachat', req, res, next);
+    
     // Utils.selectTypeOperation('rachat').then(async op_code => {
         // saveOparation('TYOP-007', req, res, next);
     // }).catch(err => response(res, 400, err));
 };
 
-const opTransfert = async (req, res, next) => {
-    console.log(`Opération de transfert..`);
-    if (req.headers.op_code!='TYOP-008') return response(res, 403, `Type opération non authorisé !`);
-    // Utils.selectTypeOperation('transfert').then(async op_code => {
-        // saveOparation('TYOP-008', req, res, next);
-    // }).catch(err => response(res, 400, err));
-};
+// const opTransfert = async (req, res, next) => {
+//     console.log(`Opération de transfert..`);
+//     if (req.headers.op_code!='TYOP-008') return response(res, 403, `Type opération non authorisé !`);
+//     // Utils.selectTypeOperation('transfert').then(async op_code => {
+//     //     saveOparation('TYOP-008', req, res, next);
+//     // }).catch(err => response(res, 400, err));
+// };
+
+async function saveAtsgoOperation(type, req, res, next) {
+
+    const apikey = req.apikey.r_valeur;
+    const {idFcp, libelle, montant} = req.body;
+
+    Utils.expectedParameters({idFcp, montant}).then(async () => {
+
+        console.log(`Recupération des données client`)
+        await Acteur.findById(req.session.e_acteur).then(async acteur => {
+            await Particulier.findById(acteur.e_particulier).then(async particulier => {
+                
+                const date = new Date();
+                const idClient = particulier.r_ncompte_titre;
+
+                console.log(`Envoi de l'operation à ATSGO`);
+
+                Atsgo.saveOperation(apikey, {
+                    idFcp, 
+                    idClient, 
+                    referenceOperation: "string", 
+                    idTypeOperation: 2, 
+                    libelle, 
+                    dateValeur: date, 
+                    idModePaiement: 2, 
+                    montant
+                }).then(async () => {
+                    return response(res, 200, `Operation de ${type} terminé`);
+                }).catch(err => next(err));
+
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+    }).catch(err => response(res, 400, err));
+
+}
 
 async function saveOparation (op_code, req, res, next) {
     /**
@@ -186,6 +235,6 @@ module.exports = {
     getAllActeurOperations,
     opSouscription,
     opRachat,
-    opTransfert
+    // opTransfert
     // saveOparation
 }

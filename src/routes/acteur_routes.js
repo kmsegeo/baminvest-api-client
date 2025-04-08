@@ -81,8 +81,8 @@ router.get('/transactions', app_auth, session_verify, atsgo_auth, transactionCon
 
 // OPERATION
 router.get('/operations', app_auth, session_verify, atsgo_auth, operationController.getAllActeurOperations);
-router.post('/operations/souscription', app_auth, session_verify, operationController.opSouscription);
-router.post('/operations/rachat', app_auth, session_verify, operationController.opRachat);
-router.post('/operations/transfert', app_auth, session_verify, operationController.opTransfert);
+router.post('/operations/souscription', app_auth, session_verify, atsgo_auth, operationController.opSouscription);
+router.post('/operations/rachat', app_auth, session_verify, atsgo_auth, operationController.opRachat);
+// router.post('/operations/transfert', app_auth, session_verify, atsgo_auth, operationController.opTransfert);
 
 module.exports = router;

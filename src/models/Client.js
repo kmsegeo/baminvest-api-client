@@ -67,6 +67,12 @@ const Particulier = {
         return res.rows[0];
     },
 
+    async updateCompteTitre(particulier_id, numeroCompteTitre) {
+        const query_string = `UPDATE ${this.table_name} SET r_ncompte_titre=$1 WHERE r_i=$2 RETURNING *`;
+        const res = await db.query(query_string, [numeroCompteTitre, particulier_id]);
+        return res.rows[0];
+    },
+
     async cleanAll() {
         const res = await db.query(`DELETE FROM ${this.table_name} WHERE r_i <> $1 RETURNING r_i`, [1]);
         return res.rows;
