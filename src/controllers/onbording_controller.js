@@ -444,11 +444,18 @@ const createRepresentant = async (req, res, next) => {
 
 const getActeurFiles = async (req, res, next) => {
     const acteurId = req.params.acteurId;
-    Document.findAllByActeurId(acteurId).then(async photos => {
+    await Document.findAllByActeurId(acteurId).then(async photos => {
         return response(res, 200, `Chargement terminé`, photos);
     }).catch(err => next(err));
 }
 
+const getFile = async (req, res, next) => {
+    const ref = req.params.ref;
+    await Document.findByRef(ref).then(async photo => {
+        if (!photo) return response(res, 404, 'Fichier introuvable !')
+        return response(res, 200, `Chargement terminé`, photo);
+    }).catch(err => next(err));
+}
 
 const uploadPhotoProfil = async (req, res, next) => {
 
@@ -470,7 +477,7 @@ const uploadPhotoProfil = async (req, res, next) => {
 
 const getPhotoProfil = async (req, res, next) => {
     const acteurId = req.params.acteurId;
-    Document.findBySpecific(acteurId, 'photoprofil').then(async photo => {
+    await Document.findBySpecific(acteurId, 'photoprofil').then(async photo => {
         return response(res, 200, `Chargement terminé`, photo);
     }).catch(err => next(err));
 }
@@ -495,7 +502,7 @@ const uploadDomiciliation = async (req, res, next) => {
 
 const getDomiciliation = async (req, res, next) => {
     const acteurId = req.params.acteurId;
-    Document.findBySpecific(acteurId, 'domiciliation').then(async photo => {
+    await Document.findBySpecific(acteurId, 'domiciliation').then(async photo => {
         return response(res, 200, `Chargement terminé`, photo);
     }).catch(err => next(err));
 }
@@ -520,7 +527,7 @@ const uploadSignature = async (req, res, next) => {
 
 const getSignature = async (req, res, next) => {
     const acteurId = req.params.acteurId;
-    Document.findBySpecific(acteurId, 'signature').then(async photo => {
+    await Document.findBySpecific(acteurId, 'signature').then(async photo => {
         return response(res, 200, `Chargement terminé`, photo);
     }).catch(err => next(err));
 }
@@ -751,6 +758,7 @@ module.exports = {
     updateEntreprise,
     createRepresentant,
     getActeurFiles,
+    getFile,
     uploadPhotoProfil,
     getPhotoProfil,
     uploadDomiciliation,

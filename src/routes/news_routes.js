@@ -5,7 +5,7 @@ const newsController = require('../controllers/news_controller')
 
 const router = express.Router();
 
-router.get('/', app_auth, newsController.getLastNews);
-router.get('/:ref', app_auth, newsController.getOneNews);
+router.get('/', app_auth, session_verify, newsController.getLastNews);
+router.get('/:id', app_auth, session_verify, newsController.getOneNews);
 
 module.exports = router;

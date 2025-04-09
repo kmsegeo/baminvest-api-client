@@ -6,7 +6,7 @@ const Document = {
     tableName: 't_document',
 
     async findAllByTypeDocumentId(type_id) {
-        const res = db.query(`
+        const res = await db.query(`
            SELECT 
                 td.r_i,
                 tt.r_intitule,
@@ -21,7 +21,7 @@ const Document = {
 
     async create({acteur_id, type_document, nom_fichier}) {
         const date = new Date();
-        const res = db.query(`
+        const res = await db.query(`
             INSERT INTO ${this.tableName} (
                 r_reference,
                 r_date_creer,
@@ -40,7 +40,7 @@ const Document = {
     },
 
     async findById(id) {
-        const res = db.query(`
+        const res = await db.query(`
             SELECT 
                 td.r_i,
                 tt.r_intitule,
@@ -50,11 +50,11 @@ const Document = {
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt  
             WHERE td.e_type_document=tt.r_i AND td.r_i=$1 AND td.r_statut=$2`, [id, 1]);
-        return res.rows
+        return res.rows[0];
     },
 
     async findByRef(ref) {
-        const res = db.query(`
+        const res = await db.query(`
             SELECT 
                 td.r_i,
                 tt.r_intitule,
@@ -64,7 +64,7 @@ const Document = {
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt  
             WHERE td.e_type_document=tt.r_i AND td.r_reference=$1 AND td.r_statut=$2`, [ref, 1]);
-        return res.rows
+        return res.rows[0]
     },
 
     async findAllByActeurId(acteur_id) {
