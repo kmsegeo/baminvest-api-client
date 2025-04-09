@@ -1451,6 +1451,44 @@
         }
       }
     },
+    "/v1/acteurs/fichiers/{ref}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/v1/acteurs/{acteurId}/motdepasse/activer": {
       "post": {
         "description": "",
@@ -2351,6 +2389,11 @@
             "name": "timestamp",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -2360,12 +2403,12 @@
         }
       }
     },
-    "/v1/news/{ref}": {
+    "/v1/news/{id}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "ref",
+            "name": "id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2387,6 +2430,11 @@
           },
           {
             "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
             "in": "header",
             "type": "string"
           }
