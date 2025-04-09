@@ -9,7 +9,6 @@ const getLastNews = async (req, res, next) => {
 
     await News.findAll().then(async results => {
         for(let result of results) {
-            console.log(result)
             await Document.findById(result.e_document).then(async doc => {
                 delete doc.r_i
                 delete doc.r_date_creer
