@@ -41,6 +41,13 @@ const onbordingParticulier = async (req, res, next) => {
         contact_telephone_fixe, contact_intitule, contact_email, profil_reponses
     } = req.body;
 
+    // Bypass 
+
+    type_piece = 1;
+    num_piece =  "CI001424482"
+
+    // delete after support
+
     console.log(`Vérification des paramètres`);
     await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_piece, num_piece, type_compte, profession, profil_reponses}).then(async () => {
         
