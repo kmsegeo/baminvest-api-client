@@ -32,7 +32,8 @@ const onbordingParticulier = async (req, res, next) => {
     console.log(`Création d'un compte particulier..`);
 
     const {
-        civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, adresse, telephone, type_piece, num_piece,
+        civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, adresse, telephone, 
+        // type_piece, num_piece,
         type_compte, langue,compte_titre, compte_espece,  autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, 
         lien_parente_sgo, nom_prenom_titulaire, pays_naissance, pays_residence, situation_matrimoniale, situation_habitat, categorie_professionnelle, 
         autres_categorie_prof, profession, employeur, nbr_enfants, langue_preferee, instrument_paiement_privilige, origine_ressources_investies, 
@@ -43,8 +44,8 @@ const onbordingParticulier = async (req, res, next) => {
 
     // Bypass 
 
-    type_piece = 1;
-    num_piece =  "CI001424482"
+    const type_piece = 1;
+    const num_piece =  "CI001424482"
 
     // delete after support
 
