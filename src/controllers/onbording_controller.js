@@ -463,7 +463,7 @@ const uploadPhotoProfil = async (req, res, next) => {
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "photoprofil";
-    const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    const nom_fichier = `${req.protocol}://${req.get('host')}/apibam/uploads/${req.file.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
@@ -488,7 +488,7 @@ const uploadDomiciliation = async (req, res, next) => {
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "domiciliation";
-    const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    const nom_fichier = `${req.protocol}://${req.get('host')}/apibam/uploads/${req.file.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
@@ -513,7 +513,7 @@ const uploadSignature = async (req, res, next) => {
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "signature";
-    const nom_fichier = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    const nom_fichier = `${req.protocol}://${req.get('host')}/apibam/uploads/${req.file.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
