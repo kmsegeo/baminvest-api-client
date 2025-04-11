@@ -75,8 +75,8 @@ router.delete('/sessions/:ref', app_auth, session_verify, sessionController.dest
 
 // PORTEFEUILLE
 router.get('/portefeuilles', app_auth, session_verify, atsgo_auth, portefeuilleController.getClientProtefeuilles);
-// router.get('/portefeuilles/evolution/:periode', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
 router.get('/transactions', app_auth, session_verify, atsgo_auth, transactionController.getTransactionHistorique);
+// router.get('/portefeuilles/evolution/:periode', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
 
 // OPERATION
 router.get('/operations', app_auth, session_verify, atsgo_auth, operationController.getAllActeurOperations);
