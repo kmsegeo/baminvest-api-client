@@ -95,7 +95,7 @@ const getVlFonds = async (req, res, next) => {
                     if (n==2) break;
                 }
                 
-                analytics['progression'] = ((vl['n-0'] - vl['n-1'])/vl['n-1']).toFixed(4) + '%';
+                analytics['progression'] = ((vl['n-0'] - vl['n-1'])/vl['n-1']).toFixed(4);
                 result[i] = analytics;
                 i++;
             }

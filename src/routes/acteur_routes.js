@@ -58,6 +58,7 @@ router.post('/motdepasse/reinitialiser', app_auth, clientController.resetPasswor
 router.put('/motdepasse/modifier', app_auth, clientController.updatePassword);
 
 // OTP
+
 router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiOtp);
 router.post('/:acteurId/otp/verifier', app_auth, onbordingController.verifierOtp);
 
@@ -74,11 +75,13 @@ router.delete('/sessions/:ref', app_auth, session_verify, sessionController.dest
 // router.get('/resume', app_auth, session_verify, atsgo_auth, clientController.getActeurResumes);
 
 // PORTEFEUILLE
+
 router.get('/portefeuilles', app_auth, session_verify, atsgo_auth, portefeuilleController.getClientProtefeuilles);
 router.get('/transactions', app_auth, session_verify, atsgo_auth, transactionController.getTransactionHistorique);
 // router.get('/portefeuilles/evolution/:periode', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
 
 // OPERATION
+
 router.get('/operations', app_auth, session_verify, atsgo_auth, operationController.getAllActeurOperations);
 router.post('/operations/souscription', app_auth, session_verify, atsgo_auth, operationController.opSouscription);
 router.post('/operations/rachat', app_auth, session_verify, atsgo_auth, operationController.opRachat);
