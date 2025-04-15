@@ -733,6 +733,8 @@ const renvoiOtp = async (req, res, next) => {
             await Utils.aleatoireOTP().then(async code_otp => {
                 await Utils.genearteOTP_Msgid().then(async msgid => {
                     await OTP.create(acteur_id, {msgid, code_otp, operation}).then(async otp => {
+                        console.log('otp généré:', code_otp);
+                        console.log('Envoi de message:', msgid, '..');
                         await fetch(url, {
                             method: "POST",
                             headers: {
