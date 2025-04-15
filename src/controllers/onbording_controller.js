@@ -618,7 +618,7 @@ const createPassword = async (req, res, next) => {
                                     "dateNaissance": particulier.r_date_naissance,
                                     "tel": acteur.r_telephone_prp,
                                     "telMobile": acteur.r_telephone_prp,
-                                    "adresse": acteur.r_adresse ? acteur.r_adresse : " ",
+                                    "adresse": acteur.r_adresse ? acteur.r_adresse : "Abidjan - CIV",
                                     "email": acteur.r_email,
                                     "fonction": kyc.r_profession,
                                     "idTypeClient": 8,
