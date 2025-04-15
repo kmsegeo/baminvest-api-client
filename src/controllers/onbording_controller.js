@@ -671,7 +671,7 @@ const createPassword = async (req, res, next) => {
                             })
                             .then(res => res.json())
                             .then(data => {
-                                if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
+                                if (data!=1) return response(res, 200, `Envoi de message echoué`, data);
                                 return response(res, 200, `Message de vérification envoyé`);
                             })
                         }).catch(err => next(err)); 
