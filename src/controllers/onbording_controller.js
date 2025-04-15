@@ -32,7 +32,7 @@ const onbordingParticulier = async (req, res, next) => {
     console.log(`Création d'un compte particulier..`);
 
     const {
-        civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, adresse, telephone, 
+        civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, telephone, 
         // type_piece, num_piece,
         type_compte, langue,compte_titre, compte_espece,  autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, 
         lien_parente_sgo, nom_prenom_titulaire, pays_naissance, pays_residence, situation_matrimoniale, situation_habitat, categorie_professionnelle, 
@@ -45,7 +45,8 @@ const onbordingParticulier = async (req, res, next) => {
     // Bypass 
 
     const type_piece = 1;
-    const num_piece =  "CI001424482"
+    const num_piece =  "00000000000";
+    const adresse = "Abidjan - CIV";
 
     // delete after support
 
@@ -618,7 +619,7 @@ const createPassword = async (req, res, next) => {
                                     "dateNaissance": particulier.r_date_naissance,
                                     "tel": acteur.r_telephone_prp,
                                     "telMobile": acteur.r_telephone_prp,
-                                    "adresse": acteur.r_adresse ? acteur.r_adresse : "Abidjan - CIV",
+                                    "adresse": acteur.r_adresse,
                                     "email": acteur.r_email,
                                     "fonction": kyc.r_profession,
                                     "idTypeClient": 8,
@@ -648,21 +649,19 @@ const createPassword = async (req, res, next) => {
                     }).catch(err => next(err));
                 }).catch(err => next(err));
 
-                await OTP.clean(acteur_id, 1).catch(err => next(err)); 
+                await OTP.clean(acteur_id).catch(err => next(err)); 
                 
                 await Utils.aleatoireOTP().then(async code_otp => {
                     await Utils.genearteOTP_Msgid().then(async msgid => {
                         await OTP.create(acteur_id, {msgid, code_otp, operation: 1}).then(async otp => { 
-                            const smsId = "test@mediasoftci.com";
-                            const smsPwd = "12345";
                             await fetch(process.env.ML_SMSCI_URL, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
                                 },
                                 body: JSON.stringify({
-                                    identify: smsId,
-                                    pwd: smsPwd,
+                                    identify: "test@mediasoftci.com",
+                                    pwd: "12345",
                                     fromad: "BAM CI",
                                     toad: acteur.r_telephone_prp,
                                     msgid: msgid,
