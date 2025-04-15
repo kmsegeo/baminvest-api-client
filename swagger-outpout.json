@@ -265,9 +265,6 @@
                 "email": {
                   "example": "any"
                 },
-                "adresse": {
-                  "example": "any"
-                },
                 "telephone": {
                   "example": "any"
                 },
