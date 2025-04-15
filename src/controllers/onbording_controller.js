@@ -652,9 +652,10 @@ const createPassword = async (req, res, next) => {
                 await OTP.clean(acteur_id).catch(err => next(err)); 
                 
                 await Utils.aleatoireOTP().then(async code_otp => {
-                    console.log('otp généré:', code_otp);
                     await Utils.genearteOTP_Msgid().then(async msgid => {
                         await OTP.create(acteur_id, {msgid, code_otp, operation: 1}).then(async otp => { 
+                            console.log('otp généré:', code_otp);
+                            console.log('Envoi de message:', msgid, '..');
                             await fetch(process.env.ML_SMSCI_URL, {
                                 method: "POST",
                                 headers: {
