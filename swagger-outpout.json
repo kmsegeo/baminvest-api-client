@@ -2011,10 +2011,16 @@
                 "idFcp": {
                   "example": "any"
                 },
-                "libelle": {
+                "montant": {
                   "example": "any"
                 },
-                "montant": {
+                "mobile_payeur": {
+                  "example": "any"
+                },
+                "callback_erreur": {
+                  "example": "any"
+                },
+                "callback_succes": {
                   "example": "any"
                 }
               }
@@ -2066,14 +2072,57 @@
                 "idFcp": {
                   "example": "any"
                 },
-                "libelle": {
+                "montant": {
                   "example": "any"
                 },
-                "montant": {
+                "moyen_paiement": {
                   "example": "any"
                 }
               }
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/acteurs/operations/souscription/{id}/paiement/statut": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {

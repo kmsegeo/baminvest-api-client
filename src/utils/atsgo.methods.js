@@ -32,11 +32,45 @@ const Atsgo = {
         }).catch(error => { throw error });
     },
 
-    async saveOperation (apikey, opdata) {
+    async saveMouvement (apikey, mvdata, callback) {
+
+        console.log(`Enregistrement de la transaction..`)
+
+        const idClient = mvdata.idClient;
+
+        const headers =  {
+            "Content-Type": "application/json",
+        }
+
+        await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT_MOUVEMENT + '?ApiKey=' + apikey, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(mvdata),
+        })
+        .then(async resp => resp.json())
+        .then(async data => {
+            
+            if (data.status!=200) {
+                console.log(data.errors);
+                throw `Erreur d'enregistrement de l'operation à atsgo !`;
+            }
+            
+            console.log(`Enregistrement de la transaction terminé`)
+            callback(data.payLoad);
+
+            // const idOperationClient = data.payLoad;
+
+            // Activation de l'operation
+            // await validationAtsgoOperation(apikey, idClient, idOperationClient);
+        })
+
+    },
+
+    async saveOperation(apikey, opdata, callback) {
         
         console.log(`Enregistrement de l'operation..`)
 
-        const idClient = opdata.idClient;
+        // const idClient = opdata.idClient;
 
         const headers =  {
             "Content-Type": "application/json",
@@ -55,12 +89,24 @@ const Atsgo = {
                 throw `Erreur d'enregistrement de l'operation à atsgo !`;
             }
 
-            const idOperationClient = data.payLoad;
+            console.log(`Enregistrement de l'operation terminé`)
+            callback(data.payLoad);
+            // const idOperationClient = data.payLoad;
 
             // Activation de l'operation
             // await validationAtsgoOperation(apikey, idClient, idOperationClient);
         })
         
+    },
+
+    async findClientOperation(apikey, idClient, callback) {
+        
+        await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT_OPERATIONS + '?ApiKey=' + apikey + '&idClient=' + idClient)
+        .then(async resp => resp.json())
+        .then(async data => {
+            console.log(`Chargement operations terminé`)
+            callback(data.payLoad);
+        })
     }
 }
 
@@ -127,5 +173,7 @@ async function validationAtsgoOperation(apikey, idClient, idOperationClient) {
         // console.log(`Reférence cible :`, ref);
     }).catch(error => { throw error });
 }
+
+
 
 module.exports = Atsgo;

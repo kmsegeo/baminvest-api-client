@@ -11,6 +11,7 @@ const CircuitEtape = require('../models/CircuitEtape');
 const CircuitAffectation = require('../models/CircuitAffectation');
 const Atsgo = require('../utils/atsgo.methods');
 const { Particulier } = require('../models/Client');
+const Wave = require('../utils/wave.methods');
 
 const getAllTypeOperations = async (req, res, next) => {
     await TypeOperation.findAll()
@@ -56,14 +57,72 @@ const opSouscription = async (req, res, next) => {
     
     console.log(`Opération de souscription..`);
     if (req.headers.op_code!='TYOP-006') return response(res, 403, `Type opération non authorisé !`);
-
+    
     const apikey = req.apikey.r_valeur;
-    const {idFcp, libelle, montant} = req.body;
+    const {idFcp, montant, mobile_payeur, callback_erreur, callback_succes} = req.body;
     const acteur_id = req.session.e_acteur;
 
-    Utils.expectedParameters({idFcp, montant}).then(async () => {
-        saveAtsgoOperation('Souscription', acteur_id, {apikey, idFcp, libelle, montant, res, next});
+    Utils.expectedParameters({idFcp, montant, mobile_payeur, callback_erreur, callback_succes}).then(async () => {
+
+        console.log(`Recupération des données client`)
+        await Acteur.findById(acteur_id).then(async acteur => {
+            await Particulier.findById(acteur.e_particulier).then(async particulier => {
+                
+                const date = new Date();
+                const idClient = particulier.r_ncompte_titre;
+                
+                console.log(`Initialisation de paiement wave`);
+                await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, async data => {
+                    
+                    console.log(`Enregistrement de mouvement..`)
+                    await Atsgo.saveMouvement(apikey, {
+                        idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+                        idClient,
+                        idFcp,
+                        date: date,
+                        dateMouvement: data.when_created,
+                        dateValeur: data.when_created,
+                        idModePaiement: 6,
+                        montant: data.amount,
+                        libelle: data.id
+                    }, async (mouvement_data) => {
+                        
+                        console.log(`Envoi de l'operation à ATSGO`);
+
+                        await Atsgo.saveOperation(apikey, {
+                            idFcp, 
+                            idClient, 
+                            referenceOperation: data.id, 
+                            idTypeOperation: 2,         // 2:Souscription - 3:Rachat
+                            libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
+                            dateValeur: data.when_created, 
+                            idModePaiement: 6,          //6: Wave
+                            montant: data.amount
+
+                        }, async (operaton_data) => {
+                            
+                            let transfert_data = {
+                                idOperation: operaton_data,
+                                moyen_paiement: "TMOP-003",
+                                 // code: data.id,
+                                montant: data.amount,
+                                devise: data.currency,
+                                paiement_url: data.wave_launch_url,
+                                date_creation: data.when_created,
+                                date_expire: data.when_expires
+                            }
+    
+                            return response(res, 200, `L'operation de souscription à été enregistré`, transfert_data);
+
+                        }).catch(err => next(err));
+                    }).catch(err => next(err));
+
+                }).catch(err => next(err));
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+
     }).catch(err => response(res, 400, err));
+
 };
 
 const opRachat = async (req, res, next) => {
@@ -72,11 +131,58 @@ const opRachat = async (req, res, next) => {
     if (req.headers.op_code!='TYOP-007') return response(res, 403, `Type opération non authorisé !`);
     
     const apikey = req.apikey.r_valeur;
-    const {idFcp, libelle, montant} = req.body;
+    const {idFcp, montant, moyen_paiement} = req.body;
     const acteur_id = req.session.e_acteur;
 
     Utils.expectedParameters({idFcp, montant}).then(async () => {
-        saveAtsgoOperation('Rachat', acteur_id, {apikey, idFcp, libelle, montant, res, next});
+        
+        console.log(`Recupération des données client`)
+        await Acteur.findById(acteur_id).then(async acteur => {
+            await Particulier.findById(acteur.e_particulier).then(async particulier => {
+                
+                const date = new Date();
+                const idClient = particulier.r_ncompte_titre;
+
+                console.log(`Enregistrement de mouvement..`)
+
+                await Atsgo.saveOperation(apikey, {
+                    idFcp, 
+                    idClient, 
+                    referenceOperation: "strings", 
+                    idTypeOperation: 3,             // 2:Souscription - 3:Rachat
+                    libelle: "RETRAIT DE FONDS DE PLACEMENT",
+                    dateValeur: date, 
+                    idModePaiement: 7,              // 7: Paiement espece
+                    montant: montant
+
+                }, async (operaton_data) => {
+
+                    await Atsgo.saveMouvement(apikey, {
+                        idTypeMouvement: 2,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+                        idClient,
+                        idFcp,
+                        date: date,
+                        dateMouvement: date,
+                        dateValeur: date,
+                        idModePaiement: 7,        // 7: Paiement espece
+                        montant: montant,
+                        libelle: "--code de transaction--"
+                    }, async (mouvement_data) => {
+
+                        const data = {
+                            idOperation: mouvement_data,
+                            moyen_paiement: "TMOP-002",
+                            montant: montant,
+                            devise: "XOF",
+                            date_creation: date
+                        }
+                        return response(res, 200, `Operation de rachat en cours de traitement`, data);
+                    }).catch(err => next(err));
+
+                }).catch(err => next(err));
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+            
     }).catch(err => response(res, 400, err));
 };
 
