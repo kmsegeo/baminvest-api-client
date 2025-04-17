@@ -722,9 +722,11 @@ const renvoiOtp = async (req, res, next) => {
     
     await Acteur.findById(acteur_id).then(async acteur => {
         if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
+        if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
+
         await OTP.findByActeurId(acteur_id).then(async otp => {
-            if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
-            
+            if (!otp) return response(res, 404, `Aucun message otp trouvé !`);
+
             const operation = otp.r_operation;
             await OTP.clean(acteur_id).catch(err => next(err));                          // Operation: 1: activation, 2: reinitialisation
 
