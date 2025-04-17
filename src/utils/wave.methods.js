@@ -10,7 +10,7 @@ const Wave = {
         const checkout_params = {
             amount: montant,
             currency: "XOF",
-            restrict_payer_mobile: '+' + mobile_payeur,
+            restrict_payer_mobile: mobile_payeur ? '+' + mobile_payeur : null,
             error_url: url_erreur,
             success_url: url_succes,
         }

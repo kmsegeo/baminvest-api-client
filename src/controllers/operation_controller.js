@@ -62,7 +62,7 @@ const opSouscription = async (req, res, next) => {
     const {idFcp, montant, mobile_payeur, callback_erreur, callback_succes} = req.body;
     const acteur_id = req.session.e_acteur;
 
-    Utils.expectedParameters({idFcp, montant, mobile_payeur, callback_erreur, callback_succes}).then(async () => {
+    Utils.expectedParameters({idFcp, montant}).then(async () => {
 
         console.log(`Recupération des données client`)
         await Acteur.findById(acteur_id).then(async acteur => {
@@ -74,7 +74,7 @@ const opSouscription = async (req, res, next) => {
                 console.log(`Initialisation de paiement wave`);
                 await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, async data => {
                     
-                    console.log(`Enregistrement de mouvement..`)
+                    console.log(`Enregistrement de mouvement`)
                     await Atsgo.saveMouvement(apikey, {
                         idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
                         idClient,
