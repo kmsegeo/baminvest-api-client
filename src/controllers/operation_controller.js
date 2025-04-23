@@ -65,64 +65,81 @@ const opSouscription = async (req, res, next) => {
 
     Utils.expectedParameters({idFcp, montant}).then(async () => {
 
-        console.log(`Recupération des données client`)
-        await Acteur.findById(acteur_id).then(async acteur => {
-            await Particulier.findById(acteur.e_particulier).then(async particulier => {
+        console.log(`Vérification de la valleur liquidative du fonds`)
+        const fonds_url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
+
+        await fetch(fonds_url).then(async res => res.json()).then(async data => {
+            if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
+            
+            let fonds = null;
+
+            for (let f of data.payLoad) 
+                if (f.idFcp==idFcp) fonds = f;
+
+            if (!fonds)
+                return response(res, 404, `Fonds introuvable !`)
+
+            if (montant<fonds.vl)
+                return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`)
                 
-                const date = new Date();
-                // const idClient = particulier.r_ncompte_titre;
-                const idClient = particulier.r_atsgo_id_client;
-                
-                console.log(`Initialisation de paiement wave`);
-                await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, async data => {
+            console.log(`Recupération des données client`)
+            await Acteur.findById(acteur_id).then(async acteur => {
+                await Particulier.findById(acteur.e_particulier).then(async particulier => {
                     
-                    console.log(`Enregistrement de mouvement`)
-                    await Atsgo.saveMouvement(apikey, {
-                        idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
-                        idClient,
-                        idFcp,
-                        date: date,
-                        dateMouvement: data.when_created,
-                        dateValeur: data.when_created,
-                        idModePaiement: 6,
-                        montant: data.amount,
-                        libelle: data.id
-                    }, async (mouvement_data) => {
+                    const date = new Date();
+                    // const idClient = particulier.r_ncompte_titre;
+                    const idClient = particulier.r_atsgo_id_client;
+                    
+                    console.log(`Initialisation de paiement wave`);
+                    await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, async data => {
                         
-                        console.log(`Envoi de l'operation à ATSGO`);
-
-                        await Atsgo.saveOperation(apikey, {
-                            idFcp, 
-                            idClient, 
-                            referenceOperation: data.id, 
-                            idTypeOperation: 2,         // 2:Souscription - 3:Rachat
-                            libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
-                            dateValeur: data.when_created, 
-                            idModePaiement: 6,          //6: Wave
-                            montant: data.amount
-
-                        }, async (operaton_data) => {
+                        console.log(`Enregistrement de mouvement`)
+                        await Atsgo.saveMouvement(apikey, {
+                            idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+                            idClient,
+                            idFcp,
+                            date: date,
+                            dateMouvement: data.when_created,
+                            dateValeur: data.when_created,
+                            idModePaiement: 6,
+                            montant: data.amount,
+                            libelle: data.id
+                        }, async (mouvement_data) => {
                             
-                            let transfert_data = {
-                                idOperation: operaton_data,
-                                moyen_paiement: "TMOP-003",
-                                 // code: data.id,
-                                montant: data.amount,
-                                devise: data.currency,
-                                paiement_url: data.wave_launch_url,
-                                date_creation: data.when_created,
-                                date_expire: data.when_expires
-                            }
-    
-                            return response(res, 200, `L'operation de souscription à été enregistré`, transfert_data);
+                            console.log(`Envoi de l'operation à ATSGO`);
 
+                            await Atsgo.saveOperation(apikey, {
+                                idFcp, 
+                                idClient, 
+                                referenceOperation: data.id, 
+                                idTypeOperation: 2,         // 2:Souscription - 3:Rachat
+                                libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
+                                dateValeur: data.when_created, 
+                                idModePaiement: 6,          //6: Wave
+                                montant: data.amount
+
+                            }, async (operaton_data) => {
+                                
+                                let transfert_data = {
+                                    idOperation: operaton_data,
+                                    moyen_paiement: "TMOP-003",
+                                    // code: data.id,
+                                    montant: data.amount,
+                                    devise: data.currency,
+                                    paiement_url: data.wave_launch_url,
+                                    date_creation: data.when_created,
+                                    date_expire: data.when_expires
+                                }
+        
+                                return response(res, 200, `L'operation de souscription à été enregistré`, transfert_data);
+
+                            }).catch(err => next(err));
                         }).catch(err => next(err));
-                    }).catch(err => next(err));
 
+                    }).catch(err => next(err));
                 }).catch(err => next(err));
             }).catch(err => next(err));
-        }).catch(err => next(err));
-
+        })  
     }).catch(err => response(res, 400, err));
 
 };
@@ -137,55 +154,72 @@ const opRachat = async (req, res, next) => {
     const acteur_id = req.session.e_acteur;
 
     Utils.expectedParameters({idFcp, montant}).then(async () => {
+
+        // console.log(`Vérification de la valeur du portefeuil`)
+        // const fonds_url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
+
+        // await fetch(fonds_url).then(async res => res.json()).then(async data => {
+        //     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
+            
+        //     let fonds = null;
+
+        //     for (let f of data.payLoad) 
+        //         if (f.idFcp==idFcp) fonds = f;
+
+        //     if (!fonds)
+        //         return response(res, 404, `Fonds introuvable !`)
+
+        //     if (montant<fonds.vl)
+        //         return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`)
         
-        console.log(`Recupération des données client`)
-        await Acteur.findById(acteur_id).then(async acteur => {
-            await Particulier.findById(acteur.e_particulier).then(async particulier => {
-                
-                const date = new Date();
-                // const idClient = particulier.r_ncompte_titre;
-                const idClient = particulier.r_atsgo_id_client;
+            console.log(`Recupération des données client`)
+            await Acteur.findById(acteur_id).then(async acteur => {
+                await Particulier.findById(acteur.e_particulier).then(async particulier => {
+                    
+                    const date = new Date();
+                    // const idClient = particulier.r_ncompte_titre;
+                    const idClient = particulier.r_atsgo_id_client;
 
-                console.log(`Enregistrement de mouvement..`)
+                    console.log(`Enregistrement de mouvement..`)
 
-                await Atsgo.saveOperation(apikey, {
-                    idFcp, 
-                    idClient, 
-                    referenceOperation: "strings", 
-                    idTypeOperation: 3,             // 2:Souscription - 3:Rachat
-                    libelle: "RETRAIT DE FONDS DE PLACEMENT",
-                    dateValeur: date, 
-                    idModePaiement: 7,              // 7: Paiement espece
-                    montant: montant
+                    await Atsgo.saveOperation(apikey, {
+                        idFcp, 
+                        idClient, 
+                        referenceOperation: "strings", 
+                        idTypeOperation: 3,             // 2:Souscription - 3:Rachat
+                        libelle: "RETRAIT DE FONDS DE PLACEMENT",
+                        dateValeur: date, 
+                        idModePaiement: 7,              // 7: Paiement espece
+                        montant: montant
 
-                }, async (operaton_data) => {
+                    }, async (operaton_data) => {
 
-                    await Atsgo.saveMouvement(apikey, {
-                        idTypeMouvement: 2,       // 1:Apport Liquidité - 2:Retrait de Liquidités
-                        idClient,
-                        idFcp,
-                        date: date,
-                        dateMouvement: date,
-                        dateValeur: date,
-                        idModePaiement: 7,        // 7: Paiement espece
-                        montant: montant,
-                        libelle: "--code de transaction--"
-                    }, async (mouvement_data) => {
-
-                        const data = {
-                            idOperation: mouvement_data,
-                            moyen_paiement: "TMOP-002",
+                        await Atsgo.saveMouvement(apikey, {
+                            idTypeMouvement: 2,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+                            idClient,
+                            idFcp,
+                            date: date,
+                            dateMouvement: date,
+                            dateValeur: date,
+                            idModePaiement: 7,        // 7: Paiement espece
                             montant: montant,
-                            devise: "XOF",
-                            date_creation: date
-                        }
-                        return response(res, 200, `Operation de rachat en cours de traitement`, data);
-                    }).catch(err => next(err));
+                            libelle: "--code de transaction--"
+                        }, async (mouvement_data) => {
 
+                            const data = {
+                                idOperation: mouvement_data,
+                                moyen_paiement: "TMOP-002",
+                                montant: montant,
+                                devise: "XOF",
+                                date_creation: date
+                            }
+                            return response(res, 200, `Operation de rachat en cours de traitement`, data);
+                        }).catch(err => next(err));
+
+                    }).catch(err => next(err));
                 }).catch(err => next(err));
             }).catch(err => next(err));
-        }).catch(err => next(err));
-            
+        // })
     }).catch(err => response(res, 400, err));
 };
 
