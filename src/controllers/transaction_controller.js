@@ -15,7 +15,8 @@ const getTransactionHistorique = async (req, res, next) => {
     await Acteur.findById(req.session.e_acteur).then(async acteur => {
         await Particulier.findById(acteur.e_particulier).then( async particulier => {
             
-            const id_client = particulier.r_ncompte_titre;
+            // const id_client = particulier.r_ncompte_titre;
+            const id_client = particulier.r_atsgo_id_client;
             const apikey = req.apikey.r_valeur;
             const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
 
@@ -51,7 +52,8 @@ const checkWaveTransaction = async (req, res, next) => {
     await Acteur.findById(acteur_id).then(async acteur => {
         await Particulier.findById(acteur.e_particulier).then(async particulier => {
         
-            const idClient = particulier.r_ncompte_titre;
+            // const idClient = particulier.r_ncompte_titre;
+            const idClient = particulier.r_atsgo_id_client;
 
             console.log(`Chargement des opération client`)
             await Atsgo.findClientOperation(apikey, idClient, async operations => {
@@ -93,6 +95,7 @@ const checkWaveTransaction = async (req, res, next) => {
                 
 //                 const date = new Date();
 //                 const idClient = particulier.r_ncompte_titre;
+//                 const idClient = particulier.r_atsgo_id_client;
 
 //                 await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, async data => {
 //                     console.log(`Enregistrement de mouvement`)

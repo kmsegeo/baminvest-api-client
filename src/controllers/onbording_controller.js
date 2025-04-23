@@ -34,7 +34,7 @@ const onbordingParticulier = async (req, res, next) => {
     const {
         civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, telephone, 
         // type_piece, num_piece,
-        type_compte, langue,compte_titre, compte_espece,  autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, 
+        type_compte, langue, compte_titre, compte_espece,  autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, 
         lien_parente_sgo, nom_prenom_titulaire, pays_naissance, pays_residence, situation_matrimoniale, situation_habitat, categorie_professionnelle, 
         autres_categorie_prof, profession, employeur, nbr_enfants, langue_preferee, instrument_paiement_privilige, origine_ressources_investies, 
         autres_origines_ressources, tranche_revenus, autres_actifs, autres_actifs_preciser, autres_comptes_bridge, comptes_bridges, banques_relations,
@@ -579,13 +579,13 @@ const createPassword = async (req, res, next) => {
 
     await Acteur.findById(acteur_id).then(async acteur => {
         if (!acteur) return response(res, 404, `Acteur introuvable !`);
-        if (acteur.r_statut!=0) return response(res, 400, `Se compte semble déjà actif !`)
+        if (acteur.r_statut!=0) return response(res, 409, `Se compte semble déjà actif !`)
         console.log(`Hashage du mot de passe`);
         await bcrypt.hash(mdp, 10).then(async hash => {
             console.log(hash);
             await Acteur.updatePassword(acteur_id, hash).then(async result => {
                 if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
-                if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
+                if (!acteur.r_telephone_prp) return response(res, 404, `Numéro de téléphone principal introuvable !`);
                 
                 await Client.Particulier.findById(acteur.e_particulier).then(async particulier => {
                     if (!particulier) return response(res, 403, `Compte particulier introuvable !`)

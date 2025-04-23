@@ -67,9 +67,15 @@ const Particulier = {
         return res.rows[0];
     },
 
-    async updateCompteTitre(particulier_id, numeroCompteTitre) {
-        const query_string = `UPDATE ${this.table_name} SET r_ncompte_titre=$1 WHERE r_i=$2 RETURNING *`;
-        const res = await db.query(query_string, [numeroCompteTitre, particulier_id]);
+    // async updateCompteTitre(particulier_id, numeroCompteTitre) {
+    //     const query_string = `UPDATE ${this.table_name} SET r_ncompte_titre=$1 WHERE r_i=$2 RETURNING *`;
+    //     const res = await db.query(query_string, [numeroCompteTitre, particulier_id]);
+    //     return res.rows[0];
+    // },
+
+    async setAtsgoIdClient(particulier_id, atsgo_id_client) {
+        const query_string = `UPDATE ${this.table_name} SET r_atsgo_id_client=$1 WHERE r_i=$2 RETURNING *`;
+        const res = await db.query(query_string, [atsgo_id_client, particulier_id]);
         return res.rows[0];
     },
 

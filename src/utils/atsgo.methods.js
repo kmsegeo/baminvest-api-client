@@ -139,7 +139,7 @@ async function validateAtsgoAccount(apikey, data) {
 
         await Acteur.findByEmail(ref).then(async acteur => {
             if (!acteur) throw `Acteur non trouvé !`;
-            await Particulier.updateCompteTitre(acteur.e_particulier, idClient).then(async particulier => {
+            await Particulier.setAtsgoIdClient(acteur.e_particulier, idClient).then(async particulier => {
                 if (!particulier) throw `Erreur à l'enregistrement du compte titre !`;
                 console.log('Données du callback envoyé');
             }).catch(error => { throw error });

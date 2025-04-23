@@ -10,7 +10,8 @@ const getClientProtefeuilles = async (req, res, next) => {
     await Acteur.findById(req.session.e_acteur).then(async acteur => {
         await Particulier.findById(acteur.e_particulier).then( async particulier => {
             
-            const id_client = particulier.r_ncompte_titre;
+            // const id_client = particulier.r_ncompte_titre;
+            const id_client = particulier.r_atsgo_id_client;
 
             const apikey = req.apikey.r_valeur;
             const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();

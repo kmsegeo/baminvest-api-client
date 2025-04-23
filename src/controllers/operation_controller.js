@@ -31,7 +31,8 @@ const getAllActeurOperations = async (req, res, next) => {
     await Acteur.findById(req.session.e_acteur).then(async acteur => {
         await Particulier.findById(acteur.e_particulier).then(async particulier => {
             
-            const idClient = particulier.r_ncompte_titre;
+            // const idClient = particulier.r_ncompte_titre;
+            const idClient = particulier.r_atsgo_id_client;
 
             const url = process.env.ATSGO_URL + process.env.URI_CLIENT_OPERATIONS + '?ApiKey=' + apikey + '&IdClient=' + idClient;
             console.log(url);
@@ -69,7 +70,8 @@ const opSouscription = async (req, res, next) => {
             await Particulier.findById(acteur.e_particulier).then(async particulier => {
                 
                 const date = new Date();
-                const idClient = particulier.r_ncompte_titre;
+                // const idClient = particulier.r_ncompte_titre;
+                const idClient = particulier.r_atsgo_id_client;
                 
                 console.log(`Initialisation de paiement wave`);
                 await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, async data => {
@@ -141,7 +143,8 @@ const opRachat = async (req, res, next) => {
             await Particulier.findById(acteur.e_particulier).then(async particulier => {
                 
                 const date = new Date();
-                const idClient = particulier.r_ncompte_titre;
+                // const idClient = particulier.r_ncompte_titre;
+                const idClient = particulier.r_atsgo_id_client;
 
                 console.log(`Enregistrement de mouvement..`)
 
@@ -201,8 +204,9 @@ async function saveAtsgoOperation(type, acteur_id, {apikey, idFcp, libelle, mont
         await Particulier.findById(acteur.e_particulier).then(async particulier => {
             
             const date = new Date();
-            const idClient = particulier.r_ncompte_titre;
-
+            // const idClient = particulier.r_ncompte_titre;
+            const idClient = particulier.r_atsgo_id_client;
+            
             console.log(`Envoi de l'operation à ATSGO`);
 
             Atsgo.saveOperation(apikey, {
