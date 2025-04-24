@@ -9,6 +9,7 @@ const getAllFonds = async (req, res, next) => {
 
     const apikey = req.apikey.r_valeur;
     const url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
+    console.log(url);
 
     fetch(url)
         .then(async res => res.json())
@@ -50,6 +51,7 @@ const getAllValeurLiquidatives = async (req, res, next) => {
 
     const apikey = req.apikey.r_valeur;
     const url  = `${process.env.ATSGO_URL + process.env.URI_VLS}?ApiKey=${apikey}`;
+    console.log(url);
 
     fetch(url)
         .then(res => res.json())
@@ -68,9 +70,12 @@ const getVlFonds = async (req, res, next) => {
     const fonds_url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
     const vls_url  = `${process.env.ATSGO_URL + process.env.URI_VLS}?ApiKey=${apikey}`;
 
+    console.log(fonds_url);
     await fetch(fonds_url).then(async res => res.json()).then(async data => {
         if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
         const fonds = data.payLoad;
+
+        console.log(vls_url);
         await fetch(vls_url).then(res => res.json()).then(data => {
             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des valeurs liquidatives !`)
             

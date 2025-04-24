@@ -23,6 +23,7 @@ const getActeurResumes = async (req, res, next) => {
         // HISTORY
 
         // const wallet_history_url  = `${process.env.ATSGO_URL_PORTEFEUILLE_HISTORY}?ApiKey=${apikey}&IdClient=${atsgo_client_id}&DateDebut=${today}&DateFin=${today}`;
+        // console.log(wallet_history_url)
         // await fetch(wallet_history_url)
         //     .then(res => res.json())
         //     .then(async data => {
@@ -33,6 +34,7 @@ const getActeurResumes = async (req, res, next) => {
         // WALLET ACTIVES
 
         // const wallet_url  = `${process.env.ATSGO_URL_PORTEFEUILLE_BY_CLIENT}?ApiKey=${apikey}&IdClient=${atsgo_client_id}&Date=${today}`;
+        // console.log(wallet_url)
         // await fetch(wallet_url)
         //     .then(res => res.json())
         //     .then(async data => {
@@ -44,6 +46,8 @@ const getActeurResumes = async (req, res, next) => {
         // FONDS
 
         const fonds_url  = `${process.env.ATSGO_URL_FONDS}?ApiKey=${apikey}`;
+        console.log(fonds_url)
+        
         await fetch(fonds_url)
             .then(async res => res.json())
             .then(async data => {

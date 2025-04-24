@@ -5,6 +5,20 @@ const Document = {
 
     tableName: 't_document',
 
+    async findAll() {
+        const res = await db.query(`
+            SELECT 
+                td.r_i,
+                tt.r_intitule,
+                td.r_reference,
+                td.r_nom_fichier,
+                td.r_date_creer,
+                td.r_date_modif
+            FROM ${this.tableName} As td, t_type_document As tt  
+            WHERE td.e_type_document=tt.r_i AND td.r_statut=$1`, [1]);
+        return (await res).rows;
+    },
+
     async findAllByTypeDocumentId(type_id) {
         const res = await db.query(`
            SELECT 
@@ -93,6 +107,21 @@ const Document = {
             FROM ${this.tableName} As td, t_type_document As tt  
             WHERE td.e_type_document=tt.r_i AND td.e_acteur=$1 AND td.r_statut=$2 AND tt.r_intitule=$3`, [acteur_id, 1, intitule]);
         return res.rows[0];
+    },
+
+    async findAllByIntitule(intitule) {
+        const res = db.query(`
+            SELECT 
+                td.r_i,
+                tt.r_intitule,
+                td.r_reference,
+                td.r_nom_fichier,
+                td.r_date_creer,
+                td.r_date_modif
+            FROM ${this.tableName} As td, t_type_document As tt  
+            WHERE td.e_type_document=tt.r_i AND tt.r_intitule=$1 AND td.r_statut=$2`, [intitule, 1]);
+            
+        return (await res).rows;
     },
 
 }

@@ -67,6 +67,7 @@ const opSouscription = async (req, res, next) => {
 
         console.log(`Vérification de la valleur liquidative du fonds`)
         const fonds_url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
+        console.log(fonds_url);
 
         await fetch(fonds_url).then(async res => res.json()).then(async data => {
             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`);

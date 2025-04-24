@@ -10,10 +10,12 @@ const getLastNews = async (req, res, next) => {
     await News.findAll().then(async results => {
         for(let result of results) {
             await Document.findById(result.e_document).then(async doc => {
-                delete doc.r_i
-                delete doc.r_date_creer
-                delete doc.r_date_modif
-                result['document'] = doc;
+                if (doc) {
+                    delete doc.r_i
+                    delete doc.r_date_creer
+                    delete doc.r_date_modif
+                    result['document'] = doc;
+                }
                 delete result.e_document
             }).catch(err => next(err));
         }
@@ -31,11 +33,13 @@ const getOneNews = async (req, res, next) => {
     await News.findById(id).then(async result => {
         if (!result) return response(res, 404, 'Article non trouvé !');
         await Document.findById(result.e_document).then(async doc => {
-            delete doc.r_i
-            delete doc.r_date_creer
-            delete doc.r_date_modif
-            result['document'] = doc;
-            delete result.e_document
+            if (doc) {
+                delete doc.r_i
+                delete doc.r_date_creer
+                delete doc.r_date_modif
+                result['document'] = doc;
+                delete result.e_document
+            }
             return response(res, 200, `Chargement de l'article`, result);
         }).catch(err => next(err));
     }).catch(err => next(err));

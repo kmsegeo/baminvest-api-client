@@ -50,8 +50,8 @@ router.get('/:acteurId/fichiers/domiciliation', app_auth, onbordingController.ge
 router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), onbordingController.uploadSignature);
 router.get('/:acteurId/fichiers/signature', app_auth, onbordingController.getSignature);
 
-router.get('/:acteurId/fichiers', app_auth, onbordingController.getActeurFiles);
-router.get('/fichiers/:ref', app_auth, onbordingController.getFile);
+// router.get('/fichiers', app_auth, onbordingController.getActeurFiles);
+// router.get('/fichiers/:ref', app_auth, onbordingController.getFile);
 
 router.post('/:acteurId/motdepasse/activer', app_auth, atsgo_auth, onbordingController.createPassword);
 router.post('/motdepasse/reinitialiser', app_auth, clientController.resetPassword);

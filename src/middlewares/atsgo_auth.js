@@ -16,6 +16,7 @@ module.exports = async (req, res, next) => {
             }
 
             const url = process.env.ATSGO_URL + process.env.URI_AUTHENTICATE
+            console.log(url);
     
             await fetch(url, { 
                 method: "POST",
