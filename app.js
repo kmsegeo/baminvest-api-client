@@ -12,6 +12,7 @@ const fondsRoutes = require('./src/routes/fonds_routes');
 const moyenPaiementRoutes = require('./src/routes/moyen_paiement_routes');
 const newsRoutes = require('./src/routes/news_routes');
 const clientRoutes = require('./src/routes/client_routes');
+const path = require('path');
 
 const app = express(); 
 
