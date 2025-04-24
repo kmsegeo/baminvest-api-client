@@ -28,9 +28,9 @@ const getTransactionHistorique = async (req, res, next) => {
             .then(async data => {
                 if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
 
-                for(let payLoad of data.payLoad) {
-                    delete payLoad.etat;
-                }
+                // for(let payLoad of data.payLoad) {
+                //     delete payLoad.etat;
+                // }
 
                 return response(res, 200, 'Chargement de l\'historique terminé', data.payLoad);
             })
