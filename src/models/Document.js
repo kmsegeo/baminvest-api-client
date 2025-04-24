@@ -8,7 +8,6 @@ const Document = {
     async findAll() {
         const res = await db.query(`
             SELECT 
-                td.r_i,
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
@@ -70,7 +69,6 @@ const Document = {
     async findByRef(ref) {
         const res = await db.query(`
             SELECT 
-                td.r_i,
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
