@@ -69,7 +69,7 @@ const opSouscription = async (req, res, next) => {
         const fonds_url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
 
         await fetch(fonds_url).then(async res => res.json()).then(async data => {
-            if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
+            if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`);
             
             let fonds = null;
 
@@ -77,10 +77,10 @@ const opSouscription = async (req, res, next) => {
                 if (f.idFcp==idFcp) fonds = f;
 
             if (!fonds)
-                return response(res, 404, `Fonds introuvable !`)
+                return response(res, 404, `Fonds introuvable !`);
 
-            if (montant<fonds.vl)
-                return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`)
+            if (Number(montant) < Number(fonds.vl))
+                return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`);
                 
             console.log(`Recupération des données client`)
             await Acteur.findById(acteur_id).then(async acteur => {
@@ -154,72 +154,55 @@ const opRachat = async (req, res, next) => {
     const acteur_id = req.session.e_acteur;
 
     Utils.expectedParameters({idFcp, montant}).then(async () => {
-
-        // console.log(`Vérification de la valeur du portefeuil`)
-        // const fonds_url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
-
-        // await fetch(fonds_url).then(async res => res.json()).then(async data => {
-        //     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`)
-            
-        //     let fonds = null;
-
-        //     for (let f of data.payLoad) 
-        //         if (f.idFcp==idFcp) fonds = f;
-
-        //     if (!fonds)
-        //         return response(res, 404, `Fonds introuvable !`)
-
-        //     if (montant<fonds.vl)
-        //         return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`)
         
-            console.log(`Recupération des données client`)
-            await Acteur.findById(acteur_id).then(async acteur => {
-                await Particulier.findById(acteur.e_particulier).then(async particulier => {
-                    
-                    const date = new Date();
-                    // const idClient = particulier.r_ncompte_titre;
-                    const idClient = particulier.r_atsgo_id_client;
+        console.log(`Recupération des données client`)
+        await Acteur.findById(acteur_id).then(async acteur => {
+            await Particulier.findById(acteur.e_particulier).then(async particulier => {
+                
+                const date = new Date();
+                // const idClient = particulier.r_ncompte_titre;
+                const idClient = particulier.r_atsgo_id_client;
 
-                    console.log(`Enregistrement de mouvement..`)
+                console.log(`Enregistrement de mouvement..`)
 
-                    await Atsgo.saveOperation(apikey, {
-                        idFcp, 
-                        idClient, 
-                        referenceOperation: "strings", 
-                        idTypeOperation: 3,             // 2:Souscription - 3:Rachat
-                        libelle: "RETRAIT DE FONDS DE PLACEMENT",
-                        dateValeur: date, 
-                        idModePaiement: 7,              // 7: Paiement espece
-                        montant: montant
+                await Atsgo.saveOperation(apikey, {
+                    idFcp, 
+                    idClient, 
+                    referenceOperation: "strings", 
+                    idTypeOperation: 3,             // 2:Souscription - 3:Rachat
+                    libelle: "RETRAIT DE FONDS DE PLACEMENT",
+                    dateValeur: date, 
+                    idModePaiement: 7,              // 7: Paiement espece
+                    montant: montant
 
-                    }, async (operaton_data) => {
+                }, async (operaton_data) => {
 
-                        await Atsgo.saveMouvement(apikey, {
-                            idTypeMouvement: 2,       // 1:Apport Liquidité - 2:Retrait de Liquidités
-                            idClient,
-                            idFcp,
-                            date: date,
-                            dateMouvement: date,
-                            dateValeur: date,
-                            idModePaiement: 7,        // 7: Paiement espece
+                    await Atsgo.saveMouvement(apikey, {
+                        idTypeMouvement: 2,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+                        idClient,
+                        idFcp,
+                        date: date,
+                        dateMouvement: date,
+                        dateValeur: date,
+                        idModePaiement: 7,        // 7: Paiement espece
+                        montant: montant,
+                        libelle: "--code de transaction--"
+                    }, async (mouvement_data) => {
+
+                        const data = {
+                            idOperation: mouvement_data,
+                            moyen_paiement: "TMOP-002",
                             montant: montant,
-                            libelle: "--code de transaction--"
-                        }, async (mouvement_data) => {
-
-                            const data = {
-                                idOperation: mouvement_data,
-                                moyen_paiement: "TMOP-002",
-                                montant: montant,
-                                devise: "XOF",
-                                date_creation: date
-                            }
-                            return response(res, 200, `Operation de rachat en cours de traitement`, data);
-                        }).catch(err => next(err));
-
+                            devise: "XOF",
+                            date_creation: date
+                        }
+                        return response(res, 200, `Operation de rachat en cours de traitement`, data);
                     }).catch(err => next(err));
+
                 }).catch(err => next(err));
             }).catch(err => next(err));
-        // })
+        }).catch(err => next(err));
+            
     }).catch(err => response(res, 400, err));
 };
 
