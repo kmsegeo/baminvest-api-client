@@ -5,14 +5,17 @@ const getAllFiles = async (req, res, next) => {
     
     const intitule = req.query.intitule;
 
+    const expected = ['dici', 'prospectus', 'brochure', 'factsheet'];
+
     if (!intitule) 
-        await Document.findAll().then(async documents => {
-            return response(res, 200, `Chargement terminé`, documents);
-        }).catch(err => next(err));
-    else
-        await Document.findAllByIntitule(intitule).then(async documents => {
-            return response(res, 200, `Chargement terminé`, documents);
-        }).catch(err => next(err));
+        return response(res, 403, `Intitulé de type fichier attendu !`)
+
+    if (!expected.includes(intitule))
+        return response(res, 403, `L'intitulé ne fait pas partie des types attendus !`);
+
+    await Document.findAllByIntitule(intitule).then(async documents => {
+        return response(res, 200, `Chargement terminé`, documents);
+    }).catch(err => next(err));
 
 }
 

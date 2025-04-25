@@ -452,7 +452,7 @@ const createRepresentant = async (req, res, next) => {
 }
 
 const getActeurFiles = async (req, res, next) => {
-    const acteurId = req.params.acteurId;
+    const acteurId = req.session.e_acteur;
     await Document.findAllByActeurId(acteurId).then(async photos => {
         return response(res, 200, `Chargement terminé`, photos);
     }).catch(err => next(err));

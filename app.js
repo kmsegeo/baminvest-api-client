@@ -13,7 +13,6 @@ const moyenPaiementRoutes = require('./src/routes/moyen_paiement_routes');
 const newsRoutes = require('./src/routes/news_routes');
 const clientRoutes = require('./src/routes/client_routes');
 const path = require('path');
-const filesRoutes = require('./src/routes/files_routes');
 
 const app = express(); 
 
@@ -30,7 +29,6 @@ app.use(base_path + '/acteurs', acteurRoutes);
 app.use(base_path + '/fonds', fondsRoutes); 
 app.use(base_path + '/moy_paiements', moyenPaiementRoutes); 
 app.use(base_path + '/news', newsRoutes); 
-app.use(base_path + '/fichiers', filesRoutes); 
 
 app.use(base_path + '/temp', clientRoutes); 
 

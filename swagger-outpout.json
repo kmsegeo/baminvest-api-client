@@ -1404,82 +1404,6 @@
         }
       }
     },
-    "/v1/acteurs/{acteurId}/fichiers": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "acteurId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/v1/acteurs/fichiers/{ref}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "ref",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/v1/acteurs/{acteurId}/motdepasse/activer": {
       "post": {
         "description": "",
@@ -1862,6 +1786,86 @@
         }
       }
     },
+    "/v1/acteurs/fichiers": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/acteurs/fichiers/{ref}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/v1/acteurs/portefeuilles": {
       "get": {
         "description": "",
@@ -2202,6 +2206,91 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/fonds/fichiers": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "intitule",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/fonds/fichiers/{ref}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }

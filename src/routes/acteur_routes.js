@@ -50,9 +50,6 @@ router.get('/:acteurId/fichiers/domiciliation', app_auth, onbordingController.ge
 router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), onbordingController.uploadSignature);
 router.get('/:acteurId/fichiers/signature', app_auth, onbordingController.getSignature);
 
-// router.get('/fichiers', app_auth, onbordingController.getActeurFiles);
-// router.get('/fichiers/:ref', app_auth, onbordingController.getFile);
-
 router.post('/:acteurId/motdepasse/activer', app_auth, atsgo_auth, onbordingController.createPassword);
 router.post('/motdepasse/reinitialiser', app_auth, clientController.resetPassword);
 router.put('/motdepasse/modifier', app_auth, clientController.updatePassword);
@@ -73,6 +70,11 @@ router.delete('/sessions/:ref', app_auth, session_verify, sessionController.dest
 
 // SOMMAIRE
 // router.get('/resume', app_auth, session_verify, atsgo_auth, clientController.getActeurResumes);
+
+// FICHIERS
+
+router.get('/fichiers', app_auth, session_verify, onbordingController.getActeurFiles);
+router.get('/fichiers/:ref', app_auth, session_verify, onbordingController.getFile);
 
 // PORTEFEUILLE
 
