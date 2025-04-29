@@ -61,7 +61,7 @@ const opSouscription = async (req, res, next) => {
     
     const apikey = req.apikey.r_valeur;
     const {idFcp, montant, mobile_payeur, callback_erreur, callback_succes} = req.body;
-    // const acteur_id = req.session.e_acteur;
+    const acteur_id = req.session.e_acteur;
 
     Utils.expectedParameters({idFcp, montant}).then(async () => {
 
