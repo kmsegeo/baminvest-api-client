@@ -103,7 +103,7 @@ const opSouscription = async (req, res, next) => {
                             idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
                             idClient,
                             idFcp,
-                            date: date,
+                            date: new Date(),
                             dateMouvement: data.when_created,
                             dateValeur: data.when_created,
                             idModePaiement: 6,
