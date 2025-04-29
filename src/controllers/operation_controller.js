@@ -146,6 +146,8 @@ const opSouscription = async (req, res, next) => {
 };
 
 const opSouscriptionCompleted = async (req, res, next) => {
+
+    console.log('Vérification de paiement wave..')
     
     const {id, type, data} = req.body;
 
