@@ -13,7 +13,7 @@ const Wave = {
             restrict_payer_mobile: mobile_payeur ? '+' + mobile_payeur : null,
             error_url: url_erreur ? url_erreur : "https://example.com/error",
             success_url: url_succes ? url_succes : "https://example.com/success",
-            custom_fields
+            // custom_fields
         }
 
         axios.post(url, checkout_params, {

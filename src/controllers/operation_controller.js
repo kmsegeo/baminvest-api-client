@@ -80,8 +80,8 @@ const opSouscription = async (req, res, next) => {
             if (!fonds)
                 return response(res, 404, `Fonds introuvable !`);
 
-            // if (Number(montant) < Number(fonds.vl))
-            //     return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`);
+            if (Number(montant) < Number(fonds.vl))
+                return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`);
                 
             console.log(`Recupération des données client`)
             await Acteur.findById(acteur_id).then(async acteur => {
@@ -98,32 +98,32 @@ const opSouscription = async (req, res, next) => {
                     console.log(`Initialisation de paiement wave`);
                     await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, custom_fields, async data => {
                         
-                        // console.log(`Enregistrement de mouvement`)
-                        // await Atsgo.saveMouvement(apikey, {
-                        //     idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
-                        //     idClient,
-                        //     idFcp,
-                        //     date: date,
-                        //     dateMouvement: data.when_created,
-                        //     dateValeur: data.when_created,
-                        //     idModePaiement: 6,
-                        //     montant: data.amount,
-                        //     libelle: data.id
-                        // }, async (mouvement_data) => {
+                        console.log(`Enregistrement de mouvement`)
+                        await Atsgo.saveMouvement(apikey, {
+                            idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+                            idClient,
+                            idFcp,
+                            date: date,
+                            dateMouvement: data.when_created,
+                            dateValeur: data.when_created,
+                            idModePaiement: 6,
+                            montant: data.amount,
+                            libelle: data.id
+                        }, async (mouvement_data) => {
                             
-                        //     console.log(`Envoi de l'operation à ATSGO`);
+                            console.log(`Envoi de l'operation à ATSGO`);
 
-                        //     await Atsgo.saveOperation(apikey, {
-                        //         idFcp, 
-                        //         idClient, 
-                        //         referenceOperation: data.id, 
-                        //         idTypeOperation: 2,         // 2:Souscription - 3:Rachat
-                        //         libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
-                        //         dateValeur: data.when_created, 
-                        //         idModePaiement: 6,          //6: Wave
-                        //         montant: data.amount
+                            await Atsgo.saveOperation(apikey, {
+                                idFcp, 
+                                idClient, 
+                                referenceOperation: data.id, 
+                                idTypeOperation: 2,         // 2:Souscription - 3:Rachat
+                                libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
+                                dateValeur: data.when_created, 
+                                idModePaiement: 6,          //6: Wave
+                                montant: data.amount
 
-                        //     }, async (operaton_data) => {
+                            }, async (operaton_data) => {
                                 
                                 let transfert_data = {
                                     // idOperation: operaton_data,
@@ -138,8 +138,8 @@ const opSouscription = async (req, res, next) => {
         
                                 return response(res, 200, `L'operation de souscription à été enregistré`, transfert_data);
 
-                            // }).catch(err => next(err));
-                        // }).catch(err => next(err));
+                            }).catch(err => next(err));
+                        }).catch(err => next(err));
 
                     }).catch(err => next(err));
                 }).catch(err => next(err));
