@@ -83,16 +83,20 @@ const opSouscription = async (req, res, next) => {
             // if (Number(montant) < Number(fonds.vl))
             //     return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`);
                 
-            // console.log(`Recupération des données client`)
-            // await Acteur.findById(acteur_id).then(async acteur => {
-                // await Particulier.findById(acteur.e_particulier).then(async particulier => {
+            console.log(`Recupération des données client`)
+            await Acteur.findById(acteur_id).then(async acteur => {
+                await Particulier.findById(acteur.e_particulier).then(async particulier => {
                     
-                    // const date = new Date();
-                    // const idClient = particulier.r_ncompte_titre;
-                    // const idClient = particulier.r_atsgo_id_client;
+                    const idClient = particulier.r_atsgo_id_client;
+
+                    const custom_fields = {
+                        idClient,
+                        idFcp,
+                        atsgo_apikey: apikey
+                    }
                     
                     console.log(`Initialisation de paiement wave`);
-                    await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, async data => {
+                    await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, custom_fields, async data => {
                         
                         // console.log(`Enregistrement de mouvement`)
                         // await Atsgo.saveMouvement(apikey, {
@@ -138,8 +142,8 @@ const opSouscription = async (req, res, next) => {
                         // }).catch(err => next(err));
 
                     }).catch(err => next(err));
-                // }).catch(err => next(err));
-            // }).catch(err => next(err));
+                }).catch(err => next(err));
+            }).catch(err => next(err));
         }).catch(err => next(err)); 
     }).catch(err => response(res, 400, err));
 
