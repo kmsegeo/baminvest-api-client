@@ -147,12 +147,7 @@ const opSouscription = async (req, res, next) => {
 
 const opSouscriptionCompleted = async (req, res, next) => {
     
-    // console.log(`Opération de souscription..`);
-    // if (req.headers.op_code!='TYOP-006') return response(res, 403, `Type opération non authorisé !`);
-    
-    // const apikey = req.apikey.r_valeur;
     const {id, type, data} = req.body;
-    // const acteur_id = req.session.e_acteur;
 
     Utils.expectedParameters({id, type, data}).then(async () => {
 
@@ -175,7 +170,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                     const idClient = particulier.r_atsgo_id_client;
                 
                     console.log(`Enregistrement de mouvement`)
-                    await Atsgo.saveMouvement(apikey, {
+                    await Atsgo.saveMouvement(custom_fields.atsgo_apikey, {
                         idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
                         idClient: custom_fields.idClient,
                         idFcp: custom_fields.idFcp,
@@ -189,19 +184,17 @@ const opSouscriptionCompleted = async (req, res, next) => {
                         
                         console.log(`Envoi de l'operation à ATSGO`);
 
-                        await Atsgo.saveOperation(apikey, {
-                            idFcp, 
-                            idClient, 
+                        await Atsgo.saveOperation(custom_fields.atsgo_apikey, {
+                            idClient: custom_fields.idClient,
+                            idFcp: custom_fields.idFcp,
                             referenceOperation: data.id, 
                             idTypeOperation: 2,         // 2:Souscription - 3:Rachat
                             libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
                             dateValeur: data.when_created, 
                             idModePaiement: 6,          //6: Wave
                             montant: data.amount
-
                         }, async (operaton_data) => {
-                            console.log(`L'operation de souscription à été enregistré`)
-                            console.log(operaton_data)
+                            return response(res, 200, `L'operation de souscription à été enregistré`, operaton_data);
                         }).catch(err => next(err));
                     }).catch(err => next(err));
                     
