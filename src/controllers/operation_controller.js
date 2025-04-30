@@ -85,8 +85,8 @@ const opSouscription = async (req, res, next) => {
             if (!fonds)
                 return response(res, 404, `Fonds introuvable !`);
 
-            // if (Number(montant) < Number(fonds.vl))
-            //     return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`);
+            if (Number(montant) < Number(fonds.vl))
+                return response(res, 403, `Le montant attendu est inférieur à la valeur liquidative actuelle !`);
                 
             console.log(`Recupération des données client`)
             await Acteur.findById(acteur_id).then(async acteur => {
