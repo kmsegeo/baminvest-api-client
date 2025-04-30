@@ -12,6 +12,7 @@ const CircuitAffectation = require('../models/CircuitAffectation');
 const Atsgo = require('../utils/atsgo.methods');
 const { Particulier } = require('../models/Client');
 const Wave = require('../utils/wave.methods');
+const uuid = require('uuid');
 
 const getAllTypeOperations = async (req, res, next) => {
     await TypeOperation.findAll()
@@ -57,7 +58,11 @@ const getAllActeurOperations = async (req, res, next) => {
 const opSouscription = async (req, res, next) => {
     
     console.log(`Opération de souscription..`);
-    if (req.headers.op_code!='TYOP-006') return response(res, 403, `Type opération non authorisé !`);
+
+    const op_code = 'TYOP-006';
+    const moyen_paiement = 'TMOP-003';
+
+    if (req.headers.op_code!=op_code) return response(res, 403, `Type opération non authorisé !`);
     
     const apikey = req.apikey.r_valeur;
     const {idFcp, montant, mobile_payeur, callback_erreur, callback_succes} = req.body;
@@ -89,57 +94,36 @@ const opSouscription = async (req, res, next) => {
                     
                     const idClient = particulier.r_atsgo_id_client;
 
-                    const custom_fields = {
-                        idClient,
-                        idFcp,
-                        atsgo_apikey: apikey
-                    }
-                    
-                    console.log(`Initialisation de paiement wave`);
-                    await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, custom_fields, async data => {
+                    await TypeOperation.findByCode(op_code).then(async type_operation => {
+                        if(!type_operation) return response(res, 404, `Type opération non trouvé !`);
+
+                            console.log(`Initialisation de paiement wave`);
+                            const op_ref = uuid.v4();
+
+                            await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, op_ref, async data => {
                         
-                        // console.log(`Enregistrement de mouvement`)
-                        // await Atsgo.saveMouvement(apikey, {
-                        //     idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
-                        //     idClient,
-                        //     idFcp,
-                        //     date: new Date(),
-                        //     dateMouvement: data.when_created,
-                        //     dateValeur: data.when_created,
-                        //     idModePaiement: 6,
-                        //     montant: data.amount,
-                        //     libelle: data.id
-                        // }, async (mouvement_data) => {
-                            
-                        //     console.log(`Envoi de l'operation à ATSGO`);
+                                await Operation.create(acteur.r_i, type_operation.r_i, 0, idFcp, op_ref, { 
+                                    reference_operateur: data.id, 
+                                    libelle: 'SOUSCRIPTION FCP BRIDGE - N° DE TRANSACTION: ' + mobile_payeur, 
+                                    montant: montant, 
+                                    frais_operation: null, 
+                                    frais_operateur: null, 
+                                    compte_paiement: idClient
+                                }).then(async operation => {
+                                    if (!operation) return response(res, 400, `Initialisation de paiement échoué !`);
+                                    let transfert_data = {
+                                        idOperation: operation.r_reference,
+                                        // code: data.id,
+                                        montant: data.amount,
+                                        devise: data.currency,
+                                        paiement_url: data.wave_launch_url,
+                                        date_creation: data.when_created,
+                                        date_expire: data.when_expires
+                                    }
 
-                        //     await Atsgo.saveOperation(apikey, {
-                        //         idFcp, 
-                        //         idClient, 
-                        //         referenceOperation: data.id, 
-                        //         idTypeOperation: 2,         // 2:Souscription - 3:Rachat
-                        //         libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
-                        //         dateValeur: data.when_created, 
-                        //         idModePaiement: 6,          //6: Wave
-                        //         montant: data.amount
-
-                        //     }, async (operaton_data) => {
-                                
-                                let transfert_data = {
-                                    // idOperation: operaton_data,
-                                    // moyen_paiement: "TMOP-003",
-                                    // code: data.id,
-                                    montant: data.amount,
-                                    devise: data.currency,
-                                    paiement_url: data.wave_launch_url,
-                                    date_creation: data.when_created,
-                                    date_expire: data.when_expires
-                                }
-        
-                                return response(res, 200, `L'operation de souscription à été enregistré`, transfert_data);
-
-                            // }).catch(err => next(err));
-                        // }).catch(err => next(err));
+                                    return response(res, 200, `Initialisation de paiement réussi`, transfert_data);
+                                }).catch(err => next(err));
+                            }).catch(err => next(err));
 
                     }).catch(err => next(err));
                 }).catch(err => next(err));
@@ -151,65 +135,55 @@ const opSouscription = async (req, res, next) => {
 
 const opSouscriptionCompleted = async (req, res, next) => {
 
-    console.log('Vérification de paiement wave..')
+    console.log('Wenhook::Reponse de paiement wave..')
     
+    const apikey = req.apikey.r_valeur;
     const {id, type, data} = req.body;
 
-    console.log(req.body)
+    Utils.expectedParameters({id, type, data}).then(async () => {
 
-    // Utils.expectedParameters({id, type, data}).then(async () => {
+        if (type!="checkout.session.completed") return null;
 
-    //         if (type!="merchant.payment_received")
-    //             return null;
+        console.log('Paiement wave réussi')
 
-    //         console.log('Paiement wave réussi')
+        console.log(`Récupération des données de l'opération`)
+        await Operation.findByRef(data.client_reference).then(async operation => {
+            if (!operation) return response(res, 404, `Données de l'opération introuvable !`)
 
-    //         console.log('type', type);
-    //         console.log('data_wave', data);
-            
-    //         // return null;
+            const idClient = operation.compte_paiement;
+            const idFcp = operation.e_fonds;
 
-    //         const custom_fields = data.custom_fields;
+            console.log(`Envoi des données de souscription à ATSGO..`);
 
-    //         console.log(`Recupération des données client`)
-    //         await Acteur.findByTelephone(data.sender_mobile).then(async acteur => {
-    //             await Particulier.findById(acteur.e_particulier).then(async particulier => {
-                                        
-    //                 const idClient = particulier.r_atsgo_id_client;
+            await Atsgo.saveMouvement(apikey, {
+                idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+                idClient: idClient,
+                idFcp: idFcp,
+                date: new Date(),
+                dateMouvement: data.when_created,
+                dateValeur: data.when_completed,
+                idModePaiement: 6,        // 6:wave
+                montant: data.amount,
+                libelle: operation.r_libelle
+            }, async (mouvement_data) => {
+                await Atsgo.saveOperation(apikey, {
+                    idClient: idClient,
+                    idFcp: idFcp,
+                    referenceOperation: data.transaction_id, 
+                    idTypeOperation: 2,         // 2:Souscription - 3:Rachat
+                    libelle: operation.r_libelle, 
+                    dateValeur: data.when_created, 
+                    idModePaiement: 6,          //6: Wave
+                    montant: data.amount
+                }, async (operaton_data) => {
+                    await Operation.updateSuccess(operation.r_reference).then(async result => {
+                        return response(res, 200, `Opération de souscription envoyé avec succès`, { reference: result.r_reference });                        
+                    }).catch(err => next(err));
+                }).catch(err => next(err));
+            }).catch(err => next(err));
                 
-    //                 console.log(`Enregistrement de mouvement`)
-    //                 await Atsgo.saveMouvement(custom_fields.atsgo_apikey, {
-    //                     idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
-    //                     idClient: custom_fields.idClient,
-    //                     idFcp: custom_fields.idFcp,
-    //                     date: new Date(),
-    //                     dateMouvement: data.when_created,
-    //                     dateValeur: data.when_created,
-    //                     idModePaiement: 6,        // 6:wave
-    //                     montant: data.amount,
-    //                     libelle: data.id
-    //                 }, async (mouvement_data) => {
-                        
-    //                     console.log(`Envoi de l'operation à ATSGO`);
-
-    //                     await Atsgo.saveOperation(custom_fields.atsgo_apikey, {
-    //                         idClient: custom_fields.idClient,
-    //                         idFcp: custom_fields.idFcp,
-    //                         referenceOperation: data.id, 
-    //                         idTypeOperation: 2,         // 2:Souscription - 3:Rachat
-    //                         libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
-    //                         dateValeur: data.when_created, 
-    //                         idModePaiement: 6,          //6: Wave
-    //                         montant: data.amount
-    //                     }, async (operaton_data) => {
-    //                         return response(res, 200, `L'operation de souscription à été enregistré`, operaton_data);
-    //                     }).catch(err => next(err));
-    //                 }).catch(err => next(err));
-                    
-    //             }).catch(err => next(err));
-    //         }).catch(err => next(err));
-    // }).catch(err => console.log(err));
-
+        }).catch(err => next(err));
+    }).catch(err => console.log(err));
 };
 
 const opRachat = async (req, res, next) => {
@@ -349,9 +323,9 @@ async function saveOparation (op_code, req, res, next) {
                                 let status = 1;        // Soumis à aucun circuit de validation
                                 if (circuit) {
                                     console.log(`Le type opération est soumis à un circuit de validation`)
-                                    status = 0;
+                                    // status = 0;
                                 } console.log(`Enregistrement de l'opération`);
-                                await Operation.create(session.e_acteur, type_operation.r_i, moypaiement.r_i, fonds.r_i, status, {...req.body}).then(async operation => {
+                                await Operation.create(session.e_acteur, type_operation.r_i, moypaiement.r_i, fonds.r_i, uuid.v4(), {...req.body}).then(async operation => {
                                     if (!operation) return response(res, 400, `Une erreur s'est produit !`);
                                     console.log(`Chargement des étapes du circuit`);
                                     if (status==0) {

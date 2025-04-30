@@ -34,8 +34,7 @@ const Atsgo = {
 
     async saveMouvement (apikey, mvdata, callback) {
 
-        console.log(`Enregistrement de la transaction..`)
-
+        console.log(`Enregistrement du mouvement..`)
         const idClient = mvdata.idClient;
 
         const headers =  {
@@ -52,10 +51,10 @@ const Atsgo = {
             
             if (data.status!=200) {
                 console.log(data.errors);
-                throw `Erreur d'enregistrement de l'operation à atsgo !`;
+                throw `Erreur d'enregistrement du mouvement à atsgo !`;
             }
             
-            console.log(`Enregistrement de la transaction terminé`)
+            console.log(`Enregistrement du mouvement terminé`)
             callback(data.payLoad);
 
             // const idOperationClient = data.payLoad;

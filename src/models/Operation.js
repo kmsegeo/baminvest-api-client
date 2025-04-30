@@ -1,5 +1,4 @@
 const db = require('../config/database');
-const uudi = require('uuid');
 
 const Operation = {
 
@@ -10,7 +9,7 @@ const Operation = {
         return res.rows;
     },
 
-    async create(acteur, type_operation, moyen_paiement, fonds, status, {
+    async create(acteur, type_operation, moyen_paiement, fonds, reference, {
         reference_operateur,
         libelle, 
         montant, 
@@ -38,7 +37,7 @@ const Operation = {
                 e_fonds)
             VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
             RETURNING *`, [
-                uudi.v4(), 
+                reference, 
                 reference_operateur, 
                 date, 
                 date, 
@@ -46,7 +45,7 @@ const Operation = {
                 montant, 
                 frais_operation, 
                 frais_operateur, 
-                status, 
+                0, 
                 acteur, 
                 type_operation, 
                 moyen_paiement, 
@@ -54,6 +53,16 @@ const Operation = {
                 fonds
             ]);
 
+        return res.rows[0];
+    },
+    
+    async findByRef(ref) {
+        const res = await db.query(`SELECT * FROM ${this.table_name} WHERE r_reference=$1`, [ref]);
+        return res.rows[0];
+    },
+
+    async updateSuccess(ref) {
+        const res = await db.query(`UPDATE ${this.table_name} SET r_statut=$1 WHERE r_reference=$2 RETURNING *`, [1, ref]);
         return res.rows[0];
     }
 }

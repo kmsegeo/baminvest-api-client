@@ -3,19 +3,23 @@ const response = require("../middlewares/response");
 
 const Wave = {
 
-    async checkout(montant, mobile_payeur, url_erreur, url_succes, custom_fields, callback) {
+    async checkout(montant, mobile_payeur, url_erreur, url_succes, client_reference, callback) {
+
+        console.log(`Création d'une Session de paiement..`);
 
         const url = process.env.WAVE_URL + process.env.URI_CHECKOUT_SESSION;
 
+        console.log(`Formatage de données`)
         const checkout_params = {
             amount: montant,
             currency: "XOF",
+            client_reference,
             restrict_payer_mobile: mobile_payeur ? '+' + mobile_payeur : null,
             error_url: url_erreur ? url_erreur : "https://example.com/error",
             success_url: url_succes ? url_succes : "https://example.com/success",
-            // custom_fields
         }
 
+        console.log(`Envoi des données à Wave CI`)
         axios.post(url, checkout_params, {
             headers: {
                 'Authorization': `Bearer ${process.env.WAVE_API_API_ALL}`,
@@ -23,13 +27,15 @@ const Wave = {
             },
         })
         .then((resp) => {
-            console.log('Initialisation de paiement wave terminé')
+            console.log('Session de paiement générée avec succès');
             callback(resp.data)
         }).catch((error) => { throw error });
 
     }, 
 
     async checkoutCheck(checkout_id, callback) {
+
+        console.log(`Vérification du paiement wave..`)
 
         const url = process.env.WAVE_URL + process.env.URI_CHECKOUT_SESSION;
 
