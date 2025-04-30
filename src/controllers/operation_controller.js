@@ -155,58 +155,60 @@ const opSouscriptionCompleted = async (req, res, next) => {
     
     const {id, type, data} = req.body;
 
-    Utils.expectedParameters({id, type, data}).then(async () => {
+    console.log(req.body)
 
-            if (type!="merchant.payment_received")
-                return null;
+    // Utils.expectedParameters({id, type, data}).then(async () => {
 
-            console.log('Paiement wave réussi')
+    //         if (type!="merchant.payment_received")
+    //             return null;
 
-            console.log('type', type);
-            console.log('data_wave', data);
+    //         console.log('Paiement wave réussi')
+
+    //         console.log('type', type);
+    //         console.log('data_wave', data);
             
-            // return null;
+    //         // return null;
 
-            const custom_fields = data.custom_fields;
+    //         const custom_fields = data.custom_fields;
 
-            console.log(`Recupération des données client`)
-            await Acteur.findByTelephone(data.sender_mobile).then(async acteur => {
-                await Particulier.findById(acteur.e_particulier).then(async particulier => {
+    //         console.log(`Recupération des données client`)
+    //         await Acteur.findByTelephone(data.sender_mobile).then(async acteur => {
+    //             await Particulier.findById(acteur.e_particulier).then(async particulier => {
                                         
-                    const idClient = particulier.r_atsgo_id_client;
+    //                 const idClient = particulier.r_atsgo_id_client;
                 
-                    console.log(`Enregistrement de mouvement`)
-                    await Atsgo.saveMouvement(custom_fields.atsgo_apikey, {
-                        idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
-                        idClient: custom_fields.idClient,
-                        idFcp: custom_fields.idFcp,
-                        date: new Date(),
-                        dateMouvement: data.when_created,
-                        dateValeur: data.when_created,
-                        idModePaiement: 6,        // 6:wave
-                        montant: data.amount,
-                        libelle: data.id
-                    }, async (mouvement_data) => {
+    //                 console.log(`Enregistrement de mouvement`)
+    //                 await Atsgo.saveMouvement(custom_fields.atsgo_apikey, {
+    //                     idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+    //                     idClient: custom_fields.idClient,
+    //                     idFcp: custom_fields.idFcp,
+    //                     date: new Date(),
+    //                     dateMouvement: data.when_created,
+    //                     dateValeur: data.when_created,
+    //                     idModePaiement: 6,        // 6:wave
+    //                     montant: data.amount,
+    //                     libelle: data.id
+    //                 }, async (mouvement_data) => {
                         
-                        console.log(`Envoi de l'operation à ATSGO`);
+    //                     console.log(`Envoi de l'operation à ATSGO`);
 
-                        await Atsgo.saveOperation(custom_fields.atsgo_apikey, {
-                            idClient: custom_fields.idClient,
-                            idFcp: custom_fields.idFcp,
-                            referenceOperation: data.id, 
-                            idTypeOperation: 2,         // 2:Souscription - 3:Rachat
-                            libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
-                            dateValeur: data.when_created, 
-                            idModePaiement: 6,          //6: Wave
-                            montant: data.amount
-                        }, async (operaton_data) => {
-                            return response(res, 200, `L'operation de souscription à été enregistré`, operaton_data);
-                        }).catch(err => next(err));
-                    }).catch(err => next(err));
+    //                     await Atsgo.saveOperation(custom_fields.atsgo_apikey, {
+    //                         idClient: custom_fields.idClient,
+    //                         idFcp: custom_fields.idFcp,
+    //                         referenceOperation: data.id, 
+    //                         idTypeOperation: 2,         // 2:Souscription - 3:Rachat
+    //                         libelle: "DEPÔT DE LIQUIDITE SUR FCP", 
+    //                         dateValeur: data.when_created, 
+    //                         idModePaiement: 6,          //6: Wave
+    //                         montant: data.amount
+    //                     }, async (operaton_data) => {
+    //                         return response(res, 200, `L'operation de souscription à été enregistré`, operaton_data);
+    //                     }).catch(err => next(err));
+    //                 }).catch(err => next(err));
                     
-                }).catch(err => next(err));
-            }).catch(err => next(err));
-    }).catch(err => console.log(err));
+    //             }).catch(err => next(err));
+    //         }).catch(err => next(err));
+    // }).catch(err => console.log(err));
 
 };
 
