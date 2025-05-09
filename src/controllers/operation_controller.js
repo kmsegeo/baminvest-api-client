@@ -214,9 +214,10 @@ const opRachat = async (req, res, next) => {
                     idClient, 
                     referenceOperation: "strings", 
                     idTypeOperation: 3,             // 2:Souscription - 3:Rachat
-                    libelle: "RETRAIT DE FONDS DE PLACEMENT",
+                    libelle: "RETRAIT DE FONDS DE PLACEMENT", 
                     dateValeur: date, 
                     idModePaiement: 7,              // 7: Paiement espece
+                    refModePaiement: "strings",
                     montant: montant
 
                 }, async (operaton_data) => {
@@ -229,6 +230,7 @@ const opRachat = async (req, res, next) => {
                         dateMouvement: date,
                         dateValeur: date,
                         idModePaiement: 7,        // 7: Paiement espece
+                        refModePaiement: "strings",
                         montant: montant,
                         libelle: "--code de transaction--"
                     }, async (mouvement_data) => {
