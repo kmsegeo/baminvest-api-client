@@ -163,17 +163,19 @@ const opSouscriptionCompleted = async (req, res, next) => {
                 dateMouvement: data.when_created,
                 dateValeur: data.when_completed,
                 idModePaiement: 6,        // 6:wave
+                refModePaiement: data.transaction_id,
                 montant: data.amount,
                 libelle: operation.r_libelle
             }, async (mouvement_data) => {
                 await Atsgo.saveOperation(apikey, {
                     idClient: idClient,
                     idFcp: idFcp,
-                    referenceOperation: data.transaction_id, 
+                    referenceOperation: operation.r_reference, 
                     idTypeOperation: 2,         // 2:Souscription - 3:Rachat
                     libelle: operation.r_libelle, 
                     dateValeur: data.when_created, 
                     idModePaiement: 6,          //6: Wave
+                    refModePaiement: data.transaction_id,
                     montant: data.amount
                 }, async (operaton_data) => {
                     await Operation.updateSuccess(operation.r_reference).then(async result => {
