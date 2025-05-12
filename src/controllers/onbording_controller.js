@@ -493,7 +493,7 @@ const getPhotoProfil = async (req, res, next) => {
 
 const uploadDomiciliation = async (req, res, next) => {
 
-    console.log(`Chargememnt de fichier de deminicialation..`)
+    console.log(`Chargememnt de fichier de dominicilisation..`)
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "domiciliation";

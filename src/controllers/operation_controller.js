@@ -148,7 +148,10 @@ const opSouscriptionCompleted = async (req, res, next) => {
 
         console.log(`Récupération des données de l'opération`)
         await Operation.findByRef(data.client_reference).then(async operation => {
-            if (!operation) return response(res, 404, `Données de l'opération introuvable !`)
+            if (!operation) {
+                refundSouscription(data.id);
+                return response(res, 404, `Données de l'opération introuvable !`);
+            }
 
             const idClient = operation.compte_paiement;
             const idFcp = operation.e_fonds;
