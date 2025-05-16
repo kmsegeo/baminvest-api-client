@@ -62,7 +62,7 @@ const login = async (req, res, next) => {
                             
                             await Particulier.findById(result.e_particulier).then(async particulier => {
                                 if (!particulier) return response(res, 400, `Une erreur s'est produite à la récupération du compte client !`);
-                            
+                                
                                 if (particulier) {
                                     particulier['type_piece_intitule'] = type_piece[particulier.r_type_piece];
                                     particulier['type_compte_intitule'] = type_compte[particulier.r_type_compte];
@@ -78,7 +78,7 @@ const login = async (req, res, next) => {
 
                         } else if (result.e_entreprise!=0 && result.e_particulier==0) {     // Entreprise
 
-                            console.log(`Chargement des données entreprise`)
+                            console.log(`Chargement des données entreprise`);
                             await Entreprise.findById(result.e_entreprise).then(async entreprise => {
                                 if (!entreprise) return response(res, 400, `Une erreur s'est produite à la récupération du compte client !`);
 
@@ -89,6 +89,7 @@ const login = async (req, res, next) => {
 
                                 result['entreprise'] = entreprise;
                             }).catch(err => next(err));
+
                         }
 
                         console.log(`Chargement des signataires`);
@@ -109,6 +110,7 @@ const login = async (req, res, next) => {
 
                         acteur = result;
                     }).catch(err => next(err));
+                    
                     return response(res, 200, 'Ouverture de session', {
                         auth_token: jwt.sign(
                             {session: session.r_reference},

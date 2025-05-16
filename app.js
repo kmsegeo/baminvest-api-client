@@ -21,8 +21,8 @@ const app = express();
 app.use(cors()); 
 app.use(express.json()); 
 
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.json({limit: '50mb'})); 
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true})); 
 
 // Routes
 
@@ -34,11 +34,11 @@ app.use(base_path + '/acteurs', acteurRoutes);
 app.use(base_path + '/fonds', fondsRoutes); 
 app.use(base_path + '/moy_paiements', moyenPaiementRoutes); 
 app.use(base_path + '/news', newsRoutes); 
-app.use(base_path + '/webhooks', webhookRoutes);
+app.use(base_path + '/webhooks', webhookRoutes); 
 
 app.use(base_path + '/temp', clientRoutes); 
 
-app.use(`/uploads`, express.static(path.join(__dirname, 'uploads')));
+app.use(`/uploads`, express.static(path.join(__dirname, 'uploads'))); 
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument)); 
 app.use(base_path + '/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument)); 

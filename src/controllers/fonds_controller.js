@@ -121,32 +121,25 @@ const calculateOperationCost = async (req, res, next) => {
 const runSimulator = async (req, res, next) => {
 
     const {versement_initial, versement_periodique, horizon, rendement_attendu} = req.body;
-
-    const horizon_mois = Number(horizon) * 12;
+    const frais = 14/100;
     const taux = Number(rendement_attendu)/100;
-
+    const taux_mensuel = taux/12;
+    const horizon_mois = Number(horizon) * 12;
     
     const versement_total = Number(versement_periodique) * horizon_mois;
-    const revenu_net = (Number(versement_initial) + Number(versement_periodique)) * Number(taux);
+    // const revenu_mensuel_net = ((10000000 - (versement_initial * Math.pow(1 + taux_mensuel, horizon_mois).toFixed(2))) * taux_mensuel) / (Math.pow(1 + taux_mensuel, horizon_mois).toFixed(2) - 1);
+    const revenu_mensuel_net = Number(( (versement_initial + versement_periodique) * taux_mensuel) .toFixed(2) );
+    // const revenu_net = Number(((Number(versement_initial) + versement_total) * Number(taux_mensuel)).toFixed(2));
+    const revenu_net = 0;
     const revenu_moyen_mensuel = 0;
     const valeur_final_placement = Number(versement_initial) + Number(versement_total) + Number(revenu_net);
-    
-    console.log("Versement initial", versement_initial);
-    console.log("horizon", horizon, "an(s)")
-    console.log("Horizon mois", horizon_mois);
-    console.log("Taux", taux);
-
-    console.log("Versement total", versement_total)
-    console.log("Revenu net", revenu_net);
-    console.log("Revenu moyen mensuel", revenu_moyen_mensuel);
-    console.log("Valeur final placement", valeur_final_placement);
 
     return response(res, 200, `Calcul simulateur terminé`, {
         versement_initial,
-        horizon,
         horizon_mois,
         taux,
         versement_total,
+        revenu_mensuel_net,
         revenu_net,
         revenu_moyen_mensuel,
         valeur_final_placement
