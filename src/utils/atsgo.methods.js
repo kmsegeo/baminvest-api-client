@@ -5,9 +5,10 @@ const Acteur = require("../models/Acteur");
 
 const Atsgo = {
 
-    async onbording (apikey, client) {
+    async onbording(apikey, client) {
 
         console.log('Envoi des données à ATSGO..')
+        console.log(client)
 
         const headers =  {
             "Content-Type": "application/json",
@@ -24,7 +25,7 @@ const Atsgo = {
                 console.log(data.errors);
                 throw "Erreur d'enregistrement à atsgo !";
             }
-            console.log('Enregistrement terminé');
+            console.log('Envoi des données terminé');
 
             // validation du onbording
             await validateAtsgoAccount(apikey, data.payLoad);

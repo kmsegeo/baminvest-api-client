@@ -587,6 +587,7 @@ const createPassword = async (req, res, next) => {
                 if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
                 if (!acteur.r_telephone_prp) return response(res, 404, `Numéro de téléphone principal introuvable !`);
                 
+                console.log(`Chargement des données de l'acteur: particulier, kyc, documents, ..`)
                 await Client.Particulier.findById(acteur.e_particulier).then(async particulier => {
                     if (!particulier) return response(res, 403, `Compte particulier introuvable !`)
                     await KYC.Particulier.findByParticulierId(acteur.e_particulier).then(async kyc => {
@@ -595,7 +596,7 @@ const createPassword = async (req, res, next) => {
                             
                             let persNom = personne.r_nom_prenom ? personne.r_nom_prenom.split(' ')[0] : "";
                             let persPrenom = personne.r_nom_prenom ? personne.r_nom_prenom.split(' ')[1] : "";
-
+                            
                             await Document.findAllByActeurId(acteur_id).then(async files => {
                                 
                                 // Save to atsgo
@@ -611,6 +612,7 @@ const createPassword = async (req, res, next) => {
                                         signature = file.r_nom_fichier;
                                 })
 
+                                console.log(`Préparation de données pour ATSGO`);
                                 const apikey = req.apikey.r_valeur;
 
                                 await Atsgo.onbording(apikey, {

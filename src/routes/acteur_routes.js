@@ -90,6 +90,6 @@ router.post('/operations/rachat', app_auth, session_verify, atsgo_auth, operatio
 router.get('/operations/souscription/:id/paiement/statut', app_auth, session_verify, atsgo_auth, transactionController.checkWaveTransaction);
 // router.post('/operations/wave/transfert', app_auth, session_verify, atsgo_auth, transactionController.waveTransfert);
 
-// OPERATION: 
+// OPERATION:
 
 module.exports = router;
