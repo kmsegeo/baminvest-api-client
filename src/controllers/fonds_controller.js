@@ -66,11 +66,11 @@ const getVlFonds = async (req, res, next) => {
 
     console.log(`Chargement des fonds..`)
     if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
-        
+    
     const apikey = req.apikey.r_valeur;
     const fonds_url  = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
     const vls_url  = `${process.env.ATSGO_URL + process.env.URI_VLS}?ApiKey=${apikey}`;
-
+    
     console.log(fonds_url);
     await fetch(fonds_url).then(async res => res.json()).then(async data => {
         if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des fonds !`, data.title)

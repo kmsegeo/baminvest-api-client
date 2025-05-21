@@ -20,38 +20,23 @@ const Campagne = require('../models/Campagne');
 const DataFormat = require('../utils/DataFormat.methods');
 const Atsgo = require('../utils/atsgo.methods');
 
-const getAllTypeActeurs = async (req, res, next) => {
-    console.log(`Récupération des types acteur..`);
-    await Client.TypeActeur.findAll()
-        .then(types => response(res, 200, `Liste des acteurs`, types))
-        .catch(error => next(error));
-}
-
 const onbordingParticulier = async (req, res, next) => {
 
     console.log(`Création d'un compte particulier..`);
 
     const {
-        civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, telephone, 
-        // type_piece, num_piece,
-        type_compte, langue, compte_titre, compte_espece,  autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, 
-        lien_parente_sgo, nom_prenom_titulaire, pays_naissance, pays_residence, situation_matrimoniale, situation_habitat, categorie_professionnelle, 
+        civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, email, telephone, adresse, type_piece, num_piece, piece_validite,
+        type_compte, langue, autres_contexte_ouv, contexte_ouverture_compte, raisons_ouverture_compte, ouverture_compte, lien_parente_sgo, 
+        nom_prenom_titulaire, pays_naissance, pays_residence, situation_matrimoniale, situation_habitat, categorie_professionnelle, 
         autres_categorie_prof, profession, employeur, nbr_enfants, langue_preferee, instrument_paiement_privilige, origine_ressources_investies, 
         autres_origines_ressources, tranche_revenus, autres_actifs, autres_actifs_preciser, autres_comptes_bridge, comptes_bridges, banques_relations,
         activites_politiques, preciser_activite_politiq, proche_politicien, preciser_proche_politicien, contact_nom_prenom, contact_telephone_mobile,
-        contact_telephone_fixe, contact_intitule, contact_email, profil_reponses
+        contact_telephone_fixe, contact_intitule, contact_email, profil_reponses, categorie_fatca, categorie_client, categorie_compte, 
+        type_compte_investissement,
     } = req.body;
 
-    // Bypass 
-
-    const type_piece = 1;
-    const num_piece =  "00000000000";
-    const adresse = "Abidjan - CIV";
-
-    // delete after support
-
     console.log(`Vérification des paramètres`);
-    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_piece, num_piece, type_compte, profession, profil_reponses}).then(async () => {
+    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_piece, num_piece, piece_validite, type_compte, profession, profil_reponses}).then(async () => {
         
         console.log(`Vérification de l'existance du compte`);
         await Acteur.findByEmail(email).then(async exists_email => {
@@ -64,8 +49,22 @@ const onbordingParticulier = async (req, res, next) => {
         await TypeActeur.findByCode("TYAC-003").then(async type_acteur => {
             if (!type_acteur) return response(res, 400, `Problème survenu lors de la determination du type acteur`);
             console.log(`Création du profil particulier`);
-            await Client.Particulier.create({civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece})
-            .then(async particulier => {
+            await Client.Particulier.create({
+                civilite, 
+                nom, 
+                nom_jeune_fille, 
+                prenom, 
+                date_naissance, 
+                nationalite, 
+                type_piece, 
+                num_piece, 
+                piece_validite,
+                categorie_fatca, 
+                categorie_client, 
+                categorie_compte,
+                type_compte_investissement,
+                type_compte
+            }).then(async particulier => {
                 if (!particulier) return response(res, 400, `Une erreur s'est produite !`);
                 await Acteur.create({
                     nom_complet: particulier.r_nom + ' ' + particulier.r_prenom, 
@@ -249,13 +248,13 @@ const createParticulier = async (req, res, next) => {
         telephone, 
         type_piece, 
         num_piece, 
+        piece_validite,
+        type_compte_investissement,
         type_compte, 
-        langue,
-        compte_titre,
-        compte_espece} = req.body;
+        langue} = req.body;
 
     console.log(`Vérification des paramètres`);
-    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_compte}).then(async () => {
+    await Utils.expectedParameters({civilite, nom, prenom, date_naissance, email, telephone, type_piece, num_piece, piece_validite, type_compte}).then(async () => {
         
         console.log(`Vérification de l'existance du compte`);
         await Acteur.findByEmail(email).then(async exists_email => {
@@ -268,10 +267,24 @@ const createParticulier = async (req, res, next) => {
         await TypeActeur.findByCode("TYAC-003").then(async type_acteur => {
             if (!type_acteur) return response(res, 400, `Problème survenu lors de la determination du type acteur`);
             console.log(`Création du profil particulier`);
-            await Client.Particulier.create({civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece})
-            .then(async particulier => {
-                if (!particulier) return response(res, 400, `Une erreur s'est produite !`);
-                    await Acteur.create({
+            await Client.Particulier.create({
+                civilite, 
+                nom, 
+                nom_jeune_fille, 
+                prenom, 
+                date_naissance, 
+                nationalite, 
+                type_piece, 
+                num_piece, 
+                piece_validite, 
+                categorie_fatca, 
+                categorie_client, 
+                categorie_compte, 
+                type_compte_investissement,
+                type_compte 
+            }).then(async particulier => {
+                if (!particulier) return response(res, 400, `Une erreur s'est produite !`); 
+                    await Acteur.create({ 
                         nom_complet: particulier.r_nom + ' ' + particulier.r_prenom, 
                         email: email, 
                         telephone: telephone, 
@@ -279,17 +292,17 @@ const createParticulier = async (req, res, next) => {
                         type_acteur: type_acteur.r_i, 
                         signataire: 0, 
                         entreprise: 0, 
-                        represantant: 0,
+                        represantant: 0, 
                         particulier: particulier.r_i, 
-                        langue: langue
-                    }).then(async acteur => {
-                        delete acteur.e_type_acteur;
-                        delete acteur.e_entreprise;
-                        delete acteur.e_signataire;
-                        delete acteur.e_particulier;
-                        particulier['acteur'] = acteur;
-                        const data = DataFormat.replaceIndividualDataNumeriques(particulier)
-                        return response(res, 201, `Compte particulier créé avec succès`, data);
+                        langue: langue 
+                    }).then(async acteur => { 
+                        delete acteur.e_type_acteur; 
+                        delete acteur.e_entreprise; 
+                        delete acteur.e_signataire; 
+                        delete acteur.e_particulier; 
+                        particulier['acteur'] = acteur; 
+                        const data = DataFormat.replaceIndividualDataNumeriques(particulier); 
+                        return response(res, 201, `Compte particulier créé avec succès`, data); 
                     }).catch(error => next(error));
             }).catch(error => next(error));
         }).catch(error => next(error));
@@ -766,7 +779,6 @@ const renvoiOtp = async (req, res, next) => {
 
 module.exports = {
     onbordingParticulier,
-    getAllTypeActeurs,
     createParticulier,
     updateParticulier,
     createEntreprise,

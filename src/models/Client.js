@@ -21,11 +21,24 @@ const Particulier = {
 
     table_name: 't_particulier',
 
-    async create({civilite, nom, nom_jeune_fille, prenom, date_naissance,  nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece}) {
+    async create({civilite, 
+                nom, 
+                nom_jeune_fille, 
+                prenom, 
+                date_naissance, 
+                 nationalite, 
+                type_piece, 
+                num_piece, 
+                piece_validite, 
+                categorie_fatca, 
+                categorie_client, 
+                categorie_compte, 
+                type_compte_investissement,
+                type_compte
+            }) {
         
-        const query_string = `
-            INSERT INTO ${this.table_name} 
-                (r_civilite,
+        const query_string = `INSERT INTO ${this.table_name} (
+                r_civilite,
                 r_nom,
                 r_nom_jeune_fille,
                 r_prenom,
@@ -33,13 +46,30 @@ const Particulier = {
                 r_nationalite,
                 r_type_piece,
                 r_num_piece,
-                r_type_compte,
-                r_ncompte_titre,
-                r_ncompte_espece) 
-            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
-            RETURNING *`;
+                r_piece_validite,
+                r_categorie_fatca,
+                r_categorie_client,
+                r_categorie_compte,
+                r_type_compte_investissement,
+                r_type_compte) 
+            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`;
         
-        const res = await db.query(query_string, [civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece, type_compte, compte_titre, compte_espece]);
+        const res = await db.query(query_string, [
+            civilite, 
+            nom, 
+            nom_jeune_fille, 
+            prenom, 
+            date_naissance, 
+            nationalite, 
+            type_piece, 
+            num_piece, 
+            piece_validite, 
+            categorie_fatca, 
+            categorie_client, 
+            categorie_compte, 
+            type_compte_investissement,
+            type_compte]);
+        
         return res.rows[0];
     },
 
