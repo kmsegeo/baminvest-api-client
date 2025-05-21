@@ -10,7 +10,7 @@ const atsgo_auth = require('../middlewares/atsgo_auth');
 
 router.get('/type-acteurs', app_auth, clientRsrcController.getAllTypeActeurs);
 
-router.get('/civilite', app_auth, clientRsrcController.getCivilite);
+// router.get('/civilite', app_auth, clientRsrcController.getCivilite);
 router.get('/type-compte', app_auth, clientRsrcController.getTypeCompte);
 router.get('/contexte-ouverture-compte', app_auth, clientRsrcController.getContexteOuvertureCompte);
 router.get('/ouverture-compte', app_auth, clientRsrcController.getOuvertureCompte);
@@ -36,6 +36,5 @@ router.get('/campagne/profilrisque/questions', app_auth, campagneController.getP
 
 router.get('/type-operations', app_auth, session_verify, operationController.getAllTypeOperations);
 router.get('/type-moy-paiements', app_auth, session_verify, moyenPaiementController.getAllTypeMoypaiement);
-
 
 module.exports = router;
