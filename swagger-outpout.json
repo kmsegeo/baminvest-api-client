@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": "Api client de l'application de fonds commun de placement de Bridge Asset Management"
   },
-  "host": "172.10.10.57/api/bamclient",
+  "host": "localhost:3000",
   "basePath": "/",
   "schemes": [
     "https",
