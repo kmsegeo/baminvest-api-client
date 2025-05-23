@@ -8,7 +8,6 @@
   "host": "bam.mediasoftci.net/api/bamclient",
   "basePath": "/",
   "schemes": [
-    "http",
     "https"
   ],
   "paths": {
