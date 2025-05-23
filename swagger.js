@@ -9,6 +9,7 @@ const doc = {
     // host: 'verolive-secure.com/apibam',
     // host: 'bam.mediasoftci.net/api/bamclient',
     // host: '172.10.10.57/api/bamclient',
+    port: 3001,
     schemes: ['https', 'http']
 };
 
