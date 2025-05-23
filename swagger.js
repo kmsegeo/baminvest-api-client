@@ -7,10 +7,9 @@ const doc = {
         description: `Api client de l'application de fonds commun de placement de Bridge Asset Management`,
     },
     // host: 'verolive-secure.com/apibam',
-    // host: 'bam.mediasoftci.net/api/bamclient',
+    host: 'bam.mediasoftci.net/api/bamclient',
     // host: '172.10.10.57/api/bamclient',
-    port: 3001,
-    schemes: ['https', 'http']
+    schemes: ['https']
 };
 
 const outpoutFile = './swagger-outpout.json';
