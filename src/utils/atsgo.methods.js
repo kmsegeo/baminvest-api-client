@@ -66,6 +66,33 @@ const Atsgo = {
 
     },
 
+    async getOperationFees(apikey, opdata, callback) {
+        
+        console.log(`Envoi des données à ATSGO..`)
+
+        const headers =  {
+            "Content-Type": "application/json",
+        }
+
+        await fetch(process.env.ATSGO_URL + process.env.URI_OPERATION_FRAIS + '?ApiKey=' + apikey, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(opdata),
+        })
+        .then(async resp => resp.json())
+        .then(async data => {
+            
+            if (data.status!=200) {
+                console.log(data.errors);
+                throw `Erreur de chargement des frais à atsgo !`;
+            }
+
+            console.log(`Chargement des frais terminé`)
+            callback(data.payLoad);
+            
+        })
+    },
+
     async saveOperation(apikey, opdata, callback) {
         
         console.log(`Enregistrement de l'operation..`)

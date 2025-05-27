@@ -6,9 +6,8 @@ const doc = {
         version: process.env.VERSION,
         description: `Api client de l'application de fonds commun de placement de Bridge Asset Management`,
     },
-    // host: 'verolive-secure.com/apibam',
-    host: 'bam.mediasoftci.net/api/bamclient',
     // host: '172.10.10.57/api/bamclient',
+    host: 'bam.mediasoftci.net/api/bamclient',
     schemes: ['https']
 };
 

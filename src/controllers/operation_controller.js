@@ -111,6 +111,7 @@ const opSouscription = async (req, res, next) => {
                                     compte_paiement: idClient
                                 }).then(async operation => {
                                     if (!operation) return response(res, 400, `Initialisation de paiement échoué !`);
+                                    
                                     let transfert_data = {
                                         idOperation: operation.r_reference,
                                         // code: data.id,
@@ -122,6 +123,7 @@ const opSouscription = async (req, res, next) => {
                                     }
 
                                     return response(res, 200, `Initialisation de paiement réussi`, transfert_data);
+                                    
                                 }).catch(err => next(err));
                             }).catch(err => next(err));
 

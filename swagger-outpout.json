@@ -2836,7 +2836,7 @@
         }
       }
     },
-    "/v1/fonds/operation/calcul": {
+    "/v1/fonds/simulateur/versement": {
       "post": {
         "description": "",
         "parameters": [
@@ -2864,11 +2864,32 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "versement_initial": {
+                  "example": "any"
+                },
+                "horizon": {
+                  "example": "any"
+                },
+                "rendement_attendu": {
+                  "example": "any"
+                },
+                "placement_final": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "default": {
+            "description": ""
           }
         }
       }
@@ -2911,13 +2932,74 @@
                 "versement_initial": {
                   "example": "any"
                 },
+                "versement_recurrent": {
+                  "example": "any"
+                },
                 "versement_periodique": {
+                  "example": "any"
+                },
+                "horizon_période": {
                   "example": "any"
                 },
                 "horizon": {
                   "example": "any"
                 },
+                "horizon_mois": {
+                  "example": "any"
+                },
                 "rendement_attendu": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/fonds/operation/frais": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idFcp": {
+                  "example": "any"
+                },
+                "montant": {
                   "example": "any"
                 }
               }
