@@ -178,11 +178,11 @@ const calculateSimulator = async (req, res, next) => {
     //Horizon Période Y=An, M= Mensuel
     const investmentPeriodTerm = horizon_période;
     //Horizon si hP="Y"
-    const h = horizon;
+    // const h = horizon;
     //Horizon Mensuel si hP="M"  3/6/9/12
-    const hM = horizon_mois;
+    // const hM = horizon_mois;
     //Période sélectionné
-    const investmentPeriod = (investmentPeriodTerm=="Y") ? h : hM;
+    const investmentPeriod = horizon; // (investmentPeriodTerm=="Y") ? h : hM;
     //Taux
     const depositYearlyGrowth = rendement_attendu;
     
@@ -303,14 +303,13 @@ const calculateSimulator = async (req, res, next) => {
     r.revenus_net = overallGrowth, 
     r.versement_initial = onceOnlyDeposit, 
     r.versement_total = recurringDeposit * numberOfMonths ;
-    r.revenus_moyen = await calculateGrowthAverrage(recurringDepositPeriod, h, hM, investmentPeriodTerm, r);
+    r.revenus_moyen = await calculateGrowthAverrage(recurringDepositPeriod, investmentPeriod, investmentPeriodTerm, r);
 
     return response(res, 200, `Calcul simulateur terminé`, r);
 }
 
-async function calculateGrowthAverrage(vP, h, hM, hP, t) {
+async function calculateGrowthAverrage(vP, h, hP, t) {
 
-    let p = (hP=="Y") ? h : hM;
     // Revenu Total sur la période
     let rT = t.revenus_net;
     //Libellé
@@ -322,13 +321,13 @@ async function calculateGrowthAverrage(vP, h, hM, hP, t) {
         //Horizon en Année
         if(vP=="M") {
             rMLabel = "Revenus Mensuel Moyen";
-            rM = rT / (p*12);
+            rM = rT / (h*12);
         } else if (vP=="T") {
             rMLabel = "Revenus Trimestriel Moyen";
-            rM = rT / (p*4);
+            rM = rT / (h*4);
         } else if (vP=="S") {
             rMLabel = "Revenus Semestriel Moyen";
-            rM = rT / (p*2);
+            rM = rT / (h*2);
         } else {
             rMLabel = "Revenus Annuel Moyen";
             rM = rT / h;
@@ -338,19 +337,19 @@ async function calculateGrowthAverrage(vP, h, hM, hP, t) {
         if(vP=="M") {
             //Revenue Total / Nb de mois saisie, car Versement Périodique en Mois
             rMLabel = "Revenus Mensuel Moyen";
-            rM = rT/p;
+            rM = rT/h;
         } else if (vP=="T") {
             //Revenue Total / Nb de mois saisie / 3, car Versement Périodique en Trimestre et  T=3 mois
             rMLabel = "Revenus Trimestriel Moyen";
-            rM = rT / (p/3);
+            rM = rT / (h/3);
         } else if (vP=="S") {
             //Revenue Total / Nb de mois saisie / 6, car Versement Périodique en Semestre et  1 semestre = 6mois
             rMLabel = "Revenus Semestriel Moyen";
-            rM = rT / (p/6);
+            rM = rT / (h/6);
         } else {
             //Revenue Total / Nb de mois saisie / 12, car Versement Périodique en Année et  1 An = 12mois
             rMLabel = "Revenus Annuel Moyen";
-            rM = rT / (p/12);
+            rM = rT / (h/12);
         }
     }
 

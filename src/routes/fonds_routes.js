@@ -9,8 +9,8 @@ const fileController = require('../controllers/file_constroller');
 router.get('/', app_auth, session_verify, atsgo_auth, fondsController.getVlFonds);
 router.get('/valeur_liquidatives', app_auth, session_verify, atsgo_auth, fondsController.getAllValeurLiquidatives);
 
-router.post('/simulateur/versement', app_auth, session_verify, fondsController.calculateVersementSimulator);
 router.post('/simulateur', app_auth, session_verify, fondsController.calculateSimulator);
+router.post('/simulateur/versement', app_auth, session_verify, fondsController.calculateVersementSimulator);
 router.post('/operation/frais', app_auth, session_verify, atsgo_auth, fondsController.calculateOperationFees);
 
 router.get('/fichiers', app_auth, session_verify, fileController.getAllFiles);
