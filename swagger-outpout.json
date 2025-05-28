@@ -2836,64 +2836,6 @@
         }
       }
     },
-    "/v1/fonds/simulateur/versement": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "appauth",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "timestamp",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "versement_initial": {
-                  "example": "any"
-                },
-                "horizon": {
-                  "example": "any"
-                },
-                "rendement_attendu": {
-                  "example": "any"
-                },
-                "placement_final": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/v1/fonds/simulateur": {
       "post": {
         "description": "",
@@ -2948,6 +2890,64 @@
                   "example": "any"
                 },
                 "rendement_attendu": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/fonds/simulateur/versement": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "versement_initial": {
+                  "example": "any"
+                },
+                "horizon": {
+                  "example": "any"
+                },
+                "rendement_attendu": {
+                  "example": "any"
+                },
+                "placement_final": {
                   "example": "any"
                 }
               }
