@@ -76,11 +76,6 @@ router.delete('/sessions/:ref', app_auth, session_verify, sessionController.dest
 router.get('/fichiers', app_auth, session_verify, onbordingController.getActeurFiles);
 router.get('/fichiers/:ref', app_auth, session_verify, onbordingController.getFile);
 
-// PORTEFEUILLE
-
-router.get('/transactions', app_auth, session_verify, atsgo_auth, transactionController.getTransactionHistorique);
-router.get('/portefeuilles', app_auth, session_verify, atsgo_auth, portefeuilleController.getClientProtefeuilles);
-router.get('/portefeuilles/historique', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
 
 // OPERATION
 
@@ -90,6 +85,10 @@ router.post('/operations/rachat', app_auth, session_verify, atsgo_auth, operatio
 router.get('/operations/souscription/:id/paiement/statut', app_auth, session_verify, atsgo_auth, transactionController.checkWaveTransaction);
 // router.post('/operations/wave/transfert', app_auth, session_verify, atsgo_auth, transactionController.waveTransfert);
 
-// OPERATION:
+// PORTEFEUILLE
+
+router.get('/transactions', app_auth, session_verify, atsgo_auth, transactionController.getTransactionHistorique);
+router.get('/portefeuilles', app_auth, session_verify, atsgo_auth, portefeuilleController.getClientProtefeuilles);
+router.get('/portefeuilles/historique', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
 
 module.exports = router;

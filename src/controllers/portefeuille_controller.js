@@ -60,10 +60,11 @@ const getPortefeuilleEvolution = async (req, res, next) => {
     console.log('Chargement de l\'evolution des portefeuilles..')
     if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`)
     
+    const today = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
     const apikey = req.apikey.r_valeur;
 
     const IdFcp = req.query.IdFcp;
-    const periode = req.query.Date;
+    const periode = req.query.Date ? req.query.Date : today;
 
     await Acteur.findById(req.session.e_acteur).then(async acteur => {
         await Particulier.findById(acteur.e_particulier).then( async particulier => {
