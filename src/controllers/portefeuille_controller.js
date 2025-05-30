@@ -53,15 +53,35 @@ const getClientProtefeuilles = async (req, res, next) => {
             }).catch(err => next(err));
         }).catch(err => next(err));
     }).catch(err => next(err));
-    
-    
 }
 
 const getPortefeuilleEvolution = async (req, res, next) => {
+    
     console.log('Chargement de l\'evolution des portefeuilles..')
-    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
+    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`)
+    
+    const apikey = req.apikey.r_valeur;
 
-    return response(res, 200, 'Traitement des évolutions en cours !', null);
+    const IdFcp = req.query.IdFcp;
+    const periode = req.query.Date;
+
+    await Acteur.findById(req.session.e_acteur).then(async acteur => {
+        await Particulier.findById(acteur.e_particulier).then( async particulier => {
+            
+            const id_client = particulier.r_atsgo_id_client;
+            
+            const url = process.env.ATSGO_URL + process.env.URI_CLIENT_HIST_PORTEFEUILLES + '?ApiKey=' + apikey + '&IdFcp='+ IdFcp +'&IdClient=' + id_client + '&Date=' + periode;
+            console.log(url)
+
+            await fetch(url).then(async res => res.json())
+            .then(async data => {
+                if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des portefeuilles !`);
+
+                return response(res, 200, 'Chargement des évolutions terminé', data.payLoad);
+
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+    }).catch(err => next(err));
 }
 
 module.exports = {

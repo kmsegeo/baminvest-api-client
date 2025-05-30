@@ -78,9 +78,9 @@ router.get('/fichiers/:ref', app_auth, session_verify, onbordingController.getFi
 
 // PORTEFEUILLE
 
-router.get('/portefeuilles', app_auth, session_verify, atsgo_auth, portefeuilleController.getClientProtefeuilles);
 router.get('/transactions', app_auth, session_verify, atsgo_auth, transactionController.getTransactionHistorique);
-// router.get('/portefeuilles/evolution/:periode', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
+router.get('/portefeuilles', app_auth, session_verify, atsgo_auth, portefeuilleController.getClientProtefeuilles);
+router.get('/portefeuilles/historique', app_auth, session_verify, atsgo_auth, portefeuilleController.getPortefeuilleEvolution);
 
 // OPERATION
 

@@ -93,6 +93,7 @@ const getVlFonds = async (req, res, next) => {
 const calculateOperationFees = async (req, res, next) => {
 
     console.log('Calcul des frais de l\'opération..')
+    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
 
     const apikey = req.apikey.r_valeur;
     const {idFcp, montant} = req.body;
@@ -141,6 +142,9 @@ const calculateOperationFees = async (req, res, next) => {
 
 const calculateVersementSimulator = async (req, res, next) => {
 
+    console.log('Simulation de versement periodique...');
+    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
+
     const {versement_initial, horizon, rendement_attendu, placement_final} = req.body;
     
     const vInit = versement_initial;
@@ -166,6 +170,9 @@ const calculateVersementSimulator = async (req, res, next) => {
 }
 
 const calculateSimulator = async (req, res, next) => {
+
+    console.log('Simulation de placement...');
+    if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
 
     const {versement_initial, versement_recurrent, versement_periodique, horizon_période, horizon, horizon_mois, rendement_attendu} = req.body;
 
@@ -305,7 +312,7 @@ const calculateSimulator = async (req, res, next) => {
     r.versement_total = recurringDeposit * numberOfMonths ;
     r.revenus_moyen = await calculateGrowthAverrage(recurringDepositPeriod, investmentPeriod, investmentPeriodTerm, r);
 
-    return response(res, 200, `Calcul simulateur terminé`, r);
+    return response(res, 200, `Calcul simulation terminé`, r);
 }
 
 async function calculateGrowthAverrage(vP, h, hP, t) {
