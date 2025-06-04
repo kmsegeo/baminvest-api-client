@@ -72,7 +72,7 @@ const getPortefeuilleEvolution = async (req, res, next) => {
             const id_client = particulier.r_atsgo_id_client;
             
             const url = process.env.ATSGO_URL + process.env.URI_CLIENT_HIST_PORTEFEUILLES + '?ApiKey=' + apikey + '&IdFcp='+ IdFcp +'&IdClient=' + id_client + '&Date=' + periode;
-            console.log(url)
+            console.log(url);
 
             await fetch(url).then(async res => res.json())
             .then(async data => {

@@ -90,12 +90,12 @@ const getLanguePreferee = async (req, res, next) => {
 
 const getOrigineRessourcesInvesties = async (req, res, next) => {
     
-    const origine = [
-        {id: 1, intitule: "Salaire"},
-        {id: 2, intitule: "Pension"},
-        {id: 3, intitule: "Bénéfice"},
-        {id: 4, intitule: "Autres (préciser)"},
-    ]
+    // const origine = [
+    //     {id: 1, intitule: "Salaire"},
+    //     {id: 2, intitule: "Pension"},
+    //     {id: 3, intitule: "Bénéfice"},
+    //     {id: 4, intitule: "Autres (préciser)"},
+    // ]
     return response(res, 200, 'Liste des categorie compte', origine)
 }
 

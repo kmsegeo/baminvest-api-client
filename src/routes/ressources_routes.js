@@ -18,7 +18,7 @@ router.get('/situation-matrimoniale', app_auth, clientRsrcController.getSituatio
 router.get('/situation-habitat', app_auth, clientRsrcController.getSituationHabitat);
 router.get('/categorie-professionnelle', app_auth, clientRsrcController.getCategorieProfessionnelle);
 router.get('/langues', app_auth, clientRsrcController.getLanguePreferee);
-router.get('/origine-ressources-investies', app_auth, clientRsrcController.getOrigineRessourcesInvesties);
+router.get('/origine-ressources-investies', app_auth, atsgo_auth, clientRsrcController.getOrigineRevenu);
 router.get('/tranche-revenus', app_auth, clientRsrcController.getTrancheRevenus);
 router.get('/autres-actifs', app_auth, clientRsrcController.getAutresActifs);
 

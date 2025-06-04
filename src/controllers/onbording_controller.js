@@ -639,9 +639,9 @@ const createPassword = async (req, res, next) => {
                                     "fonction": kyc.r_profession,
                                     "idTypeClient": 8,
                                     "photo": photo,
-                                    "idTypePiece" : 7,
+                                    "idTypePiece" : particulier.r_type_piece,
                                     "numeroPiece": particulier.r_num_piece,
-                                    "dateValidite": "2031-04-19",
+                                    "dateValidite": particulier.r_piece_validite,
                                     "observations": "",
                                     "sexe": particulier.r_civilite!=1?"Feminin":"Masculin",
                                     "signature": signature,
@@ -650,12 +650,17 @@ const createPassword = async (req, res, next) => {
                                     "adresseMandataire": "",
                                     "ppe": false,
                                     "lienPPE": false,
-                                    "idCategorieFATCA": 1,
+                                    "idCategorieFATCA": particulier.r_categorie_fatca,
                                     "majKyc": new Date(),
-                                    "idCategorieClient": 1,
+                                    "idCategorieClient": particulier.r_categorie_client,
                                     "nomBanque": kyc.r_banques_relations,
-                                    "idCategorieCompte": 1,    
-                                    "idTypeCompte": 1
+                                    "idCategorieCompte": particulier.r_categorie_compte,    
+                                    "idTypeCompte": particulier.r_type_compte_investissement,
+                                    // "idPaysNationalite": 49,
+                                    "idOrigineRevenu": kyc.r_origine_ressources_investies,
+                                    "revenuMensuel": kyc.r_tranche_revenus,
+                                    // "idClientParent": 0,
+                                    // "idSecteurActivite": 3
                                 }).catch(async err => response(res, 400, err));
 
                             }).catch(err => next(err));
@@ -684,12 +689,10 @@ const createPassword = async (req, res, next) => {
                                     msgid: msgid,
                                     text: `Votre code de vérification est : ${otp.r_code_otp}`
                                 })
-                            })
-                            .then(res => res.json())
-                            .then(data => {
+                            }).then(res => res.json()).then(data => {
                                 if (data!=1) return response(res, 200, `Envoi de message echoué`, data);
                                 return response(res, 200, `Message de vérification envoyé`);
-                            })
+                            }).catch(err => next(err)); 
                         }).catch(err => next(err)); 
                     }).catch(err => next(err));
                 }).catch(err => next(err));
