@@ -117,7 +117,9 @@ const resetPassword = async (req, res, next) => {
                         }).then(res => res.json())
                         .then(data => {
                             if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
-                                return response(res, 200, `Message otp renvoyé avec succès`, otp);
+                                
+                            console.log('code otp :', otp.r_code_otp);
+                            return response(res, 200, `Message otp renvoyé avec succès`);
                         })
                     }).catch(err => next(err)); 
                 }).catch(err => next(err));
@@ -129,19 +131,21 @@ const resetPassword = async (req, res, next) => {
 
 const updatePassword = async (req, res, next) => {
 
-    // const acteur_id = req.params.acteurId;
-    const {identifiant, cur_mdp, new_mdp} = req.body;
+    const acteur_id = req.params.acteurId;
+    const {cur_mdp, new_mdp} = req.body;
 
-    await Utils.expectedParameters({identifiant, cur_mdp, new_mdp}).then(async () => {
-        await Acteur.findByEmail(identifiant).then(async acteur => {
-            if (!acteur) return response(res, 404, `Acteur introuvable !`);
-            await bcrypt.compare(cur_mdp, acteur.r_mdp).then(async valid => {
-                if(!valid) return response(res, 401, `Code de réinitialisation incorrect !`);
-                console.log(`Hashage du mot de passe`);
-                await bcrypt.hash(new_mdp, 10).then(async hash => {
-                    await Acteur.updatePassword(acteur.r_i, hash).then(async result => {
-                        if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
-                        return response(res, 200, `Mot de passe modifier avec succès`);
+    await Utils.expectedParameters({cur_mdp, new_mdp}).then(async () => {
+        await Acteur.findById(acteur_id).then(async a => {
+            await Acteur.findByEmail(a.r_email).then(async acteur => {
+                if (!acteur) return response(res, 404, `Acteur introuvable !`);
+                await bcrypt.compare(cur_mdp, acteur.r_mdp).then(async valid => {
+                    if(!valid) return response(res, 401, `Code de réinitialisation incorrect !`);
+                    console.log(`Hashage du mot de passe`);
+                    await bcrypt.hash(new_mdp, 10).then(async hash => {
+                        await Acteur.updatePassword(acteur.r_i, hash).then(async result => {
+                            if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
+                            return response(res, 200, `Mot de passe modifier avec succès`);
+                        }).catch(err => next(err));
                     }).catch(err => next(err));
                 }).catch(err => next(err));
             }).catch(err => next(err));

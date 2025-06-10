@@ -711,6 +711,7 @@ const verifierOtp = async (req, res, next) => {
     
     await Acteur.findById(acteur_id).then(async acteur => {
         if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
+        
         await OTP.findByActeurId(acteur_id).then(async otp => {
             
             if (!otp) return response(res, 400, `Pas de OTP en cours de validité !`);
