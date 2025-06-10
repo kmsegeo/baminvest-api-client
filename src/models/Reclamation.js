@@ -13,6 +13,7 @@ const Reclamation = {
         const res = await db.query(`INSERT INTO ${this.tableName} (
             r_objet, 
             r_description, 
+            r_statut,
             r_date_creer, 
             e_acteur, 
             e_document) 
