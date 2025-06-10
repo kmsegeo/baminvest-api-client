@@ -85,40 +85,44 @@ const resetPassword = async (req, res, next) => {
     const identifiant = req.body.identifiant;
     const telephone = req.body.telephone;
 
-    await Acteur.findByEmail(identifiant).then(async acteur => {
-        if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
+    await Client.Particulier.findByCompteTitre(identifiant).then(async particulier => {
+        if (!particulier) return response(res, 404, `Entrez un compte titre valide svp !`);
 
-        if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
-        if (acteur.r_telephone_prp!=telephone) return response(res, 400, `Numéro de téléphone non conforme !`);
+        await Acteur.findByParticulierId(particulier.r_i).then(async acteur => {
+            if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
 
-        await OTP.clean(acteur.r_i, 2).catch(err => next(err));          // 1: activation, 2: reinitialisation
+            if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
+            if (acteur.r_telephone_prp!=telephone) return response(res, 400, `Numéro de téléphone ne correspond pas !`);
 
-        const url = process.env.ML_SMSCI_URL;
+            await OTP.clean(acteur.r_i, 2).catch(err => next(err));          // 1: activation, 2: reinitialisation
 
-        await Utils.aleatoireOTP().then(async code_otp => {
-            await Utils.genearteOTP_Msgid().then(async msgid => {
-                await OTP.create(acteur.r_i, {msgid, code_otp, operation: 2}).then(async otp => {
-                    await fetch(url, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            identify: "test@mediasoftci.com",
-                            pwd: "12345",
-                            fromad: "BAM CI",
-                            toad: acteur.r_telephone_prp,
-                            msgid: msgid,
-                            text: `Votre code de vérification est : ${otp.r_code_otp}`
+            const url = process.env.ML_SMSCI_URL;
+
+            await Utils.aleatoireOTP().then(async code_otp => {
+                await Utils.genearteOTP_Msgid().then(async msgid => {
+                    await OTP.create(acteur.r_i, {msgid, code_otp, operation: 2}).then(async otp => {
+                        await fetch(url, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                identify: "test@mediasoftci.com",
+                                pwd: "12345",
+                                fromad: "BAM CI",
+                                toad: acteur.r_telephone_prp,
+                                msgid: msgid,
+                                text: `Votre code de vérification est : ${otp.r_code_otp}`
+                            })
+                        }).then(res => res.json())
+                        .then(data => {
+                            if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
+                                return response(res, 200, `Message otp renvoyé avec succès`, otp);
                         })
-                    }).then(res => res.json())
-                    .then(data => {
-                        if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
-                            return response(res, 200, `Message otp renvoyé avec succès`, otp);
-                    })
-                }).catch(err => next(err)); 
-            }).catch(err => next(err));
+                    }).catch(err => next(err)); 
+                }).catch(err => next(err));
 
+            }).catch(err => next(err));
         }).catch(err => next(err));
     }).catch(err => next(err));
 }

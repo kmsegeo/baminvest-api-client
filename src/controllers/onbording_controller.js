@@ -657,7 +657,7 @@ const createPassword = async (req, res, next) => {
                                     "idCategorieCompte": particulier.r_categorie_compte,    
                                     "idTypeCompte": particulier.r_type_compte_investissement,
                                     // "idPaysNationalite": 49,
-                                    "idOrigineRevenu": kyc.r_origine_ressources_investies,
+                                    "idOrigineRevenu": 0, // kyc.r_origine_ressources_investies,
                                     "revenuMensuel": kyc.r_tranche_revenus,
                                     // "idClientParent": 0,
                                     // "idSecteurActivite": 3
@@ -708,6 +708,7 @@ const verifierOtp = async (req, res, next) => {
     
     const acteur_id = req.params.acteurId;
     const code_otp = req.body.code_otp;
+    
     await Acteur.findById(acteur_id).then(async acteur => {
         if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
         await OTP.findByActeurId(acteur_id).then(async otp => {

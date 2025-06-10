@@ -79,6 +79,12 @@ const Particulier = {
         return res.rows[0];
     },
 
+    async findByCompteTitre(compte_titre) {
+        const query_string = `SELECT * FROM ${this.table_name} WHERE r_ncompte_titre=$1`;
+        const res = await db.query(query_string, [compte_titre]);
+        return res.rows[0];
+    },
+
     async update(id, {civilite, nom, nom_jeune_fille, prenom, date_naissance, nationalite, type_piece, num_piece}) {
 
         const query_string = `UPDATE ${this.table_name} 
