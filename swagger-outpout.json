@@ -2127,10 +2127,16 @@
         }
       }
     },
-    "/v1/acteurs/motdepasse/modifier": {
+    "/v1/acteurs/{acteurId}/motdepasse/modifier": {
       "put": {
         "description": "",
         "parameters": [
+          {
+            "name": "acteurId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "appauth",
             "in": "header",
@@ -2157,9 +2163,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "identifiant": {
-                  "example": "any"
-                },
                 "cur_mdp": {
                   "example": "any"
                 },
