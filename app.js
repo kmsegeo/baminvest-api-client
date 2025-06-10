@@ -13,6 +13,7 @@ const moyenPaiementRoutes = require('./src/routes/moyen_paiement_routes');
 const newsRoutes = require('./src/routes/news_routes');
 const clientRoutes = require('./src/routes/client_routes');
 const webhookRoutes = require('./src/routes/webhook_routes');
+const reclamationRoutes = require('./src/routes/reclamation_routes');
 const path = require('path');
 var bodyParser = require('body-parser');
 
@@ -26,7 +27,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 // Routes
 
-const base_path = '/v1'; 
+const base_path = '/v1';
 
 app.use(base_path + '/auth', authRoutes); 
 app.use(base_path + '/ressources', ressouceRoutes); 
@@ -35,6 +36,7 @@ app.use(base_path + '/fonds', fondsRoutes);
 app.use(base_path + '/moy_paiements', moyenPaiementRoutes); 
 app.use(base_path + '/news', newsRoutes); 
 app.use(base_path + '/webhooks', webhookRoutes); 
+app.use(base_path + '/reclamations', reclamationRoutes);
 
 app.use(base_path + '/temp', clientRoutes); 
 
