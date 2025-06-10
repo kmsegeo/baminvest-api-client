@@ -5,7 +5,7 @@ const Reclamation = {
     tableName: 't_reclamation',
 
     async findActeurAll(acteur_id) {
-        const res = await db.query(`SELECT * FROM ${this.tableName} WHERE e_acteur=$1 AND r_statut=$2`, [acteur_id, 2]);
+        const res = await db.query(`SELECT * FROM ${this.tableName} WHERE e_acteur=$1`, [acteur_id]);
         return res.rows;
     },
 

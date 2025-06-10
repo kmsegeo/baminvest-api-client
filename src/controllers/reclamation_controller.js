@@ -22,8 +22,6 @@ const createActeurReclamation = async (req, res, next) => {
     const acteur_id = req.session.e_acteur;
     const {objet, description, document} = req.body;
 
-    console.log(acteur_id)
-    
     await Reclamation.create(acteur_id, {objet, description, document}).then(async result => {
         return response(res, 201, `Enregistrement de la reclamation terminé`, result);
     }).catch(err => next(err));
