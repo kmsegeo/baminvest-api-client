@@ -104,7 +104,7 @@ const Particulier = {
     },
 
     async setAtsgoCallbackData(particulier_id, atsgo_id_client, atsgo_compte_titre, atsgo_compte_espece) {
-        const query_string = `UPDATE ${this.table_name} SET r_atsgo_id_client=$1, r_ncompte_titre=$2, r_ncompte_espece=$3, WHERE r_i=$4 RETURNING *`;
+        const query_string = `UPDATE ${this.table_name} SET r_atsgo_id_client=$1, r_ncompte_titre=$2, r_ncompte_espece=$3 WHERE r_i=$4 RETURNING *`;
         const res = await db.query(query_string, [atsgo_id_client, atsgo_compte_titre, atsgo_compte_espece, particulier_id]);
         return res.rows[0];
     },

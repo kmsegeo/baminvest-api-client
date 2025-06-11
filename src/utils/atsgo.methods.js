@@ -14,7 +14,10 @@ const Atsgo = {
             "Content-Type": "application/json",
         }
         
-        await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT + '?ApiKey=' + apikey, {
+        const url_post_client = process.env.ATSGO_URL + process.env.URI_CLIENT + '?ApiKey=' + apikey
+        console.log(url_post_client);
+
+        await fetch(url_post_client, {
             method: "POST",
             headers: headers,
             body: JSON.stringify(client),
@@ -29,9 +32,10 @@ const Atsgo = {
                 //=========== Bypass: A SUPPRIMER EN PROD..
                 
                 console.log('Récupération des données client..');
-                await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT + '?Code='+ client.email +'&ApiKey=' + apikey)
-                .then(async resp => resp.json())
-                .then(async data => {
+                const url_get_client = process.env.ATSGO_URL + process.env.URI_CLIENT + '?Code='+ client.email +'&ApiKey=' + apikey;
+                console.log(url_get_client);
+
+                await fetch(url_get_client).then(async resp => resp.json()).then(async data => {
                     console.log('Récupération des données terminé');
                     callback(data.payLoad); 
                 });
