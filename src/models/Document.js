@@ -69,12 +69,13 @@ const Document = {
     async findByRef(ref) {
         const res = await db.query(`
             SELECT 
+                td.r_i,
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
                 td.r_date_creer,
                 td.r_date_modif
-            FROM ${this.tableName} As td, t_type_document As tt  
+            FROM ${this.tableName} As td, t_type_document As tt 
             WHERE td.e_type_document=tt.r_i AND td.r_reference=$1 AND td.r_statut=$2`, [ref, 1]);
         return res.rows[0]
     },

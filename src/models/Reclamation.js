@@ -9,7 +9,7 @@ const Reclamation = {
         return res.rows;
     },
 
-    async create(acteur, {objet, description, document}) {
+    async create(e_acteur, {objet, description, e_document}) {
         const res = await db.query(`
             INSERT INTO ${this.tableName} 
                 (r_objet, 
@@ -19,7 +19,7 @@ const Reclamation = {
                  e_acteur, 
                  e_document) 
             VALUES($1,$2,$3,$4,$5,$6) 
-            RETURNING *`, [objet, description, 0, new Date(), acteur, document]);
+            RETURNING *`, [objet, description, 0, new Date(), e_acteur, e_document]);
 
         return res.rows[0];
     }
