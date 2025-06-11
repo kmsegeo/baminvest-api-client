@@ -598,6 +598,130 @@ const createPassword = async (req, res, next) => {
             console.log(hash);
             await Acteur.updatePassword(acteur_id, hash).then(async result => {
                 if (!result) return response(res, 400, `Une erreur s'est produite à la création du mot de passe !`);
+                
+                await OTP.clean(acteur_id).catch(err => next(err)); 
+
+                await Utils.aleatoireOTP().then(async code_otp => {
+                    await Utils.genearteOTP_Msgid().then(async msgid => {
+                        await OTP.create(acteur_id, {msgid, code_otp, operation: 1}).then(async otp => { 
+                            console.log('otp généré:', code_otp);
+                            console.log('Envoi de message:', msgid, '..');
+                            await fetch(process.env.ML_SMSCI_URL, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    identify: "test@mediasoftci.com",
+                                    pwd: "12345",
+                                    fromad: "BAM CI",
+                                    toad: acteur.r_telephone_prp,
+                                    msgid: msgid,
+                                    text: `Votre code de vérification est : ${otp.r_code_otp}`
+                                })
+                            }).then(res => res.json()).then(data => {
+                                if (data!=1) return response(res, 200, `Envoi de message echoué`, data);
+                                return response(res, 200, `Message de vérification envoyé`);
+                            }).catch(err => next(err)); 
+                        }).catch(err => next(err)); 
+                    }).catch(err => next(err));
+                }).catch(err => next(err));
+                
+                // if (!acteur.r_telephone_prp) return response(res, 404, `Numéro de téléphone principal introuvable !`);
+                
+                // console.log(`Chargement des données de l'acteur: particulier, kyc, documents, ..`)
+                // await Client.Particulier.findById(acteur.e_particulier).then(async particulier => {
+                //     if (!particulier) return response(res, 403, `Compte particulier introuvable !`)
+                //     await KYC.Particulier.findByParticulierId(acteur.e_particulier).then(async kyc => {
+                //         if (!kyc) return response(res, 403, `KYC particulier introuvable !`)
+                //         await PersonEmergency.findOneByParticulier(acteur.e_particulier).then(async personne => {
+                            
+                //             let persNom = personne.r_nom_prenom ? personne.r_nom_prenom.split(' ')[0] : "";
+                //             let persPrenom = personne.r_nom_prenom ? personne.r_nom_prenom.split(' ')[1] : "";
+                            
+                //             await Document.findAllByActeurId(acteur_id).then(async files => {
+                                
+                //                 // Save to atsgo
+
+                //                 let photo = null;
+                //                 let signature = null;
+
+                //                 files.forEach(file => {
+                //                     if (file.r_intitule == 'photoprofil') 
+                //                         photo = file.r_nom_fichier;
+
+                //                     if (file.r_intitule == 'signature') 
+                //                         signature = file.r_nom_fichier;
+                //                 })
+
+                //                 console.log(`Préparation de données pour ATSGO`);
+                //                 const apikey = req.apikey.r_valeur;
+
+                //                 await Atsgo.onbording(apikey, {
+                //                     "nom": particulier.r_nom,
+                //                     "prenom": particulier.r_prenom,
+                //                     "dateNaissance": particulier.r_date_naissance,
+                //                     "tel": acteur.r_telephone_prp,
+                //                     "telMobile": acteur.r_telephone_prp,
+                //                     "adresse": acteur.r_adresse,
+                //                     "email": acteur.r_email,
+                //                     "fonction": kyc.r_profession,
+                //                     "idTypeClient": 8,
+                //                     "photo": photo,
+                //                     "idTypePiece" : particulier.r_type_piece,
+                //                     "numeroPiece": particulier.r_num_piece,
+                //                     "dateValidite": particulier.r_piece_validite,
+                //                     "observations": "",
+                //                     "sexe": particulier.r_civilite!=1?"Feminin":"Masculin",
+                //                     "signature": signature,
+                //                     "nomMandataire": "",
+                //                     "prenomsMandataire": "",
+                //                     "adresseMandataire": "",
+                //                     "ppe": false,
+                //                     "lienPPE": false,
+                //                     "idCategorieFATCA": particulier.r_categorie_fatca,
+                //                     "majKyc": new Date(),
+                //                     "idCategorieClient": particulier.r_categorie_client,
+                //                     "nomBanque": kyc.r_banques_relations,
+                //                     "idCategorieCompte": particulier.r_categorie_compte,    
+                //                     "idTypeCompte": particulier.r_type_compte_investissement,
+                //                     // "idPaysNationalite": 49,
+                //                     "idOrigineRevenu": 0, // kyc.r_origine_ressources_investies,
+                //                     "revenuMensuel": kyc.r_tranche_revenus,
+                //                     // "idClientParent": 0,
+                //                     // "idSecteurActivite": 3
+                //                 }).catch(async err => response(res, 400, err));
+
+                //             }).catch(err => next(err));
+                //         }).catch(err => next(err));
+
+                //     }).catch(err => next(err));
+                // }).catch(err => next(err));
+
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+    }).catch(err => next(err));
+}
+
+const verifierOtp = async (req, res, next) => {
+    
+    console.log(`Vérification OTP..`);
+    
+    const acteur_id = req.params.acteurId;
+    const code_otp = req.body.code_otp;
+    
+    await Acteur.findById(acteur_id).then(async acteur => {
+        if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
+        
+        await OTP.findByActeurId(acteur_id).then(async otp => {
+            
+            if (!otp) return response(res, 400, `Pas de OTP en cours de validité !`);
+            if (code_otp!=otp.r_code_otp)  return response(res, 400, `Vérification echoué !`);
+            
+            const data = {};
+
+            if (otp.r_operation==1) {
+
                 if (!acteur.r_telephone_prp) return response(res, 404, `Numéro de téléphone principal introuvable !`);
                 
                 console.log(`Chargement des données de l'acteur: particulier, kyc, documents, ..`)
@@ -661,7 +785,14 @@ const createPassword = async (req, res, next) => {
                                     "revenuMensuel": kyc.r_tranche_revenus,
                                     // "idClientParent": 0,
                                     // "idSecteurActivite": 3
-                                }).catch(async err => response(res, 400, err));
+                                }, async (atsgo_data) => {
+
+                                    await Acteur.activeCompte(acteur_id).catch(err => next(err));
+                                    await Atsgo.validateAtsgoAccount(apikey, atsgo_data);
+                                    await OTP.confirm(acteur_id, otp.r_i).catch(err => next(err)); 
+                                    
+                                    return response(res, 200, `Vérification terminé avec succès`);
+                                }).catch(async err => response(res, 403, err));
 
                             }).catch(err => next(err));
                         }).catch(err => next(err));
@@ -669,67 +800,16 @@ const createPassword = async (req, res, next) => {
                     }).catch(err => next(err));
                 }).catch(err => next(err));
 
-                await OTP.clean(acteur_id).catch(err => next(err)); 
-                
-                await Utils.aleatoireOTP().then(async code_otp => {
-                    await Utils.genearteOTP_Msgid().then(async msgid => {
-                        await OTP.create(acteur_id, {msgid, code_otp, operation: 1}).then(async otp => { 
-                            console.log('otp généré:', code_otp);
-                            console.log('Envoi de message:', msgid, '..');
-                            await fetch(process.env.ML_SMSCI_URL, {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                    identify: "test@mediasoftci.com",
-                                    pwd: "12345",
-                                    fromad: "BAM CI",
-                                    toad: acteur.r_telephone_prp,
-                                    msgid: msgid,
-                                    text: `Votre code de vérification est : ${otp.r_code_otp}`
-                                })
-                            }).then(res => res.json()).then(data => {
-                                if (data!=1) return response(res, 200, `Envoi de message echoué`, data);
-                                return response(res, 200, `Message de vérification envoyé`);
-                            }).catch(err => next(err)); 
-                        }).catch(err => next(err)); 
-                    }).catch(err => next(err));
-                }).catch(err => next(err));
-
-            }).catch(err => next(err));
-        }).catch(err => next(err));
-    }).catch(err => next(err));
-}
-
-const verifierOtp = async (req, res, next) => {
-    
-    console.log(`Vérification OTP..`);
-    
-    const acteur_id = req.params.acteurId;
-    const code_otp = req.body.code_otp;
-    
-    await Acteur.findById(acteur_id).then(async acteur => {
-        if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
-        
-        await OTP.findByActeurId(acteur_id).then(async otp => {
-            
-            if (!otp) return response(res, 400, `Pas de OTP en cours de validité !`);
-            if (code_otp!=otp.r_code_otp)  return response(res, 400, `Vérification echoué !`);
-            
-            const data = {};
-            if (otp.r_operation==1) {
-                await Acteur.activeCompte(acteur_id).catch(err => next(err));
             } else if (otp.r_operation==2) {
                 const default_mdp = uuid.v4().split('-')[0];
                 bcrypt.hash(default_mdp, 10).then(async hash => {
-                    await Acteur.updatePassword(acteur_id, hash).catch(err => next(err));
+                    await Acteur.updatePassword(acteur_id, hash).then(async pwd => {
+                        data['reset_mdp'] = default_mdp;
+                        await OTP.confirm(acteur_id, otp.r_i).catch(err => next(err)); 
+                        return response(res, 200, `Vérification terminé avec succès`, data);
+                    }).catch(err => next(err));
                 }).catch(err => next(err));
-                data['reset_mdp'] = default_mdp;
             }
-
-            await OTP.confirm(acteur_id, otp.r_i).catch(err => next(err)); 
-            return response(res, 200, `Vérification terminé avec succès`, data);
 
         }).catch(err => next(err));
     }).catch(err => next(err));

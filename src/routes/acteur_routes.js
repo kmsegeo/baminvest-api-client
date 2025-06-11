@@ -50,14 +50,14 @@ router.get('/:acteurId/fichiers/domiciliation', app_auth, onbordingController.ge
 router.post('/:acteurId/fichiers/signature', app_auth, upload.single('file'), onbordingController.uploadSignature);
 router.get('/:acteurId/fichiers/signature', app_auth, onbordingController.getSignature);
 
-router.post('/:acteurId/motdepasse/activer', app_auth, atsgo_auth, onbordingController.createPassword);
+router.post('/:acteurId/motdepasse/activer', app_auth, onbordingController.createPassword);
 router.post('/motdepasse/reinitialiser', app_auth, clientController.resetPassword);
 router.put('/:acteurId/motdepasse/modifier', app_auth, clientController.updatePassword);
 
 // OTP
 
 router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiOtp);
-router.post('/:acteurId/otp/verifier', app_auth, onbordingController.verifierOtp);
+router.post('/:acteurId/otp/verifier', app_auth, atsgo_auth, onbordingController.verifierOtp);
 
 /////////////////////////
 //    SESSION ACTIVE

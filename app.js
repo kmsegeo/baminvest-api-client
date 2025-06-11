@@ -36,7 +36,7 @@ app.use(base_path + '/fonds', fondsRoutes);
 app.use(base_path + '/moy_paiements', moyenPaiementRoutes); 
 app.use(base_path + '/news', newsRoutes); 
 app.use(base_path + '/webhooks', webhookRoutes); 
-app.use(base_path + '/reclamations', reclamationRoutes);
+app.use(base_path + '/reclamations', reclamationRoutes); 
 
 app.use(base_path + '/temp', clientRoutes); 
 

@@ -5,7 +5,7 @@ const Acteur = require("../models/Acteur");
 
 const Atsgo = {
 
-    async onbording(apikey, client) {
+    async onbording(apikey, client, callback) {
 
         console.log('Envoi des données à ATSGO..')
         console.log(client)
@@ -23,12 +23,63 @@ const Atsgo = {
         .then(async data => {
             if (data.status!=200) {
                 console.log(data.errors);
-                throw "Erreur d'enregistrement à atsgo !";
-            }
-            console.log('Envoi des données terminé');
+                // throw "Erreur d'enregistrement à atsgo !";
+                console.log("Erreur d'enregistrement à atsgo !");
 
-            // validation du onbording
-            await validateAtsgoAccount(apikey, data.payLoad);
+                //=========== Bypass: A SUPPRIMER EN PROD..
+                
+                console.log('Récupération des données client..');
+                await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT + '?Code='+ client.email +'&ApiKey=' + apikey)
+                .then(async resp => resp.json())
+                .then(async data => {
+                    console.log('Récupération des données terminé');
+                    callback(data.payLoad); 
+                });
+                
+            } else {
+                console.log('Envoi des données terminé');
+                callback(data.payLoad); 
+            }
+        }).catch(error => { throw error });
+    },
+
+    async validateAtsgoAccount(apikey, data) {
+
+        console.log(`Validation du compte atsgo..`)
+
+        const headers =  {
+            "Content-Type": "application/json",
+        }
+
+        const idClient = data.idClient;
+        const cpt_titre = data.numeroCompteTitre;
+        const cpt_espece = data.code;
+
+        const ref = data.email;
+
+        await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT_VALIDATE + '?ApiKey=' + apikey, {
+            method: "PATCH",
+            headers: headers,
+            body: JSON.stringify({idClient}),
+        })
+        .then(resp => resp.json())
+        .then(async validate => {
+            if (validate.status!=200) {
+                console.log(validate.errors);
+                throw "Erreur lors de la validation du compte atsgo !";
+            }
+            console.log(`Validation du compte terminé`);
+            // callback
+            console.log(`Appel du callback..`);
+            console.log(`Reférence cible :`, ref);
+
+            await Acteur.findByEmail(ref).then(async acteur => {
+                if (!acteur) throw `Acteur non trouvé !`;
+                await Particulier.setAtsgoCallbackData(acteur.e_particulier, idClient, cpt_titre, cpt_espece).then(async particulier => {
+                    if (!particulier) throw `Erreur à l'enregistrement du compte titre !`;
+                    console.log('Données du callback envoyé');
+                }).catch(error => { throw error });
+            }).catch(error => { throw error });
 
         }).catch(error => { throw error });
     },
@@ -135,44 +186,6 @@ const Atsgo = {
             callback(data.payLoad);
         })
     }
-}
-
-async function validateAtsgoAccount(apikey, data) {
-
-    console.log(`Validation du compte atsgo..`)
-
-    const headers =  {
-        "Content-Type": "application/json",
-    }
-
-    const idClient = data.idClient;
-    const ref = data.email;
-
-    await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT_VALIDATE + '?ApiKey=' + apikey, {
-        method: "PATCH",
-        headers: headers,
-        body: JSON.stringify({idClient}),
-    })
-    .then(resp => resp.json())
-    .then(async validate => {
-        if (validate.status!=200) {
-            console.log(validate.errors);
-            throw "Erreur lors de la validation du compte atsgo !";
-        }
-        console.log(`Validation du compte terminé`);
-        // callback
-        console.log(`Appel du callback..`);
-        console.log(`Reférence cible :`, ref);
-
-        await Acteur.findByEmail(ref).then(async acteur => {
-            if (!acteur) throw `Acteur non trouvé !`;
-            await Particulier.setAtsgoIdClient(acteur.e_particulier, idClient).then(async particulier => {
-                if (!particulier) throw `Erreur à l'enregistrement du compte titre !`;
-                console.log('Données du callback envoyé');
-            }).catch(error => { throw error });
-        }).catch(error => { throw error });
-
-    }).catch(error => { throw error });
 }
 
 async function validationAtsgoOperation(apikey, idClient, idOperationClient) {
