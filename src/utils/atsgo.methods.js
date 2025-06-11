@@ -47,7 +47,7 @@ const Atsgo = {
         }).catch(error => { throw error });
     },
 
-    async validateAtsgoAccount(apikey, data) {
+    async validateAtsgoAccount(apikey, atsgo_data) {
 
         console.log(`Validation du compte atsgo..`)
 
@@ -55,11 +55,8 @@ const Atsgo = {
             "Content-Type": "application/json",
         }
 
-        const idClient = data.idClient;
-        const cpt_titre = data.numeroCompteTitre;
-        const cpt_espece = data.code;
-
-        const ref = data.email;
+        const idClient = atsgo_data.idClient;
+        const ref = atsgo_data.email;
 
         await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT_VALIDATE + '?ApiKey=' + apikey, {
             method: "PATCH",
@@ -73,18 +70,28 @@ const Atsgo = {
                 throw "Erreur lors de la validation du compte atsgo !";
             }
             console.log(`Validation du compte terminé`);
+            
             // callback
-            console.log(`Appel du callback..`);
-            console.log(`Reférence cible :`, ref);
+            
+            console.log('Récupération des données client atsgo..');
+            const url_get_client = process.env.ATSGO_URL + process.env.URI_CLIENT + '?Code='+ ref +'&ApiKey=' + apikey;
+            console.log(url_get_client);
 
-            await Acteur.findByEmail(ref).then(async acteur => {
-                if (!acteur) throw `Acteur non trouvé !`;
-                await Particulier.setAtsgoCallbackData(acteur.e_particulier, idClient, cpt_titre, cpt_espece).then(async particulier => {
-                    if (!particulier) throw `Erreur à l'enregistrement du compte titre !`;
-                    console.log('Données du callback envoyé');
+            await fetch(url_get_client).then(async resp => resp.json()).then(async data => {
+                console.log('Récupération des données terminé');
+                
+                const cpt_titre = data.numeroCompteTitre;
+                const cpt_espece = data.code;
+
+                await Acteur.findByEmail(ref).then(async acteur => {
+                    if (!acteur) throw `Acteur non trouvé !`;
+                    await Particulier.setAtsgoCallbackData(acteur.e_particulier, idClient, cpt_titre, cpt_espece).then(async particulier => {
+                        if (!particulier) throw `Erreur à l'enregistrement du compte titre !`;
+                        console.log('Données du callback envoyé');
+                    }).catch(error => { throw error });
                 }).catch(error => { throw error });
+            
             }).catch(error => { throw error });
-
         }).catch(error => { throw error });
     },
 

@@ -717,7 +717,7 @@ const verifierOtp = async (req, res, next) => {
                                 }, async (atsgo_data) => {
 
                                     await Acteur.activeCompte(acteur_id).catch(err => next(err));
-                                    await Atsgo.validateAtsgoAccount(apikey, atsgo_data);
+                                    await Atsgo.validateAtsgoAccount(apikey, atsgo_data).catch(err => next(err));
                                     await OTP.confirm(acteur_id, otp.r_i).catch(err => next(err)); 
                                     
                                     return response(res, 200, `Vérification terminé avec succès`);
