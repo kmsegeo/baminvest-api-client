@@ -84,7 +84,7 @@ const Atsgo = {
                 const cpt_espece = cbkdata.code;
                 const cpt_titre = cbkdata.numeroCompteTitre;
 
-                console.log('atsgo_id:', 'compte_espece:', cpt_espece, 'compte_titre:', cpt_titre)
+                console.log('atsgo_id:', idClient, 'compte_espece:', cpt_espece, 'compte_titre:', cpt_titre)
 
                 await Acteur.findByEmail(ref).then(async acteur => {
                     if (!acteur) throw `Acteur non trouvé !`;
