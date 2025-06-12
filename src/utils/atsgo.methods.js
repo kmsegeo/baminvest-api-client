@@ -79,9 +79,12 @@ const Atsgo = {
 
             await fetch(url_get_client).then(async resp => resp.json()).then(async data => {
                 console.log('Récupération des données terminé');
-                
-                const cpt_titre = data.numeroCompteTitre;
-                const cpt_espece = data.code;
+
+                const cbkdata = data.payLoad;
+                const cpt_espece = cbkdata.code;
+                const cpt_titre = cbkdata.numeroCompteTitre;
+
+                console.log('atsgo_id:', 'compte_espece:', cpt_espece, 'compte_titre:', cpt_titre)
 
                 await Acteur.findByEmail(ref).then(async acteur => {
                     if (!acteur) throw `Acteur non trouvé !`;
