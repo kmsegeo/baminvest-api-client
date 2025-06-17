@@ -3,6 +3,7 @@ const app_auth = require('../middlewares/app_auth');
 const session_verify = require('../middlewares/session_verify');
 const clientController = require('../controllers/client_controller')
 const kycController = require('../controllers/kyc_controller');
+const atsgo_auth = require('../middlewares/atsgo_auth');
 const router = express.Router();
 
 // router.post('/particulier', app_auth, clientController.createParticulier);
@@ -12,6 +13,10 @@ const router = express.Router();
 // router.post('/entreprise', app_auth, clientController.createEntreprise);
 // router.post('/entreprise/:id/kyc', app_auth, session_verify, kycController.createEntrepriseKYC);
 // router.get('/entreprise/:id/kyc', app_auth, session_verify, kycController.getEntrepriseKYC);
-router.delete('/particulier/clean', app_auth, clientController.cleanAllParticulier);
+
+router.delete('/particulier/all/clean', app_auth, clientController.cleanAllParticulier);
+
+router.get('/acteur/:id/operations', app_auth, atsgo_auth, clientController.getAllClientOperations);
+router.patch('/acteur/:id/operation/valider', app_auth, atsgo_auth, clientController.validerOperation);
 
 module.exports = router;

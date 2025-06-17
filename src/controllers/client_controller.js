@@ -107,8 +107,8 @@ const resetPassword = async (req, res, next) => {
                                 "Content-Type": "application/json",
                             },
                             body: JSON.stringify({
-                                identify: "test@mediasoftci.com",
-                                pwd: "12345",
+                                identify: process.env.ML_SMS_ID,
+                                pwd: process.env.ML_SMS_PWD,
                                 fromad: "BAM CI",
                                 toad: acteur.r_telephone_prp,
                                 msgid: msgid,
@@ -154,9 +154,88 @@ const updatePassword = async (req, res, next) => {
 
 }
 
+const getAllClientOperations = async (req, res, next) => {
+    
+    const ApiKey = req.apikey.r_valeur;
+    const acteur_id = req.params.id;
+
+    await Acteur.findById(acteur_id).then(async acteur => {
+        await Client.Particulier.findById(acteur.e_particulier).then(async particulier => {
+
+            const IdClient = particulier.r_atsgo_id_client; 
+            const url = process.env.ATSGO_URL + process.env.URI_CLIENT_OPERATIONS + '?IdClient=' + IdClient + '&ApiKey=' + ApiKey;
+            
+            console.log(url);
+
+            await fetch(url).then(res => res.json()).then(data => {
+                if (data.status!=200) return response(res, 403, `Erreur lors de la récupération des opérations du client`)
+                return response(res, 200, `Chargement des opérations du client`, data.payLoad);
+            }).catch(err => next(err));
+
+        }).catch(err => next(err));
+    }).catch(err => next(err));
+
+}
+
+const validerOperation = async (req, res, next) => {
+
+    const ApiKey = req.apikey.r_valeur;    
+
+    const acteur_id = req.params.id;
+    const {idOperationClient, idClient} = req.body;
+
+    await Acteur.findById(acteur_id).then(async acteur => {
+        if (!acteur) return response(res, 404, `Acteur non trouvé !`);
+        
+        const url = process.env.ATSGO_URL + process.env.URI_CLIENT_OPERATION_VALIDATE + '?ApiKey=' + ApiKey;
+        console.log(url)
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                idOperationClient,
+                idClient
+            })
+        }).then(res => res.json()).then(async atsgo_data => {
+            if (atsgo_data.status!=200) return response(res, 403, `Erreur lors du processus de validation`);  
+
+            const notification = `Votre opération de souscription portant identifiant: ${idOperationClient}, à été validé avec succès.`;
+            
+            await Utils.genearteOTP_Msgid().then(async msgid => {
+                await OTP.create(acteur_id, {msgid, code_otp:notification, operation: 3}).then(async message => {
+                    fetch(process.env.ML_SMSCI_URL, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            identify: process.env.ML_SMS_ID,
+                            pwd: process.env.ML_SMS_PWD,
+                            fromad: "BAM CI",
+                            toad: acteur.r_telephone_prp,
+                            msgid: msgid,
+                            text: message.r_code_otp
+                        })
+                    }).then(res => res.json()).then(sms_data => {
+                        if (sms_data!=1) return response(res, 403, `Envoi de message echoué`, sms_data);
+                        return response(res, 200, `Validation de l'opération terminé`, atsgo_data);
+                    }).catch(err => next(err)); 
+                }).catch(err => next(err)); 
+            }).catch(err => next(err)); 
+        })
+    }).catch(err => next(err));
+
+}
+
+
 module.exports = {
     getActeurResumes,
     cleanAllParticulier,
     resetPassword,
-    updatePassword
+    updatePassword,
+    getAllClientOperations,
+    validerOperation
 }
