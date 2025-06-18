@@ -161,13 +161,13 @@ const opSouscriptionCompleted = async (req, res, next) => {
             console.log(`Envoi des données de souscription à ATSGO..`);
 
             await Atsgo.saveMouvement(apikey, {
-                idTypeMouvement: 1,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+                idTypeMouvement: 1,             // 1:Apport Liquidité - 2:Retrait de Liquidités
                 idClient: idClient,
                 idFcp: idFcp,
                 date: new Date(),
                 dateMouvement: data.when_created,
                 dateValeur: data.when_completed,
-                idModePaiement: 6,        // 6:wave
+                idModePaiement: 6,              // 6:wave
                 refModePaiement: data.transaction_id,
                 montant: data.amount,
                 libelle: operation.r_libelle
@@ -179,7 +179,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                     idTypeOperation: 2,         // 2:Souscription - 3:Rachat
                     libelle: operation.r_libelle, 
                     dateValeur: data.when_created, 
-                    idModePaiement: 6,          //6: Wave
+                    idModePaiement: 6,          // 6: Wave
                     refModePaiement: data.transaction_id,
                     montant: data.amount
                 }, async (operaton_data) => {
@@ -228,13 +228,13 @@ const opRachat = async (req, res, next) => {
                 }, async (operaton_data) => {
 
                     await Atsgo.saveMouvement(apikey, {
-                        idTypeMouvement: 2,       // 1:Apport Liquidité - 2:Retrait de Liquidités
+                        idTypeMouvement: 2,         // 1:Apport Liquidité - 2:Retrait de Liquidités
                         idClient,
                         idFcp,
                         date: date,
                         dateMouvement: date,
                         dateValeur: date,
-                        idModePaiement: 7,        // 7: Paiement espece
+                        idModePaiement: 7,          // 7: Paiement espece
                         refModePaiement: "strings",
                         montant: montant,
                         libelle: "--code de transaction--"
