@@ -3533,13 +3533,23 @@
                 },
                 "description": {
                   "example": "any"
-                },
-                "document_ref": {
-                  "example": "any"
                 }
               }
             }
           }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/v1/events/": {
+      "get": {
+        "description": "",
+        "produces": [
+          "text/event-stream"
         ],
         "responses": {
           "default": {

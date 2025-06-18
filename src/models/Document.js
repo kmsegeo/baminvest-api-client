@@ -45,6 +45,7 @@ const Document = {
                 r_nom_fichier) 
             VALUES($1,$2,$3,$4,$5,$6,$7)
             RETURNING 
+                r_i,
                 r_reference,
                 r_nom_fichier, 
                 r_date_creer, 
