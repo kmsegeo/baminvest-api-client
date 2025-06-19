@@ -729,7 +729,8 @@ const verifierOtp = async (req, res, next) => {
                     }).catch(err => next(err));
                 }).catch(err => next(err));
 
-            } else if (otp.r_operation==2) {
+            } 
+            else if (otp.r_operation==2) {
                 const default_mdp = uuid.v4().split('-')[0];
                 bcrypt.hash(default_mdp, 10).then(async hash => {
                     await Acteur.updatePassword(acteur_id, hash).then(async pwd => {
@@ -791,6 +792,38 @@ const renvoiOtp = async (req, res, next) => {
     }).catch(err => next(err));
 }
 
+const verifierMotdepasseOtp = async (req, res, next) => { 
+
+    console.log(`Vérification OTP..`);
+    
+    const email = req.body.email;
+    const code_otp = req.body.code_otp;
+    
+    await Acteur.findByEmail(email).then(async acteur => {
+        if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
+        
+        await OTP.findByActeurId(acteur.r_i).then(async otp => {
+            if (!otp) return response(res, 400, `Pas de OTP en cours de validité !`);
+
+            if (code_otp!=otp.r_code_otp) return response(res, 400, `Vérification echoué !`);
+            
+            const data = {};
+
+            if (otp.r_operation==2) {
+                const default_mdp = uuid.v4().split('-')[0];
+                bcrypt.hash(default_mdp, 10).then(async hash => {
+                    await Acteur.updatePassword(acteur.r_i, hash).then(async pwd => {
+                        data['reset_mdp'] = default_mdp;
+                        await OTP.confirm(acteur.r_i, otp.r_i).catch(err => next(err)); 
+                        return response(res, 200, `Vérification terminé avec succès`, data);
+                    }).catch(err => next(err));
+                }).catch(err => next(err));
+            }
+
+        }).catch(err => next(err));
+    }).catch(err => next(err));
+}
+
 module.exports = {
     onbordingParticulier,
     createParticulier,
@@ -810,5 +843,6 @@ module.exports = {
     getAllPersonEmergency,
     createPassword,
     verifierOtp,
-    renvoiOtp
+    renvoiOtp,
+    verifierMotdepasseOtp
 }

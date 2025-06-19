@@ -53,6 +53,7 @@ router.get('/:acteurId/fichiers/signature', app_auth, onbordingController.getSig
 router.post('/:acteurId/motdepasse/activer', app_auth, onbordingController.createPassword);
 router.post('/motdepasse/reinitialiser', app_auth, clientController.resetPassword);
 router.put('/motdepasse/modifier', app_auth, clientController.updatePassword);
+router.post('/motdepasse/otp/verifier', app_auth, onbordingController.verifierMotdepasseOtp);
 
 // OTP
 
