@@ -2127,16 +2127,10 @@
         }
       }
     },
-    "/v1/acteurs/{acteurId}/motdepasse/modifier": {
+    "/v1/acteurs/motdepasse/modifier": {
       "put": {
         "description": "",
         "parameters": [
-          {
-            "name": "acteurId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "appauth",
             "in": "header",
@@ -2163,6 +2157,9 @@
             "schema": {
               "type": "object",
               "properties": {
+                "email": {
+                  "example": "any"
+                },
                 "cur_mdp": {
                   "example": "any"
                 },
@@ -3550,6 +3547,33 @@
         "description": "",
         "produces": [
           "text/event-stream"
+        ],
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
           "default": {
