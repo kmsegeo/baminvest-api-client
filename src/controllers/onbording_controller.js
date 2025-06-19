@@ -796,19 +796,17 @@ const verifierMotdepasseOtp = async (req, res, next) => {
 
     console.log(`Vérification OTP..`);
     
-    const email = req.body.email;
+    const phone = req.body.phone;
     const code_otp = req.body.code_otp;
     
-    await Acteur.findByEmail(email).then(async acteur => {
+    await Acteur.findByTelephone(phone).then(async acteur => {
         if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
         
         await OTP.findByActeurId(acteur.r_i).then(async otp => {
             if (!otp) return response(res, 400, `Pas de OTP en cours de validité !`);
-
             if (code_otp!=otp.r_code_otp) return response(res, 400, `Vérification echoué !`);
             
             const data = {};
-
             if (otp.r_operation==2) {
                 const default_mdp = uuid.v4().split('-')[0];
                 bcrypt.hash(default_mdp, 10).then(async hash => {

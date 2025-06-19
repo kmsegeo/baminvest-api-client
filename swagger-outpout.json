@@ -2157,7 +2157,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "email": {
+                "phone": {
                   "example": "any"
                 },
                 "cur_mdp": {
@@ -2207,7 +2207,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "email": {
+                "phone": {
                   "example": "any"
                 },
                 "code_otp": {

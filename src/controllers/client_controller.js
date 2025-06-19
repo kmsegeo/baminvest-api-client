@@ -131,10 +131,10 @@ const resetPassword = async (req, res, next) => {
 
 const updatePassword = async (req, res, next) => {
 
-    const {email, cur_mdp, new_mdp} = req.body;
+    const {phone, cur_mdp, new_mdp} = req.body;
 
-    await Utils.expectedParameters({email, cur_mdp, new_mdp}).then(async () => {
-        await Acteur.findByEmail(email).then(async acteur => {
+    await Utils.expectedParameters({phone, cur_mdp, new_mdp}).then(async () => {
+        await Acteur.findByTelephone(phone).then(async acteur => {
             if (!acteur) return response(res, 404, `Acteur introuvable !`);
             await bcrypt.compare(cur_mdp, acteur.r_mdp).then(async valid => {
                 if(!valid) return response(res, 401, `Code de réinitialisation incorrect !`);
