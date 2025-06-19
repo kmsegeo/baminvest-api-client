@@ -227,7 +227,6 @@ const validerOperation = async (req, res, next) => {
 
 }
 
-
 module.exports = {
     getActeurResumes,
     cleanAllParticulier,

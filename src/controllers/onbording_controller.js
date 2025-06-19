@@ -792,6 +792,55 @@ const renvoiOtp = async (req, res, next) => {
     }).catch(err => next(err));
 }
 
+const renvoiMotdepasseOtp = async (req, res, next) => { 
+
+    console.log(`Renvoi du message OTP..`);
+    
+    const phone = req.query.phone;
+    
+    await Acteur.findByTelephone(phone).then(async acteur => {
+        if (!acteur) return response(res, 404, `Cet acteur n'existe pas !`);
+        if (!acteur.r_telephone_prp) return response(res, 400, `Numéro de téléphone principal introuvable !`);
+
+        await OTP.findByActeurId(acteur.r_i).then(async otp => {
+            if (!otp) return response(res, 404, `Aucun message otp trouvé !`);
+
+            const operation = otp.r_operation;
+            await OTP.clean(acteur.r_i).catch(err => next(err));                          // Operation: 1: activation, 2: reinitialisation
+
+            const url = process.env.ML_SMSCI_URL;
+            
+            await Utils.aleatoireOTP().then(async code_otp => {
+                await Utils.genearteOTP_Msgid().then(async msgid => {
+                    await OTP.create(acteur.r_i, {msgid, code_otp, operation}).then(async otp => {
+                        console.log('otp généré:', code_otp);
+                        console.log('Envoi de message:', msgid, '..');
+                        await fetch(url, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                identify: process.env.ML_SMS_ID,
+                                pwd: process.env.ML_SMS_PWD,
+                                fromad: "BAM CI",
+                                toad: acteur.r_telephone_prp,
+                                msgid: msgid,
+                                text: `Votre code de vérification est : ${otp.r_code_otp}`
+                            })
+                        }).then(res => res.json())
+                        .then(data => {
+                            if (data!=1) return response(res, 400, `Envoi de message echoué`, data);
+                                return response(res, 200, `Message otp renvoyé avec succès`, otp);
+                        })
+                    }).catch(err => next(err)); 
+                }).catch(err => next(err));
+            }).catch(err => next(err));
+        }).catch(err => next(err));
+    }).catch(err => next(err));
+
+}
+
 const verifierMotdepasseOtp = async (req, res, next) => { 
 
     console.log(`Vérification OTP..`);
@@ -842,5 +891,6 @@ module.exports = {
     createPassword,
     verifierOtp,
     renvoiOtp,
-    verifierMotdepasseOtp
+    renvoiMotdepasseOtp,
+    verifierMotdepasseOtp,
 }
