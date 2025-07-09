@@ -233,5 +233,5 @@ module.exports = {
     resetPassword,
     updatePassword,
     getAllClientOperations,
-    validerOperation
+    validerOperation, 
 }

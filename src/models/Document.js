@@ -11,11 +11,12 @@ const Document = {
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
+                td.r_chemin_fichier,
                 td.r_date_creer,
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt  
             WHERE td.e_type_document=tt.r_i AND td.r_statut=$1`, [1]);
-        return (await res).rows;
+        return res.rows;
     },
 
     async findAllByTypeDocumentId(type_id) {
@@ -25,6 +26,7 @@ const Document = {
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
+                td.r_chemin_fichier,
                 td.r_date_creer,
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt  
@@ -32,7 +34,7 @@ const Document = {
         return res.rows
     },
 
-    async create({acteur_id, type_document, nom_fichier}) {
+    async create({acteur_id, type_document, nom_fichier, chemin_fichier}) {
         const date = new Date();
         const res = await db.query(`
             INSERT INTO ${this.tableName} (
@@ -42,15 +44,17 @@ const Document = {
                 r_statut,
                 e_type_document,
                 e_acteur,
-                r_nom_fichier) 
-            VALUES($1,$2,$3,$4,$5,$6,$7)
+                r_nom_fichier,
+                r_chemin_fichier) 
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8)
             RETURNING 
                 r_i,
                 r_reference,
                 r_nom_fichier, 
+                r_chemin_fichier,
                 r_date_creer, 
-                r_date_modif`, [uuid.v4(), date, date, 1, type_document, acteur_id, nom_fichier]);
-        return (await res).rows[0];
+                r_date_modif`, [uuid.v4(), date, date, 1, type_document, acteur_id, nom_fichier, chemin_fichier]);
+        return res.rows[0];
     },
 
     async findById(id) {
@@ -60,6 +64,7 @@ const Document = {
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
+                td.r_chemin_fichier,
                 td.r_date_creer,
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt  
@@ -74,6 +79,7 @@ const Document = {
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
+                td.r_chemin_fichier,
                 td.r_date_creer,
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt 
@@ -88,6 +94,7 @@ const Document = {
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
+                td.r_chemin_fichier,
                 td.r_date_creer,
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt  
@@ -102,6 +109,7 @@ const Document = {
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
+                td.r_chemin_fichier,
                 td.r_date_creer,
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt  
@@ -116,6 +124,7 @@ const Document = {
                 tt.r_intitule,
                 td.r_reference,
                 td.r_nom_fichier,
+                td.r_chemin_fichier,
                 td.r_date_creer,
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt  

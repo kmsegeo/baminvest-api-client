@@ -32,12 +32,12 @@ const createActeurReclamation = async (req, res, next) => {
     if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`); 
 
     const acteur_id = req.session.e_acteur;
+    const typedoc_intitule = "reclamation";
     const filename = req.file?.filename;
     const objet = req.body.objet;
     const description = req.body.description;
-
-    const typedoc_intitule = "reclamation";
-    const nom_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${filename}`;
+    const nom_fichier = req.body.nom_fichier;
+    const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${filename}`;
 
     Utils.expectedParameters({objet, description}).then(async () => {
         
@@ -47,7 +47,7 @@ const createActeurReclamation = async (req, res, next) => {
             if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
             
             if (filename) 
-            await Document.create({acteur_id: acteur_id, type_document: typedoc.r_i, nom_fichier}).then(async document => {
+            await Document.create({acteur_id: acteur_id, type_document: typedoc.r_i, nom_fichier, chemin_fichier}).then(async document => {
                 if (!document) return response(res, 400, `Importation du document échoué !`);
                 document['type_document'] = typedoc.r_intitule;
                 delete document.e_type_document

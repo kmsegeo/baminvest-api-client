@@ -485,11 +485,12 @@ const uploadPhotoProfil = async (req, res, next) => {
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "photoprofil";
-    const nom_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file?.filename}`;
+    const nom_fichier = req.body.nom_fichier;
+    const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file?.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
-        await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
+        await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier, chemin_fichier}).then(async document => {
             document['type_document'] = typedoc.r_intitule;
             delete document.e_type_document
             return response(res, 201, `Uploads terminé`, document);
@@ -510,11 +511,12 @@ const uploadDomiciliation = async (req, res, next) => {
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "domiciliation";
-    const nom_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file.filename}`;
+    const nom_fichier = req.body.nom_fichier;
+    const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
-        await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
+        await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier, chemin_fichier}).then(async document => {
             document['type_document'] = typedoc.r_intitule;
             delete document.e_type_document
             return response(res, 201, `Uploads terminé`, document);
@@ -535,11 +537,12 @@ const uploadSignature = async (req, res, next) => {
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "signature";
-    const nom_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file.filename}`;
+    const nom_fichier = req.body.nom_fichier;
+    const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
         if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
-        await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier}).then(async document => {
+        await Document.create({acteur_id: acteur, type_document: typedoc.r_i, nom_fichier, chemin_fichier}).then(async document => {
             document['type_document'] = typedoc.r_intitule;
             delete document.e_type_document
             return response(res, 201, `Uploads terminé`, document);

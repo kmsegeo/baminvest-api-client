@@ -1837,6 +1837,18 @@
             "name": "timestamp",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nom_fichier": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -1911,6 +1923,18 @@
             "name": "timestamp",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nom_fichier": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -1985,6 +2009,18 @@
             "name": "timestamp",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nom_fichier": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -3576,6 +3612,9 @@
                   "example": "any"
                 },
                 "description": {
+                  "example": "any"
+                },
+                "nom_fichier": {
                   "example": "any"
                 }
               }
