@@ -101,11 +101,13 @@ const opSouscription = async (req, res, next) => {
                             const op_ref = uuid.v4();
 
                             await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, op_ref, async data => {
+
+                                const montant_invest = montant - (montant/100);       // -1% de de fais
                         
                                 await Operation.create(acteur.r_i, type_operation.r_i, 0, idFcp, op_ref, { 
                                     reference_operateur: data.id, 
                                     libelle: 'SOUSCRIPTION FCP BRIDGE - N° DE TRANSACTION: ' + mobile_payeur, 
-                                    montant: montant, 
+                                    montant: montant_invest, 
                                     frais_operation: null, 
                                     frais_operateur: null, 
                                     compte_paiement: idClient
