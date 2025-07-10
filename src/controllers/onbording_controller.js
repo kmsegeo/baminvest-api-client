@@ -485,7 +485,7 @@ const uploadPhotoProfil = async (req, res, next) => {
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "photoprofil";
-    const nom_fichier = req.body.nom_fichier;
+    const nom_fichier = req.file?.filename;
     const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file?.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
@@ -512,7 +512,7 @@ const updatePhotoProfil = async (req, res, next) => {
     // const acteurId = req.params.acteurId;
     const acteurEmail = req.params.email;
     const typedoc_intitule = "photoprofil";
-    const nom_fichier = req.body.nom_fichier;
+    const nom_fichier = req.file?.filename;
     const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file?.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
@@ -534,7 +534,7 @@ const uploadDomiciliation = async (req, res, next) => {
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "domiciliation";
-    const nom_fichier = req.body.nom_fichier;
+    const nom_fichier = req.file?.filename;
     const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
@@ -560,7 +560,7 @@ const uploadSignature = async (req, res, next) => {
 
     const acteur = req.params.acteurId;
     const typedoc_intitule = "signature";
-    const nom_fichier = req.body.nom_fichier;
+    const nom_fichier = req.file?.filename;
     const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file.filename}`;
 
     await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {

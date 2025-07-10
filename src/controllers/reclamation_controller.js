@@ -36,7 +36,7 @@ const createActeurReclamation = async (req, res, next) => {
     const filename = req.file?.filename;
     const objet = req.body.objet;
     const description = req.body.description;
-    const nom_fichier = req.body.nom_fichier;
+    const nom_fichier = req.file?.filename;
     const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${filename}`;
 
     Utils.expectedParameters({objet, description}).then(async () => {
