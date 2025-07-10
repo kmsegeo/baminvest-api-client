@@ -43,6 +43,7 @@ router.post('/entreprise/:entrepriseId/representant', app_auth, onbordingControl
 
 router.post('/:acteurId/fichiers/photoprofil', app_auth, upload.single('file'), onbordingController.uploadPhotoProfil);
 router.get('/:acteurId/fichiers/photoprofil', app_auth, onbordingController.getPhotoProfil);
+router.patch('/:email/fichiers/photoprofil', app_auth, upload.single('file'), onbordingController.updatePhotoProfil);
 
 router.post('/:acteurId/fichiers/domiciliation', app_auth, upload.single('file'), onbordingController.uploadDomiciliation);
 router.get('/:acteurId/fichiers/domiciliation', app_auth, onbordingController.getDomiciliation);

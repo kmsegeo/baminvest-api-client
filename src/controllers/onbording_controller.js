@@ -505,6 +505,29 @@ const getPhotoProfil = async (req, res, next) => {
     }).catch(err => next(err));
 }
 
+const updatePhotoProfil = async (req, res, next) => {
+    
+    console.log(`Mise à jour de photo de profil..`)
+
+    // const acteurId = req.params.acteurId;
+    const acteurEmail = req.params.email;
+    const typedoc_intitule = "photoprofil";
+    const nom_fichier = req.body.nom_fichier;
+    const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${req.file?.filename}`;
+
+    await TypeDocument.findByIntitule(typedoc_intitule).then(async typedoc => {
+        if(!typedoc) return response(res, 404, `Le type document '${typedoc_intitule}' introuvable !`);
+        await Acteur.findByEmail(acteurEmail).then(async acteur => {
+            await Document.update({acteur_id: acteur.r_i, type_document: typedoc.r_i, nom_fichier, chemin_fichier}).then(async document => {
+            document['type_document'] = typedoc.r_intitule;
+            delete document.e_type_document
+            return response(res, 200, `Uploads terminé`, document);
+        }).catch(err => next(err));
+        }).catch(err => next(err))
+    }).catch(err => next(err));
+
+}
+
 const uploadDomiciliation = async (req, res, next) => {
 
     console.log(`Chargememnt de fichier de dominicilisation..`)
@@ -885,6 +908,7 @@ module.exports = {
     getFile,
     uploadPhotoProfil,
     getPhotoProfil,
+    updatePhotoProfil,
     uploadDomiciliation,
     getDomiciliation,
     uploadSignature,

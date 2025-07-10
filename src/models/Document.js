@@ -72,6 +72,22 @@ const Document = {
         return res.rows[0];
     },
 
+    async update({acteur_id, type_document, nom_fichier, chemin_fichier}) {
+        const date = new Date();
+        const res = await db.query(`UPDATE ${this.tableName} 
+            SET r_date_modif=$1,
+                r_nom_fichier=$2,
+                r_chemin_fichier=$3
+            WHERE e_acteur=$4 AND e_type_document=  $5
+            RETURNING r_i,
+                r_reference,
+                r_nom_fichier, 
+                r_chemin_fichier,
+                r_date_creer, 
+                r_date_modif`, [date, nom_fichier, chemin_fichier, acteur_id, type_document]);
+        return res.rows[0];
+    },
+
     async findByRef(ref) {
         const res = await db.query(`
             SELECT 

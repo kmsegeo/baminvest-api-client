@@ -16,7 +16,7 @@ const webhookRoutes = require('./src/routes/webhook_routes');
 const reclamationRoutes = require('./src/routes/reclamation_routes');
 const eventRoutes = require('./src/routes/event_routes');
 const path = require('path');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 
 const app = express(); 
 
