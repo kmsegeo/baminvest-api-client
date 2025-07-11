@@ -227,6 +227,15 @@ const validerOperation = async (req, res, next) => {
 
 }
 
+const testAouscript = async (req, res, next) => {
+
+    const montant = 1212;
+    const montant_invest = montant - (montant/100);
+
+    return response(res, 200, `Tests souscription`, montant_invest);
+    
+}
+
 module.exports = {
     getActeurResumes,
     cleanAllParticulier,
@@ -234,4 +243,5 @@ module.exports = {
     updatePassword,
     getAllClientOperations,
     validerOperation, 
+    testAouscript
 }

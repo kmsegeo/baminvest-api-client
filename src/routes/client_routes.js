@@ -18,5 +18,6 @@ router.delete('/particulier/all/clean', app_auth, clientController.cleanAllParti
 
 router.get('/acteur/:id/operations', app_auth, atsgo_auth, clientController.getAllClientOperations);
 router.patch('/acteur/:id/operation/valider', app_auth, atsgo_auth, clientController.validerOperation);
+router.patch('/test-souscription', app_auth, atsgo_auth, clientController.testAouscript);
 
 module.exports = router;

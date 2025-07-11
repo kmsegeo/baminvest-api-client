@@ -3,15 +3,18 @@ const response = require("../middlewares/response");
 
 const Wave = {
 
-    async checkout(montant, mobile_payeur, url_erreur, url_succes, client_reference, callback) {
+    async checkout(montant, frais_operateur, mobile_payeur, url_erreur, url_succes, client_reference, callback) {
 
         console.log(`Création d'une Session de paiement..`);
+
+        montant = montant==undefined ? 0 : Number(montant);
+        frais_operateur = frais_operateur==undefined ? 0: Number(frais_operateur);
 
         const url = process.env.WAVE_URL + process.env.URI_CHECKOUT_SESSION;
 
         console.log(`Formatage de données`)
         const checkout_params = {
-            amount: montant,
+            amount: (montant + frais_operateur),
             currency: "XOF",
             client_reference,
             restrict_payer_mobile: mobile_payeur ? '+' + mobile_payeur : null,

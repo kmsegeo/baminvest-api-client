@@ -124,6 +124,7 @@ const calculateOperationFees = async (req, res, next) => {
                 await Particulier.findById(acteur.e_particulier).then(async particulier => {
                     
                     const idClient = particulier.r_atsgo_id_client;
+                    const frais_operateur = Number(montant/100);
                     
                     await Atsgo.getOperationFees(apikey, {
                         idClient,
@@ -131,6 +132,8 @@ const calculateOperationFees = async (req, res, next) => {
                         idTypeOperation: 2,         // 2:Souscription - 3:Rachat
                         montant
                     }, async (fees) => {
+                        fees['fraisOperateur'] = frais_operateur;
+                        fees['montantTotal'] = fees.montantTotal + frais_operateur;
                         return response(res, 200, `Chargement ddes frais d'opération`, fees);
                     })
 

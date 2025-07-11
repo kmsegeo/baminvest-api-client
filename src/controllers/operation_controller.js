@@ -70,6 +70,10 @@ const opSouscription = async (req, res, next) => {
 
     Utils.expectedParameters({idFcp, montant}).then(async () => {
 
+        if (isNaN(montant)) return response(res, 400, `Valeur numérique attendue pour le montant de soucription !`, {montant});
+
+        const frais_operateur = Number(montant/100);
+
         console.log(`Vérification de la valleur liquidative du fonds`)
         const fonds_url = `${process.env.ATSGO_URL + process.env.URI_FONDS}?ApiKey=${apikey}`;
         console.log(fonds_url);
@@ -100,16 +104,14 @@ const opSouscription = async (req, res, next) => {
                             console.log(`Initialisation de paiement wave`);
                             const op_ref = uuid.v4();
 
-                            await Wave.checkout(montant, mobile_payeur, callback_erreur, callback_succes, op_ref, async data => {
-
-                                const montant_invest = montant - (montant/100);       // -1% de de fais
+                            await Wave.checkout(montant, frais_operateur, mobile_payeur, callback_erreur, callback_succes, op_ref, async data => {
                         
                                 await Operation.create(acteur.r_i, type_operation.r_i, 0, idFcp, op_ref, { 
                                     reference_operateur: data.id, 
                                     libelle: 'SOUSCRIPTION FCP BRIDGE - N° DE TRANSACTION: ' + mobile_payeur, 
-                                    montant: montant_invest, 
+                                    montant: montant, 
+                                    frais_operateur: frais_operateur, 
                                     frais_operation: null, 
-                                    frais_operateur: null, 
                                     compte_paiement: idClient
                                 }).then(async operation => {
                                     if (!operation) return response(res, 400, `Initialisation de paiement échoué !`);
@@ -152,6 +154,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
 
         console.log(`Récupération des données de l'opération`)
         await Operation.findByRef(data.client_reference).then(async operation => {
+            
             if (!operation) {
                 refundSouscription(data.id);
                 return response(res, 404, `Données de l'opération introuvable !`);
@@ -171,7 +174,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                 dateValeur: data.when_completed,
                 idModePaiement: 6,              // 6:wave
                 refModePaiement: data.transaction_id,
-                montant: data.amount,
+                montant: operation.r_montant,
                 libelle: operation.r_libelle
             }, async (mouvement_data) => {
                 await Atsgo.saveOperation(apikey, {
@@ -183,7 +186,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                     dateValeur: data.when_created, 
                     idModePaiement: 6,          // 6: Wave
                     refModePaiement: data.transaction_id,
-                    montant: data.amount
+                    montant: operation.r_montant
                 }, async (operaton_data) => {
                     await Operation.updateSuccess(operation.r_reference).then(async result => {
                         return response(res, 200, `Opération de souscription envoyé avec succès`, { reference: result.r_reference });                        
