@@ -13,6 +13,7 @@ const Atsgo = require('../utils/atsgo.methods');
 const { Particulier } = require('../models/Client');
 const Wave = require('../utils/wave.methods');
 const uuid = require('uuid');
+const OTP = require('../models/OTP');
 
 const getAllTypeOperations = async (req, res, next) => {
     await TypeOperation.findAll()
@@ -106,7 +107,7 @@ const opSouscription = async (req, res, next) => {
 
                             await Wave.checkout(montant, frais_operateur, mobile_payeur, callback_erreur, callback_succes, op_ref, async data => {
                         
-                                await Operation.create(acteur.r_i, type_operation.r_i, 0, idFcp, op_ref, { 
+                                await Operation.create(acteur_id, type_operation.r_i, 0, idFcp, op_ref, { 
                                     reference_operateur: data.id, 
                                     libelle: 'SOUSCRIPTION FCP BRIDGE - N° DE TRANSACTION: ' + mobile_payeur, 
                                     montant: montant, 
@@ -115,7 +116,7 @@ const opSouscription = async (req, res, next) => {
                                     compte_paiement: idClient
                                 }).then(async operation => {
                                     if (!operation) return response(res, 400, `Initialisation de paiement échoué !`);
-                                    
+
                                     let transfert_data = {
                                         idOperation: operation.r_reference,
                                         // code: data.id,
@@ -126,11 +127,13 @@ const opSouscription = async (req, res, next) => {
                                         date_expire: data.when_expires
                                     }
 
-                                    return response(res, 200, `Initialisation de paiement réussi`, transfert_data);
+                                    const notification = `Souscription:\nRef.Wave: ${data.id}\nMontant: ${data.amount} ${data.currency}.\nConfirmez votre dépôt: ${data.wave_launch_url}`;
+                                    Utils.sendNotificationSMS(acteur_id, mobile_payeur, notification, 3, () => {});
                                     
+                                    return response(res, 200, `Initialisation de paiement réussi`, transfert_data);
+
                                 }).catch(err => next(err));
                             }).catch(err => next(err));
-
                     }).catch(err => next(err));
                 }).catch(err => next(err));
             }).catch(err => next(err));
@@ -149,7 +152,6 @@ const opSouscriptionCompleted = async (req, res, next) => {
     Utils.expectedParameters({id, type, data}).then(async () => {
 
         if (type!="checkout.session.completed") return null;
-
         console.log('Paiement wave réussi')
 
         console.log(`Récupération des données de l'opération`)
@@ -189,7 +191,14 @@ const opSouscriptionCompleted = async (req, res, next) => {
                     montant: operation.r_montant
                 }, async (operaton_data) => {
                     await Operation.updateSuccess(operation.r_reference).then(async result => {
-                        return response(res, 200, `Opération de souscription envoyé avec succès`, { reference: result.r_reference });                        
+                        
+                        await Acteur.findById(operation.e_acteur).then(acteur => {
+                            const notification = `Souscription terminé.\nOpération envoyé avec succès.\nRef.Wave: ${data.transaction_id}\nMontant: ${operation.r_montant} ${data.currency}.`;
+                            Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {});
+                        }).catch(err => next(err))
+
+                        return response(res, 200, `Opération de souscription envoyé avec succès`, { reference: result.r_reference });
+                                                
                     }).catch(err => next(err));
                 }).catch(err => next(err));
             }).catch(err => next(err));
@@ -229,9 +238,7 @@ const opRachat = async (req, res, next) => {
                     idModePaiement: 7,              // 7: Paiement espece
                     refModePaiement: "strings",
                     montant: montant
-
                 }, async (operaton_data) => {
-
                     await Atsgo.saveMouvement(apikey, {
                         idTypeMouvement: 2,         // 1:Apport Liquidité - 2:Retrait de Liquidités
                         idClient,
@@ -252,13 +259,14 @@ const opRachat = async (req, res, next) => {
                             devise: "XOF",
                             date_creation: date
                         }
+                        
                         return response(res, 200, `Operation de rachat en cours de traitement`, data);
+
                     }).catch(err => next(err));
 
                 }).catch(err => next(err));
             }).catch(err => next(err));
         }).catch(err => next(err));
-            
     }).catch(err => response(res, 400, err));
 };
 

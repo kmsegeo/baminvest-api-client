@@ -1,4 +1,5 @@
 const db = require('../config/database');
+const OTP = require('../models/OTP');
 const TypeOperation = require('../models/TypeOperation');
 
 const Utils = {
@@ -96,7 +97,35 @@ const Utils = {
         const min = Math.ceil(1000);
         const max = Math.floor(9999);
         return Math.floor(Math.random() * (max - min)) + min;
+    },
+
+    async sendNotificationSMS(acteur_id, mobile, notification, operation, callback) {
+
+        await Utils.genearteOTP_Msgid().then(async msgid => {
+            await OTP.create(acteur_id, {msgid, code_otp:notification, operation}).then(async message => {      // Operation 3: Notification
+                
+                fetch(process.env.ML_SMSCI_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        identify: process.env.ML_SMS_ID,
+                        pwd: process.env.ML_SMS_PWD,
+                        fromad: "BAM CI",
+                        toad: mobile,
+                        msgid: msgid,
+                        text: message.r_code_otp
+                    })
+                }).then(res => res.json()).then(sms_data => {
+                    if (sms_data!=1) console.log(`Envoi de message echoué`, sms_data);
+                    callback();
+                }).catch(err => next(err)); 
+
+            }).catch(err => next(err)); 
+        }).catch(err => next(err)); 
     }
+
 }
 
 module.exports = Utils;
