@@ -127,7 +127,7 @@ const opSouscription = async (req, res, next) => {
                                         date_expire: data.when_expires
                                     }
 
-                                    const notification = `Souscription:\nRef.Wave: ${data.id}\nMontant: ${data.amount} ${data.currency}.\nConfirmez votre dépôt: ${data.wave_launch_url}`;
+                                    const notification = `Souscription:\nRef.Wave: ${data.id}\nMontant: ${data.amount} ${data.currency}.\nConfirmez: ${data.wave_launch_url}`;
                                     Utils.sendNotificationSMS(acteur_id, mobile_payeur, notification, 3, () => {});
                                     
                                     return response(res, 200, `Initialisation de paiement réussi`, transfert_data);
@@ -158,7 +158,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
         await Operation.findByRef(data.client_reference).then(async operation => {
             
             if (!operation) {
-                refundSouscription(data.id);
+                Wave.refund(data.id, null);
                 return response(res, 404, `Données de l'opération introuvable !`);
             }
 
@@ -191,10 +191,10 @@ const opSouscriptionCompleted = async (req, res, next) => {
                     montant: operation.r_montant
                 }, async (operaton_data) => {
                     await Operation.updateSuccess(operation.r_reference).then(async result => {
-                        
+
                         await Acteur.findById(operation.e_acteur).then(acteur => {
-                            const notification = `Souscription terminé.\nOpération envoyé avec succès.\nRef.Wave: ${data.transaction_id}\nMontant: ${operation.r_montant} ${data.currency}.`;
-                            Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {});
+                            const notification = `Souscription terminé.\nOpération envoyé avec succès.\nRef.Transaction: ${data.transaction_id}\nMontant: ${operation.r_montant} ${data.currency}.`;
+                            Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
                         }).catch(err => next(err))
 
                         return response(res, 200, `Opération de souscription envoyé avec succès`, { reference: result.r_reference });
