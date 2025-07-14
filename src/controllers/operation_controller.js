@@ -158,7 +158,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
         await Operation.findByRef(data.client_reference).then(async operation => {
             
             if (!operation) {
-                Wave.refund(data.id, null);
+                await Wave.refund(data.id, null);
                 return response(res, 404, `Données de l'opération introuvable !`);
             }
 
