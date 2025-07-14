@@ -56,7 +56,7 @@ const Wave = {
 
         const url = process.env.WAVE_URL + process.env.URI_CHECKOUT_SESSION;
 
-        axios.get(url + `/${ref}/refund`, { headers: {'Authorization': `Bearer ${process.env.WAVE_API_API_ALL}`} })
+        axios.post(url + `/${ref}/refund`, { headers: {'Authorization': `Bearer ${process.env.WAVE_API_API_ALL}`} })
         .then((resp) => {
             console.log(`Restitution de fond terminé`);
             callback(resp.data);
