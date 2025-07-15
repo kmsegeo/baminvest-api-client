@@ -204,7 +204,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                             Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
                         }).catch(err => console.error(err)); 
                     }); 
-                    console.err(err);
+                    console.error(err);
                 })
             }).catch(err => {
                 Wave.refund(data.id, () => { 
@@ -213,7 +213,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                         Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
                     }).catch(err => console.error(err)); 
                 }); 
-                console.err(err);
+                console.error(err);
             })
              
         }).catch(err => console.error(err));

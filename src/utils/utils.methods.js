@@ -120,10 +120,10 @@ const Utils = {
                 }).then(res => res.json()).then(sms_data => {
                     if (sms_data!=1) console.log(`Envoi de message echoué`, sms_data);
                     callback();
-                }).catch(err => next(err)); 
+                }).catch(err => console.error(err)); 
 
-            }).catch(err => next(err)); 
-        }).catch(err => next(err)); 
+            }).catch(err => console.error(err)); 
+        }).catch(err => console.error(err)); 
     }
 
 }
