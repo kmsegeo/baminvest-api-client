@@ -181,6 +181,7 @@ const Atsgo = {
                 throw `Erreur d'enregistrement de l'operation à atsgo !`;
             }
 
+            throw `Erreur d'enregistrement de l'operation à atsgo !`;
             console.log(`Enregistrement de l'operation terminé`)
             callback(data.payLoad);
             // const idOperationClient = data.payLoad;
