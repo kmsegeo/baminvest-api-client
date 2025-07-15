@@ -200,28 +200,9 @@ const validerOperation = async (req, res, next) => {
             if (atsgo_data.status!=200) return response(res, 403, `Erreur lors du processus de validation`);  
 
             const notification = `Votre opération de souscription portant identifiant: ${idOperationClient}, à été validé avec succès.`;
-            
-            await Utils.genearteOTP_Msgid().then(async msgid => {
-                await OTP.create(acteur_id, {msgid, code_otp:notification, operation: 3}).then(async message => {
-                    fetch(process.env.ML_SMSCI_URL, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            identify: process.env.ML_SMS_ID,
-                            pwd: process.env.ML_SMS_PWD,
-                            fromad: "BAM CI",
-                            toad: acteur.r_telephone_prp,
-                            msgid: msgid,
-                            text: message.r_code_otp
-                        })
-                    }).then(res => res.json()).then(sms_data => {
-                        if (sms_data!=1) return response(res, 403, `Envoi de message echoué`, sms_data);
-                        return response(res, 200, `Validation de l'opération terminé`, atsgo_data);
-                    }).catch(err => next(err)); 
-                }).catch(err => next(err)); 
-            }).catch(err => next(err)); 
+            await Utils.sendNotificationSMS(acteur_id, acteur.r_telephone_prp, notification, 3, () => {
+                return response(res, 200, `Validation de l'opération terminé`, atsgo_data);
+            });
         })
     }).catch(err => next(err));
 
