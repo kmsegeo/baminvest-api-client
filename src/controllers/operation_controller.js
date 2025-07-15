@@ -203,7 +203,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                         Acteur.findById(operation.e_acteur).then(acteur => {
                             const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
                             Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
-                                console.log(`Opération de souscription échouée`, { reference: result.r_reference });
+                                console.log(`Opération de souscription échouée`, { reference: operation.r_reference });
                             });
                         }).catch(err => console.error(err)); 
                     }); 
@@ -214,7 +214,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                     Acteur.findById(operation.e_acteur).then(acteur => {
                         const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
                         Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
-                            console.log(`Opération de souscription échouée`, { reference: result.r_reference });
+                            console.log(`Opération de souscription échouée`, { reference: operation.r_reference });
                         });
                     }).catch(err => console.error(err)); 
                 }); 
