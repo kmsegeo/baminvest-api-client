@@ -228,7 +228,9 @@ const opSouscriptionCompleted = async (req, res, next) => {
 const opRachat = async (req, res, next) => {
 
     console.log(`Opération de rachat..`);
-    if (req.headers.op_code!='TYOP-007') return response(res, 403, `Type opération non authorisé !`);
+    const op_code = 'TYOP-007';
+    
+    if (req.headers.op_code!=op_code) return response(res, 403, `Type opération non authorisé !`);
     
     const apikey = req.apikey.r_valeur;
     const {idFcp, montant, moyen_paiement} = req.body;
@@ -240,48 +242,70 @@ const opRachat = async (req, res, next) => {
         await Acteur.findById(acteur_id).then(async acteur => {
             await Particulier.findById(acteur.e_particulier).then(async particulier => {
                 
-                const date = new Date();
-                // const idClient = particulier.r_ncompte_titre;
-                const idClient = particulier.r_atsgo_id_client;
+                await TypeOperation.findByCode(op_code).then(async type_operation => {
+                    if(!type_operation) return response(res, 404, `Type opération non trouvé !`);
 
-                console.log(`Enregistrement de mouvement..`)
+                    const op_ref = uuid.v4();
+                    const libelle = `RACHAT FCP BRIDGE - N° DE TRANSACTION: `
+                    const date = new Date();
+                    // const idClient = particulier.r_ncompte_titre;
+                    const idClient = particulier.r_atsgo_id_client;
 
-                await Atsgo.saveOperation(apikey, {
-                    idFcp, 
-                    idClient, 
-                    referenceOperation: "strings", 
-                    idTypeOperation: 3,             // 2:Souscription - 3:Rachat
-                    libelle: "RETRAIT DE FONDS DE PLACEMENT", 
-                    dateValeur: date, 
-                    idModePaiement: 7,              // 7: Paiement espece
-                    refModePaiement: "strings",
-                    montant: montant
-                }, async (operaton_data) => {
-                    await Atsgo.saveMouvement(apikey, {
-                        idTypeMouvement: 2,         // 1:Apport Liquidité - 2:Retrait de Liquidités
-                        idClient,
-                        idFcp,
-                        date: date,
-                        dateMouvement: date,
-                        dateValeur: date,
-                        idModePaiement: 7,          // 7: Paiement espece
-                        refModePaiement: "strings",
-                        montant: montant,
-                        libelle: "--code de transaction--"
-                    }, async (mouvement_data) => {
+                    console.log(`Enregistrement de mouvement..`)
 
-                        const data = {
-                            idOperation: mouvement_data,
-                            moyen_paiement: "TMOP-002",
+                    await Atsgo.saveOperation(apikey, {
+                        idFcp, 
+                        idClient, 
+                        referenceOperation: op_ref, 
+                        idTypeOperation: 3,             // 2:Souscription - 3:Rachat
+                        libelle: "RETRAIT DE FONDS DE PLACEMENT", 
+                        dateValeur: date, 
+                        idModePaiement: 7,              // 7: Paiement espece
+                        refModePaiement: "",
+                        montant: montant
+                    }, async (operaton_data) => {
+                        await Atsgo.saveMouvement(apikey, {
+                            idTypeMouvement: 2,         // 1:Apport Liquidité - 2:Retrait de Liquidités
+                            idClient,
+                            idFcp,
+                            date: date,
+                            dateMouvement: date,
+                            dateValeur: date,
+                            idModePaiement: 7,          // 7: Paiement espece
+                            refModePaiement: "",
                             montant: montant,
-                            devise: "XOF",
-                            date_creation: date
-                        }
-                        
-                        return response(res, 200, `Operation de rachat en cours de traitement`, data);
+                            libelle: libelle
+                        }, async (mouvement_data) => {
 
+                            await Operation.create(acteur_id, type_operation.r_i, 0, idFcp, op_ref, { 
+                                reference_operateur: "", 
+                                libelle: libelle, 
+                                montant: montant, 
+                                frais_operateur: null, 
+                                frais_operation: null, 
+                                compte_paiement: idClient
+                            }).then(async operation => {
+                                if (!operation) return response(res, 400, `Initialisation de paiement échoué !`);
+
+                                const notification = `Rachat en cours.\nOpération envoyé avec succès.\nMontant: ${montant}XOF\nRef.Operation: ${operation.r_reference}.`;
+                                Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
+                                    console.log(`Opération de rachat envoyé avec succès`, { reference: operation.r_reference });
+                                });
+
+                            }).catch(err => next(err));
+
+                            const data = {
+                                idOperation: mouvement_data,
+                                moyen_paiement: "TMOP-002",
+                                montant: montant,
+                                devise: "XOF",
+                                date_creation: date
+                            }
+
+                            return response(res, 200, `Operation de rachat en cours de traitement`, data);
+
+                        }).catch(err => next(err));
                     }).catch(err => next(err));
-
                 }).catch(err => next(err));
             }).catch(err => next(err));
         }).catch(err => next(err));
