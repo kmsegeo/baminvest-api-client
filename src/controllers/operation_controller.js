@@ -261,7 +261,7 @@ const opRachat = async (req, res, next) => {
                         libelle: "RETRAIT DE FONDS DE PLACEMENT", 
                         dateValeur: date, 
                         idModePaiement: 7,              // 7: Paiement espece
-                        refModePaiement: "",
+                        refModePaiement: "string",
                         montant: montant
                     }, async (operaton_data) => {
                         await Atsgo.saveMouvement(apikey, {
@@ -272,7 +272,7 @@ const opRachat = async (req, res, next) => {
                             dateMouvement: date,
                             dateValeur: date,
                             idModePaiement: 7,          // 7: Paiement espece
-                            refModePaiement: "",
+                            refModePaiement: "string",
                             montant: montant,
                             libelle: libelle
                         }, async (mouvement_data) => {
