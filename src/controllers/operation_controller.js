@@ -159,7 +159,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
             
             if (!operation) {
                 await Wave.refund(data.id, async () => {});        
-                return response(res, 404, `Données de l'opération introuvable !`);
+                console.error(`Données de l'opération introuvable !`);
             }
 
             const idClient = operation.compte_paiement;
@@ -167,52 +167,59 @@ const opSouscriptionCompleted = async (req, res, next) => {
 
             console.log(`Envoi des données de souscription à ATSGO..`);
 
-            try {
-
-                await Atsgo.saveMouvement(apikey, {
-                    idTypeMouvement: 1,             // 1:Apport Liquidité - 2:Retrait de Liquidités
+            await Atsgo.saveMouvement(apikey, {
+                idTypeMouvement: 1,             // 1:Apport Liquidité - 2:Retrait de Liquidités
+                idClient: idClient,
+                idFcp: idFcp,
+                date: new Date(),
+                dateMouvement: data.when_created,
+                dateValeur: data.when_completed,
+                idModePaiement: 6,              // 6:wave
+                refModePaiement: data.transaction_id,
+                montant: operation.r_montant,
+                libelle: operation.r_libelle
+            }, async (mouvement_data) => {
+                await Atsgo.saveOperation(apikey, {
                     idClient: idClient,
                     idFcp: idFcp,
-                    date: new Date(),
-                    dateMouvement: data.when_created,
-                    dateValeur: data.when_completed,
-                    idModePaiement: 6,              // 6:wave
+                    referenceOperation: operation.r_reference, 
+                    idTypeOperation: 2,         // 2:Souscription - 3:Rachat
+                    libelle: operation.r_libelle, 
+                    dateValeur: data.when_created, 
+                    idModePaiement: 6,          // 6: Wave
                     refModePaiement: data.transaction_id,
-                    montant: operation.r_montant,
-                    libelle: operation.r_libelle
-                }, async (mouvement_data) => {
-                    await Atsgo.saveOperation(apikey, {
-                        idClient: idClient,
-                        idFcp: idFcp,
-                        referenceOperation: operation.r_reference, 
-                        idTypeOperation: 2,         // 2:Souscription - 3:Rachat
-                        libelle: operation.r_libelle, 
-                        dateValeur: data.when_created, 
-                        idModePaiement: 6,          // 6: Wave
-                        refModePaiement: data.transaction_id,
-                        montant: operation.r_montant
-                    }, async (operaton_data) => {
-                        await Operation.updateSuccess(operation.r_reference).then(async result => {
-                            await Acteur.findById(operation.e_acteur).then(acteur => {
-                                const notification = `Souscription terminé.\nOpération envoyé avec succès.\nRef.Transaction: ${data.transaction_id}\nMontant: ${operation.r_montant} ${data.currency}.`;
-                                Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
-                            }).catch(err => console.log(err))
-                            return response(res, 200, `Opération de souscription envoyé avec succès`, { reference: result.r_reference });
-                        }).catch(err => console.log(err))
-                    })
+                    montant: operation.r_montant
+                }, async (operaton_data) => {
+                    await Operation.updateSuccess(operation.r_reference).then(async result => {
+                        await Acteur.findById(operation.e_acteur).then(acteur => {
+                            const notification = `Souscription terminé.\nOpération envoyé avec succès.\nRef.Transaction: ${data.transaction_id}\nMontant: ${operation.r_montant} ${data.currency}.`;
+                            Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
+                        }).catch(err => console.error(err))
+                        return response(res, 200, `Opération de souscription envoyé avec succès`, { reference: result.r_reference });
+                    }).catch(err => console.error(err))
+                }).catch(err => {
+                    Wave.refund(data.id, () => { 
+                        Acteur.findById(operation.e_acteur).then(acteur => {
+                            const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.transaction_id}, à été restitué.`;
+                            Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
+                        }).catch(err => console.error(err)); 
+                    }); 
+                    console.err(err);
                 })
-             
-            } catch (error) {
-                await Wave.refund(data.id, async () => { 
-                    await Acteur.findById(operation.e_acteur).then(acteur => {
+            }).catch(err => {
+                Wave.refund(data.id, () => { 
+                    Acteur.findById(operation.e_acteur).then(acteur => {
                         const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.transaction_id}, à été restitué.`;
                         Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
-                    }).catch(err => console.log(err)); 
+                    }).catch(err => console.error(err)); 
                 }); 
-            }
+                console.err(err);
+            })
+             
                 
-        }).catch(err => console.log(err));
-    }).catch(err => console.log(err));
+                
+        }).catch(err => console.error(err));
+    }).catch(err => console.error(err));
 };
 
 const opRachat = async (req, res, next) => {
