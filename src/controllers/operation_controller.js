@@ -192,7 +192,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                 }, async (operaton_data) => {
                     await Operation.updateSuccess(operation.r_reference).then(async result => {
                         await Acteur.findById(operation.e_acteur).then(acteur => {
-                            const notification = `Souscription terminé.\nOpération envoyé avec succès.\nRef.Transaction: ${data.transaction_id}\nMontant: ${operation.r_montant} ${data.currency}.`;
+                            const notification = `Souscription terminé.\nOpération envoyé avec succès.\nRef.Wave: ${data.id}\nMontant: ${operation.r_montant} ${data.currency}\nRef.Transaction: ${data.transaction_id}.`;
                             Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
                         }).catch(err => console.error(err))
                         return response(res, 200, `Opération de souscription envoyé avec succès`, { reference: result.r_reference });
@@ -200,7 +200,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                 }).catch(err => {
                     Wave.refund(data.id, () => { 
                         Acteur.findById(operation.e_acteur).then(acteur => {
-                            const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.transaction_id}, à été restitué.`;
+                            const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
                             Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
                         }).catch(err => console.error(err)); 
                     }); 
@@ -209,15 +209,13 @@ const opSouscriptionCompleted = async (req, res, next) => {
             }).catch(err => {
                 Wave.refund(data.id, () => { 
                     Acteur.findById(operation.e_acteur).then(acteur => {
-                        const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.transaction_id}, à été restitué.`;
+                        const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
                         Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
                     }).catch(err => console.error(err)); 
                 }); 
                 console.err(err);
             })
              
-                
-                
         }).catch(err => console.error(err));
     }).catch(err => console.error(err));
 };
