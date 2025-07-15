@@ -192,7 +192,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                         refModePaiement: data.transaction_id,
                         montant: operation.r_montant
                     }, async (operaton_data) => {
-                        await Operation.updateSuccess(operation.r_reference).then(async result => {
+                        await Operation.updateSuccess().then(async result => {
                             await Acteur.findById(operation.e_acteur).then(acteur => {
                                 const notification = `Souscription terminé.\nOpération envoyé avec succès.\nRef.Transaction: ${data.transaction_id}\nMontant: ${operation.r_montant} ${data.currency}.`;
                                 Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
