@@ -203,10 +203,12 @@ const opSouscriptionCompleted = async (req, res, next) => {
                 })
              
             } catch (error) {
-                await Acteur.findById(operation.e_acteur).then(acteur => {
-                    const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.transaction_id}, à été restitué.`;
-                    Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
-                }).catch(err => console.log(err)); 
+                await Wave.refund(data.id, async () => { 
+                    await Acteur.findById(operation.e_acteur).then(acteur => {
+                        const notification = `Souscription échouée.\nOpération n'a pas aboutie. Le montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.transaction_id}, à été restitué.`;
+                        Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, null);
+                    }).catch(err => console.log(err)); 
+                }); 
             }
                 
         }).catch(err => console.log(err));
