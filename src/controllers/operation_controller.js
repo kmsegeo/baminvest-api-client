@@ -192,7 +192,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                 }, async (operaton_data) => {
                     await Operation.updateSuccess(operation.r_reference).then(async result => {
                         await Acteur.findById(operation.e_acteur).then(acteur => {
-                            const notification = `Souscription terminé.\nOpération envoyé avec succès.\nRef.Wave: ${data.id}\nMontant: ${operation.r_montant} ${data.currency}\nRef.Transaction: ${data.transaction_id}.`;
+                            const notification = `Souscription terminé.\nOpération envoyé avec succès.\nNo Opération:${operaton_data.idOperationClient}\nRef.Wave: ${data.id}\nMontant: ${operation.r_montant} ${data.currency}\nRef.Transaction: ${data.transaction_id}.`;
                             Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
                                 console.log(`Opération de souscription envoyé avec succès`, { reference: result.r_reference });
                             });
