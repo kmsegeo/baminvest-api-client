@@ -64,6 +64,11 @@ const Operation = {
     async updateSuccess(ref) {
         const res = await db.query(`UPDATE ${this.table_name} SET r_statut=$1, r_date_modif=$2 WHERE r_reference=$3 RETURNING *`, [1, new Date(), ref]);
         return res.rows[0];
+    },
+
+    async updateFail(ref) {
+        const res = await db.query(`UPDATE ${this.table_name} SET r_statut=$1, r_date_modif=$2 WHERE r_reference=$3 RETURNING *`, [-1, new Date(), ref]);
+        return res.rows[0];
     }
 }
 

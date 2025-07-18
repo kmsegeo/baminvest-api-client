@@ -152,9 +152,9 @@ const opSouscriptionCompleted = async (req, res, next) => {
 
     Utils.expectedParameters({id, type, data}).then(async () => {
 
-        if (type!="checkout.session.completed") return null;
+        if (type!="checkout.session.completed" || data.payment_status!="succeeded") return null;
+        
         console.log('Paiement wave réussi');
-
         console.log(`Récupération des données de l'opération`);
         await Operation.findByRef(data.client_reference).then(async operation => {
             
@@ -165,6 +165,11 @@ const opSouscriptionCompleted = async (req, res, next) => {
 
             const idClient = operation.compte_paiement;
             const idFcp = operation.e_fonds;
+
+            if (operation.r_statut==1 || operation.r_statut==-1) { // Souscription déjà pris en compte
+                console.log(`Souscription déjà traitée !`)
+                return null;     
+            }
 
             console.log(`Envoi des données de souscription à ATSGO..`);
 
@@ -200,6 +205,20 @@ const opSouscriptionCompleted = async (req, res, next) => {
                         }).catch(err => console.error(err))
                     }).catch(err => console.error(err))
                 }).catch(err => {
+                    Operation.updateFail(operation.r_reference).then(async result => {
+                        Wave.refund(data.id, () => { 
+                            Acteur.findById(operation.e_acteur).then(acteur => {
+                                const notification = `Souscription échouée:\nVotre demande n'a pas aboutie.\nLe Montant: ${operation.r_montant} ${data.currency}, de Ref.Wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
+                                Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
+                                    console.log(`Opération de souscription échouée`, { reference: result.r_reference });
+                                });
+                            }).catch(err => console.error(err)); 
+                        }); 
+                        console.error(err);
+                    }).catch(err => console.error(err))
+                })
+            }).catch(err => {
+                Operation.updateFail(operation.r_reference).then(async result => {
                     Wave.refund(data.id, () => { 
                         Acteur.findById(operation.e_acteur).then(acteur => {
                             const notification = `Souscription échouée:\nVotre demande n'a pas aboutie.\nLe Montant: ${operation.r_montant} ${data.currency}, de Ref.Wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
@@ -209,17 +228,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                         }).catch(err => console.error(err)); 
                     }); 
                     console.error(err);
-                })
-            }).catch(err => {
-                Wave.refund(data.id, () => { 
-                    Acteur.findById(operation.e_acteur).then(acteur => {
-                        const notification = `Souscription échouée:\nVotre demande n'a pas aboutie.\nLe Montant: ${operation.r_montant} ${data.currency}, de Ref.Wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
-                        Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
-                            console.log(`Opération de souscription échouée`, { reference: operation.r_reference });
-                        });
-                    }).catch(err => console.error(err)); 
-                }); 
-                console.error(err);
+                }).catch(err => console.error(err)); 
             })
              
         }).catch(err => console.error(err));
