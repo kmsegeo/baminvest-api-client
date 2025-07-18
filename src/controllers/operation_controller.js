@@ -120,7 +120,7 @@ const opSouscription = async (req, res, next) => {
 
                                     let transfert_data = {
                                         idOperation: operation.r_reference,
-                                        // code: data.id,
+                                        ref_wave: data.id,
                                         montant: data.amount,
                                         devise: data.currency,
                                         paiement_url: data.wave_launch_url,

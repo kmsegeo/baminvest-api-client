@@ -199,7 +199,7 @@ const validerOperation = async (req, res, next) => {
         }).then(res => res.json()).then(async atsgo_data => {
             if (atsgo_data.status!=200) return response(res, 403, `Erreur lors du processus de validation`);  
 
-            const notification = `Souscription:\nVotre demande de souscription No ${idOperationClient}, à été validé avec succès.`;
+            const notification = `Votre demande de souscription No ${idOperationClient}, à été validé avec succès.`;
             await Utils.sendNotificationSMS(acteur_id, acteur.r_telephone_prp, notification, 3, () => {
                 return response(res, 200, `Validation de l'opération terminé`, atsgo_data);
             });
