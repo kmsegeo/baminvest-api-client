@@ -128,7 +128,7 @@ const opSouscription = async (req, res, next) => {
                                         date_expire: data.when_expires
                                     }
 
-                                    const notification = `Demande de souscription:\nRef.Wave: ${data.id}\nMontant: ${data.amount} ${data.currency}.\nConfirmez: ${data.wave_launch_url}`;
+                                    const notification = `Souscription:\nRef.Wave: ${data.id}\nMontant: ${data.amount} ${data.currency}.\nConfirmez: ${data.wave_launch_url}`;
                                     await Utils.sendNotificationSMS(acteur_id, mobile_payeur, notification, 3, () => {});
                                     
                                     return response(res, 200, `Initialisation de paiement réussi`, transfert_data);
