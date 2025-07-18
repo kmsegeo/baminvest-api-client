@@ -107,7 +107,7 @@ const Atsgo = {
             "Content-Type": "application/json",
         }
 
-        await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT_MOUVEMENT + '?ApiKey=' + apikey+'a', {
+        await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT_MOUVEMENT + '?ApiKey=' + apikey, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(mvdata),
