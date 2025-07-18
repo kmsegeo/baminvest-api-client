@@ -208,7 +208,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                     Operation.updateFail(operation.r_reference).then(async result => {
                         Wave.refund(data.id, () => { 
                             Acteur.findById(operation.e_acteur).then(acteur => {
-                                const notification = `Souscription échouée:\nVotre demande n'a pas aboutie.\nLe Montant: ${operation.r_montant} ${data.currency}, de Ref.Wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
+                                const notification = `Votre demande de souscription a échouée:\nLe Montant: ${operation.r_montant} ${data.currency}, de Ref.Wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
                                 Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
                                     console.log(`Opération de souscription échouée`, { reference: result.r_reference });
                                 });
@@ -221,7 +221,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                 Operation.updateFail(operation.r_reference).then(async result => {
                     Wave.refund(data.id, () => { 
                         Acteur.findById(operation.e_acteur).then(acteur => {
-                            const notification = `Souscription échouée:\nVotre demande n'a pas aboutie.\nLe Montant: ${operation.r_montant} ${data.currency}, de Ref.Wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
+                            const notification = `Votre demande de souscription a échouée:\nLe Montant: ${operation.r_montant} ${data.currency}, de Ref.Wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
                             Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
                                 console.log(`Opération de souscription échouée`, { reference: operation.r_reference });
                             });
