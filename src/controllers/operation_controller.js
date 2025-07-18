@@ -115,6 +115,7 @@ const opSouscription = async (req, res, next) => {
                                     frais_operation: null, 
                                     compte_paiement: idClient
                                 }).then(async operation => {
+
                                     if (!operation) return response(res, 400, `Initialisation de paiement échoué !`);
 
                                     let transfert_data = {
@@ -127,7 +128,7 @@ const opSouscription = async (req, res, next) => {
                                         date_expire: data.when_expires
                                     }
 
-                                    const notification = `Souscription:\nRef.Wave: ${data.id}\nMontant: ${data.amount} ${data.currency}.\nConfirmez: ${data.wave_launch_url}`;
+                                    const notification = `Demande de souscription:\nRef.Wave: ${data.id}\nMontant: ${data.amount} ${data.currency}.\nConfirmez: ${data.wave_launch_url}`;
                                     await Utils.sendNotificationSMS(acteur_id, mobile_payeur, notification, 3, () => {});
                                     
                                     return response(res, 200, `Initialisation de paiement réussi`, transfert_data);
@@ -192,7 +193,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                 }, async (operaton_data) => {
                     await Operation.updateSuccess(operation.r_reference).then(async result => {
                         await Acteur.findById(operation.e_acteur).then(acteur => {
-                            const notification = `Souscription:\nOpération envoyé avec succès.\nNo.Opération: ${operaton_data}\nRef.Wave: ${data.id}\nMontant: ${operation.r_montant} ${data.currency}\nRef.Transaction: ${data.transaction_id}`;
+                            const notification = `Souscription:\nVotre demande à été soumise.\nNo.Opération: ${operaton_data}\nRef.Wave: ${data.id}\nMontant: ${operation.r_montant} ${data.currency}\nRef.Transaction: ${data.transaction_id}`;
                             Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
                                 console.log(`Opération de souscription envoyé avec succès`, { reference: result.r_reference });
                             });
@@ -201,7 +202,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
                 }).catch(err => {
                     Wave.refund(data.id, () => { 
                         Acteur.findById(operation.e_acteur).then(acteur => {
-                            const notification = `Souscription échouée:\nL'opération n'a pas aboutie.\nLe montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
+                            const notification = `Souscription échouée:\nVotre demande n'a pas aboutie.\nLe Montant: ${operation.r_montant} ${data.currency}, de Ref.Wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
                             Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
                                 console.log(`Opération de souscription échouée`, { reference: operation.r_reference });
                             });
@@ -212,7 +213,7 @@ const opSouscriptionCompleted = async (req, res, next) => {
             }).catch(err => {
                 Wave.refund(data.id, () => { 
                     Acteur.findById(operation.e_acteur).then(acteur => {
-                        const notification = `Souscription échouée:\nL'opération n'a pas aboutie.\nLe montant: ${operation.r_montant} ${data.currency}, de ref.wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
+                        const notification = `Souscription échouée:\nVotre demande n'a pas aboutie.\nLe Montant: ${operation.r_montant} ${data.currency}, de Ref.Wave: ${data.id}, à été restitué.\nRef.Transaction: ${data.transaction_id}`;
                         Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
                             console.log(`Opération de souscription échouée`, { reference: operation.r_reference });
                         });
@@ -287,7 +288,7 @@ const opRachat = async (req, res, next) => {
                             }).then(async operation => {
                                 if (!operation) return response(res, 400, `Initialisation de paiement échoué !`);
 
-                                const notification = `Rachat en cours.\nOpération envoyé avec succès.\nNo.Opération:${operaton_data}\nMontant: ${montant}XOF\nRef.Operation: ${operation.r_reference}`;
+                                const notification = `Demande de rachat:\nVotre demande à été soumise.\nNo.Opération:${operaton_data}\nMontant: ${montant}XOF\nRef.Operation: ${operation.r_reference}`;
                                 Utils.sendNotificationSMS(acteur.r_i, acteur.r_telephone_prp, notification, 3, () => {
                                     console.log(`Opération de rachat envoyé avec succès`, { reference: operation.r_reference });
                                 });
