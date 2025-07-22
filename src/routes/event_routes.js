@@ -30,7 +30,6 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
             const idClient = particulier.r_atsgo_id_client;
             const apikey = req.apikey.r_valeur;
             const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
-
             const url = process.env.ATSGO_URL + process.env.URI_CLIENT_OPERATIONS + '?ApiKey=' + apikey + '&IdClient=' + idClient;
             console.log(url);
 
@@ -44,7 +43,6 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
                 .then(async data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
                     for(let payLoad of data.payLoad) delete payLoad.idClient;
-                    console.log(data.payLoad)
                     res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
                     cur_operations = operations;
                 }).catch(err => next(err));
@@ -94,7 +92,6 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
             const id_client = particulier.r_atsgo_id_client;
             const apikey = req.apikey.r_valeur;
             const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
-
             const url = process.env.ATSGO_URL + process.env.URI_CLIENT_MOUVEMENTS + '?ApiKey=' + apikey + '&IdClient=' + id_client;
             console.log(url)
 
@@ -107,7 +104,6 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
                 .then(async res => res.json())
                 .then(async data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
-                    console.log(data.payLoad)
                     res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
                     cur_operations = operations;
                 }).catch(err => next(err));
