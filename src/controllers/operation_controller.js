@@ -27,7 +27,7 @@ const getAllActeurOperations = async (req, res, next) => {
     if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`); 
 
     const apikey = req.apikey.r_valeur;
-    const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
+    // const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
 
     console.log(`Recupération des données client`)
     await Acteur.findById(req.session.e_acteur).then(async acteur => {

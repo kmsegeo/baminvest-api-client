@@ -3627,7 +3627,7 @@
         }
       }
     },
-    "/v1/events/": {
+    "/v1/events/acteurs/operations": {
       "get": {
         "description": "",
         "produces": [
@@ -3635,17 +3635,17 @@
         ],
         "parameters": [
           {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "appauth",
             "in": "header",
             "type": "string"
           },
           {
             "name": "app_id",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "op_code",
             "in": "header",
             "type": "string"
           },
@@ -3661,8 +3661,48 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/v1/events/acteurs/transactions": {
+      "get": {
+        "description": "",
+        "produces": [
+          "text/event-stream"
+        ],
+        "parameters": [
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
