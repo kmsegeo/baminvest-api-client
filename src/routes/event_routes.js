@@ -13,20 +13,20 @@ const router = express.Router();
 
 router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (req, res, next) => {
 
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-
     console.log('Ouverture de socket d\'historique des opérations...')
 
     const acteur_id = req.session.e_acteur;
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
 
     if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`); 
 
     console.log(`Recupération des données client`)
     await Acteur.findById(acteur_id).then(async acteur => {
         await Particulier.findById(acteur.e_particulier).then(async particulier => {
-            
+
             const idClient = particulier.r_atsgo_id_client;
             const apikey = req.apikey.r_valeur;
             const date = new Date().getFullYear() + '-'  + new Date().getMonth() + '-' + new Date().getDate();
@@ -38,6 +38,7 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
             // Chargement pour la première fois
 
             await Operation.findAllByActeur(acteur_id).then(async operations => {
+                console.log(`Première opération de souscription`)
                 await fetch(url)
                 .then(async res => res.json())
                 .then(async data => {
@@ -100,6 +101,7 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
             // Chargement pour la première fois
 
             await Operation.findAllByActeur(acteur_id).then(async operations => {
+                console.log(`Première opération de transaction`)
                 await fetch(url)
                 .then(async res => res.json())
                 .then(async data => {
@@ -131,10 +133,7 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
 
         }).catch(err => next(err));
     }).catch(err => next(err));
-
-    setInterval(async () => {
-        
-    }, 15000);
+    
 });
 
 module.exports = router;
