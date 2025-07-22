@@ -38,18 +38,16 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
             // Chargement pour la première fois
 
             await Operation.findAllByActeur(acteur_id).then(async operations => {
-                console.log(`Première opération de souscription`)
                 await fetch(url)
                 .then(async res => res.json())
                 .then(async data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
                     for(let payLoad of data.payLoad) delete payLoad.idClient;
-                    console.log('data.payLoad')
-                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
+                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}`);
                     cur_operations = operations;
                 }).catch(err => next(err));
             }).catch(err=>next(err));
-
+            
             // Chargement à un interval défini
             
             setInterval(async () => {
@@ -62,17 +60,18 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
                         .then(async data => {
                             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
                             for(let payLoad of data.payLoad) delete payLoad.idClient;
-                            res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
+                            res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}`);
                         }).catch(err => next(err));
 
                         if (cur_operations.length==0 || operations[operations.length-1].r_statut!=0) cur_operations = operations;
                     }
                 }).catch(err=>next(err));
 
-            }, 15000);
+            }, 5000);
 
         }).catch(err => next(err));
     }).catch(err => next(err));
+
 });
 
 router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async (req, res, next) => {
@@ -80,7 +79,7 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
     console.log('Ouverture de socket d\'historique des transactions...')
 
     const acteur_id = req.session.e_acteur;
-
+    
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
@@ -102,13 +101,11 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
             // Chargement pour la première fois
 
             await Operation.findAllByActeur(acteur_id).then(async operations => {
-                console.log(`Première opération de transaction`)
                 await fetch(url)
                 .then(async res => res.json())
                 .then(async data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
-                    console.log('data.payLoad')
-                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
+                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}`);
                     cur_operations = operations;
                 }).catch(err => next(err));
             }).catch(err => next(err));
@@ -124,14 +121,14 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
                         .then(async res => res.json())
                         .then(async data => {
                             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
-                            res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
+                            res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}`);
                         }).catch(err => next(err));
 
                         if (cur_operations.length==0 || operations[operations.length-1].r_statut!=0) cur_operations = operations;
                     }
                 }).catch(err => next(err));
 
-            }, 15000);
+            }, 5000);
 
         }).catch(err => next(err));
     }).catch(err => next(err));
