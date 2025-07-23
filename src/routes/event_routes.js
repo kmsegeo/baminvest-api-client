@@ -67,8 +67,7 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
                 .then(data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
                     for(let payLoad of data.payLoad) delete payLoad.idClient;
-                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
-                    res.flushHeaders();
+                    sendEvent(data.payLoad);
                     cur_operations = operations;
                 }).catch(err => next(err));
             }).catch(err=>next(err));
@@ -83,8 +82,7 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
                         .then(data => {
                             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
                             for(let payLoad of data.payLoad) delete payLoad.idClient;
-                            res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
-                            res.flushHeaders();
+                            sendEvent(data.payLoad);
                             if (cur_operations.length==0 || operations[operations.length-1].r_statut!=0) cur_operations = operations;
                         }).catch(err => next(err));
                     }
@@ -110,6 +108,11 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
+    const sendEvent = (data) => {
+        res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data})}\n\n`);
+        res.flushHeaders();
+    };
+
     const acteur_id = req.session.e_acteur;
 
     if (req.headers.op_code!='TYOP-003') return response(res, 403, `Type opération non authorisé !`);
@@ -133,7 +136,7 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
                 .then(resp => resp.json())
                 .then(data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
-                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
+                    sendEvent(data.payLoad);
                     res.flushHeaders();
                     cur_operations = operations;
                 }).catch(err => next(err));
@@ -148,8 +151,7 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
                         .then(resp => resp.json())
                         .then(data => {
                             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
-                            res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
-                            res.flushHeaders();
+                            sendEvent(data.payLoad);
                             if (cur_operations.length==0 || operations[operations.length-1].r_statut!=0) cur_operations = operations;
                         }).catch(err => next(err));                        
                     }
