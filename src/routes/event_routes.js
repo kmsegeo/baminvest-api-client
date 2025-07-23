@@ -64,11 +64,10 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
             await Operation.findAllByActeur(acteur_id).then(async operations => {
                 await fetch(url)
                 .then(resp => resp.json())
-                .then(async data => {
+                .then(data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
                     for(let payLoad of data.payLoad) delete payLoad.idClient;
-                    res.write(`data: Connected to server..\n\n`);
-                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: await data.payLoad})}\n\n`);
+                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
                     res.flushHeaders();
                     cur_operations = operations;
                 }).catch(err => next(err));
