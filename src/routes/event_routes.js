@@ -62,6 +62,7 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
             // Chargement pour la première fois
 
             await Operation.findAllByActeur(acteur_id).then(async operations => {
+                res.write(`data: Connected to server\n\n`);
                 await fetch(url)
                 .then(res => res.json())
                 .then(data => {
