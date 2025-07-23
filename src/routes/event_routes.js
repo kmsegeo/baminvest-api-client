@@ -63,14 +63,12 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
 
             await Operation.findAllByActeur(acteur_id).then(async operations => {
                 await fetch(url)
-                .then(async res => res.json())
-                .then(async data => {
+                .then(res => res.json())
+                .then(data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
                     for(let payLoad of data.payLoad) delete payLoad.idClient;
-                    setTimeout(()=>{
-                        res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
-                        res.flushHeaders();
-                    },2000)
+                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
+                    res.flushHeaders();
                     cur_operations = operations;
                 }).catch(err => next(err));
             }).catch(err=>next(err));
@@ -132,8 +130,8 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
 
             await Operation.findAllByActeur(acteur_id).then(async operations => {
                 await fetch(url)
-                .then(async res => res.json())
-                .then(async data => {
+                .then(res => res.json())
+                .then(data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
                     res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
                     res.flushHeaders();
@@ -147,8 +145,8 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
                 await Operation.findAllByActeur(acteur_id).then(async operations => {
                     if (operations.length > cur_operations.length || operations[operations.length-1].r_statut==0) {
                         await fetch(url)
-                        .then(async res => res.json())
-                        .then(async data => {
+                        .then(res => res.json())
+                        .then(data => {
                             if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
                             res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
                             res.flushHeaders();
