@@ -130,10 +130,10 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
 
             // Chargement pour la première fois
 
-            await Operation.findAllByActeur(acteur_id).then(async operations => {
-                await fetch(url)
-                .then(async res => res.json())
-                .then(async data => {
+            Operation.findAllByActeur(acteur_id).then(operations => {
+                fetch(url)
+                .then(res => res.json())
+                .then(data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
                     res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
                     res.flushHeaders();
