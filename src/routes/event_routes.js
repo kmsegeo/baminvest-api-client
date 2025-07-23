@@ -62,12 +62,12 @@ router.get('/acteurs/operations', app_auth, session_verify, atsgo_auth, async (r
             // Chargement pour la première fois
 
             await Operation.findAllByActeur(acteur_id).then(async operations => {
-                res.write(`data: Connected to server\n\n`);
                 await fetch(url)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des opération !`);
                     for(let payLoad of data.payLoad) delete payLoad.idClient;
+                    res.write(`data: Connected to server..\n\n`);
                     res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des opérations: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
                     res.flushHeaders();
                     cur_operations = operations;
