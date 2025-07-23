@@ -130,17 +130,17 @@ router.get('/acteurs/transactions', app_auth, session_verify, atsgo_auth, async 
 
             // Chargement pour la première fois
 
-            await Operation.findAllByActeur(acteur_id).then(async operations => {
-                await fetch(url)
-                .then(async res => res.json())
-                .then(async data => {
-                    if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
-                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
-                    res.flushHeaders();
-                    console.log(operations)
-                    cur_operations = operations;
-                }).catch(err => next(err));
-            }).catch(err => next(err));
+            // await Operation.findAllByActeur(acteur_id).then(async operations => {
+            //     await fetch(url)
+            //     .then(async res => res.json())
+            //     .then(async data => {
+            //         if (data.status!=200) return response(res, 403, `Une erreur lors de la récupération des transactions !`);
+            //         res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération des transactions: ${new Date().toLocaleString()}`, data: data.payLoad})}\n\n`);
+            //         res.flushHeaders();
+            //         console.log(operations)
+            //         cur_operations = operations;
+            //     }).catch(err => next(err));
+            // }).catch(err => next(err));
 
             // Chargement à un interval défini
 
