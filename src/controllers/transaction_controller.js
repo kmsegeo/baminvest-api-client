@@ -57,7 +57,6 @@ const checkWaveTransaction = async (req, res, next) => {
 
             console.log(`Chargement des opération client`)
             await Atsgo.findClientOperation(apikey, idClient, async operations => {
-
                 for (let operation of operations) {
                     if (operation.idOperationClient==idOperation) {
                         await Wave.checkoutCheck(operation.referenceOperation, async result => {

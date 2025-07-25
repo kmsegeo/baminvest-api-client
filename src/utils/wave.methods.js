@@ -39,7 +39,6 @@ const Wave = {
     async checkoutCheck(checkout_id, callback) {
 
         console.log(`Vérification du paiement wave..`)
-
         const url = process.env.WAVE_URL + process.env.URI_CHECKOUT_SESSION;
 
         axios.get(url + `/${checkout_id}`, { headers: {'Authorization': `Bearer ${process.env.WAVE_API_API_ALL}`} })

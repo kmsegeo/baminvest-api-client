@@ -40,10 +40,18 @@ const onbordingParticulier = async (req, res, next) => {
         
         console.log(`Vérification de l'existance du compte`);
         await Acteur.findByEmail(email).then(async exists_email => {
-            if (exists_email) return response(res, 409, `Cette adresse email existe déjà !`);
+            if (exists_email) {
+                if (exists_email.r_statut==0) return response(res, 202, `Cette adresse email existe, mais le compte n'a pas été activé !`, exists_email)
+                else if (exists_email.r_statut==-1) return response(res, 202, `Cette adresse email existe, mais le compte à été supprimé !`, exists_email);
+                else return response(res, 409, `Cette adresse email est déjà utilisé !`);
+            }
             
         await Acteur.findByTelephone(telephone).then(async exists_phone => {
-            if (exists_phone) return response(res, 409, `Ce numéro de téléphone existe déjà !`);
+            if (exists_phone) {
+                if (exists_phone.r_statut==0) return response(res, 202, `Ce numéro de téléphone existe,mais le compte n'a pas été activé !`, exists_phone);
+                else if (exists_phone.r_statut==-1) return response(res, 202, `Ce numéro de téléphone existe, mais le compte à été supprimé !`, exists_phone);
+                else return response(res, 409, `Ce numéro de téléphone est déjà utilisé !`);
+            }
     
         console.log(`Récupération de l'id du type acteur`);
         await TypeActeur.findByCode("TYAC-003").then(async type_acteur => {
@@ -742,11 +750,14 @@ const verifierOtp = async (req, res, next) => {
                                     // "idSecteurActivite": 3
                                 }, async (atsgo_data) => {
 
-                                    await Acteur.activeCompte(acteur_id).catch(err => next(err));
-                                    await Atsgo.validateAtsgoAccount(apikey, atsgo_data).catch(err => next(err));
-                                    await OTP.confirm(acteur_id, otp.r_i).catch(err => next(err)); 
+                                    await Atsgo.validateAtsgoAccount(apikey, atsgo_data).then(() => {
+                                        Acteur.activeCompte(acteur_id).catch(err => next(err));
+                                    }).catch(err => next(err));
                                     
+                                    await OTP.confirm(acteur_id, otp.r_i).catch(err => next(err)); 
+
                                     return response(res, 200, `Vérification terminé avec succès`);
+
                                 }).catch(async err => response(res, 403, err));
 
                             }).catch(err => next(err));

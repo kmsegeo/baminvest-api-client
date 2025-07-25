@@ -26,15 +26,18 @@ const login = async (req, res, next) => {
     const {email, mdp} = req.body;
     
     console.log(`Vérification des paramètres`)
-    Utils.expectedParameters({email, mdp}).then(async () => {
+    Utils.expectedParameters({email}).then(async () => {
 
         console.log(`Chargement de l'acteur`)
-        await Acteur.findByEmail(req.body.email).then(acteur => {
+        await Acteur.findByEmail(email).then(acteur => {
             if (!acteur) return response(res, 401, `Login ou mot de passe incorrect !`);
             if (acteur.e_agent && acteur.e_agent!=0) return response(res, 401, `Ce compte n'est pas enregistré en tant que client`);
+            if (acteur.r_statut==0 || acteur.r_date_activation==undefined) return response(res, 401, `Ce compte n'a pas été activé !`);
+
             console.log(`Vérification de mot de passe`)
-            bcrypt.compare(req.body.mdp, acteur.r_mdp).then(async valid => {
+            bcrypt.compare(mdp, acteur.r_mdp).then(async valid => {
                 if(!valid) return response(res, 401, `Login ou mot de passe incorrect !`);
+                if (acteur.r_statut==-1) return response(res, 401, `Ce compte à été supprimé !`);
                 console.log(`Création de session`)
                 await Session.create({
                     os: req.headers.os,
@@ -62,6 +65,7 @@ const login = async (req, res, next) => {
                             
                             await Particulier.findById(result.e_particulier).then(async particulier => {
                                 if (!particulier) return response(res, 400, `Une erreur s'est produite à la récupération du compte client !`);
+                                if (particulier.r_atsgo_id_client==undefined) return response(res, 401, `Ce compte n'a pas été validé !`);
                                 
                                 if (particulier) {
                                     particulier['type_piece_intitule'] = type_piece[particulier.r_type_piece];
