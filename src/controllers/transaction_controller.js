@@ -5,6 +5,7 @@ const { Particulier } = require("../models/Client");
 const Utils = require("../utils/utils.methods");
 const Wave = require("../utils/wave.methods");
 const Atsgo = require("../utils/atsgo.methods");
+const Operation = require("../models/Operation");
 // const axios = require('axios');
 
 const getTransactionHistorique = async (req, res, next) => {
@@ -41,37 +42,59 @@ const getTransactionHistorique = async (req, res, next) => {
 
 // OPERATEUR: WAVE
 
-const checkWaveTransaction = async (req, res, next) => {
+const checkOperationStatus = async (req, res, next) => {
     
-    console.log(`Vérification de transaction wave..`)
+    console.log(`Vérification de transaction..`);
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
     const apikey = req.apikey.r_valeur;
     const acteur_id = req.session.e_acteur;
-    const idOperation = req.params.id;
+    const operationRef = req.params.ref;
+
+    let statut = {
+        r_enregistre: false,
+        r_envoye: false,
+        r_valide: false
+    }
 
     console.log(`Recupération des données client`)
     await Acteur.findById(acteur_id).then(async acteur => {
         await Particulier.findById(acteur.e_particulier).then(async particulier => {
-        
-            // const idClient = particulier.r_ncompte_titre;
             const idClient = particulier.r_atsgo_id_client;
 
             console.log(`Chargement des opération client`)
-            await Atsgo.findClientOperation(apikey, idClient, async operations => {
+            await Operation.findAllByActeur(acteur_id).then(async operations => {
                 for (let operation of operations) {
-                    if (operation.idOperationClient==idOperation) {
-                        await Wave.checkoutCheck(operation.referenceOperation, async result => {
-                            const data = {
-                                // mobile_payeur:  result.enforce_payer_mobile,
-                                // amount: result.amount,
-                                // currency: result.currency,
-                                statut_paiement: result.payment_status,
-                                // date_creation: result.when_created,
-                                // date_expire: result.when_expires
+                    if (operation.r_reference==operationRef) {
+                        
+                        console.log("Ref:", operation.r_reference);
+
+                        statut.r_enregistre = true;
+                        statut.r_envoye = operation.r_statut==1 ? true:false;
+                        
+                        if (operation.r_statut==1)
+                        await Atsgo.findClientOperation(apikey, idClient, async atsgo_operations => {
+                            for (let atsgo_operation of atsgo_operations) {
+                                if (atsgo_operation.referenceOperation==operation.r_reference) {
+                                    statut.r_valide = atsgo_operation.etat=="VALIDE" ? true:false;
+                                    console.log(atsgo_operation.etat);
+                                }
                             }
-                            return response(res, 200, `Vérification terminé`, data);
                         }).catch(err => next(err));
                     }
                 }
+                // return response(res, 200, `Vérification terminé`, statut);
+
+                res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération: ${new Date().toLocaleString()}`, data:statut})}\n\n`);
+
+                // const intervalId = setInterval(async () => {
+                //     res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération: ${new Date().toLocaleString()}`, data:statut})}\n\n`);
+                //     res.flushHeaders();
+                // }, 5000);
+
             }).catch(err => next(err));
         }).catch(err => next(err));
     }).catch(err => next(err));
@@ -133,6 +156,6 @@ const checkWaveTransaction = async (req, res, next) => {
 
 module.exports = {
     // waveTransfert,
-    checkWaveTransaction,
+    checkOperationStatus,
     getTransactionHistorique
 }

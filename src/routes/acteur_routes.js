@@ -86,7 +86,7 @@ router.get('/fichiers/:ref', app_auth, session_verify, onbordingController.getFi
 router.get('/operations', app_auth, session_verify, atsgo_auth, operationController.getAllActeurOperations);
 router.post('/operations/souscription', app_auth, session_verify, atsgo_auth, operationController.opSouscription);
 router.post('/operations/rachat', app_auth, session_verify, atsgo_auth, operationController.opRachat);
-router.get('/operations/souscription/:id/paiement/statut', app_auth, session_verify, atsgo_auth, transactionController.checkWaveTransaction);
+router.get('/operations/souscription/:ref/paiement/statut', app_auth, session_verify, atsgo_auth, transactionController.checkOperationStatus);
 // router.post('/operations/wave/transfert', app_auth, session_verify, atsgo_auth, transactionController.waveTransfert);
 
 // PORTEFEUILLE
