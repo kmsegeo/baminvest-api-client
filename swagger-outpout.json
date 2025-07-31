@@ -2730,12 +2730,15 @@
         }
       }
     },
-    "/v1/acteurs/operations/souscription/{id}/paiement/statut": {
+    "/v1/acteurs/operations/souscription/{ref}/paiement/statut": {
       "get": {
         "description": "",
+        "produces": [
+          "text/event-stream"
+        ],
         "parameters": [
           {
-            "name": "id",
+            "name": "ref",
             "in": "path",
             "required": true,
             "type": "string"
@@ -3627,11 +3630,35 @@
         }
       }
     },
-    "/v1/events/": {
+    "/v1/faqs/": {
       "get": {
         "description": "",
-        "produces": [
-          "text/event-stream"
+        "parameters": [
+          {
+            "name": "appauth",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "app_id",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "op_code",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
           "default": {
