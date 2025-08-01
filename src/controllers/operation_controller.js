@@ -119,7 +119,7 @@ const opSouscription = async (req, res, next) => {
                                     if (!operation) return response(res, 400, `Initialisation de paiement échoué !`);
 
                                     let transfert_data = {
-                                        idOperation: operation.r_reference,
+                                        reference_operation: operation.r_reference,
                                         ref_wave: data.id,
                                         montant: data.amount,
                                         devise: data.currency,
