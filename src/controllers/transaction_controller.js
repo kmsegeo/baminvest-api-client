@@ -66,6 +66,50 @@ const checkOperationStatus = async (req, res, next) => {
             const idClient = particulier.r_atsgo_id_client;
 
             console.log(`Chargement des opération client`)
+            
+            let end = false;
+
+            await Operation.findAllByActeur(acteur_id).then(async operations => {
+
+                for (let operation of operations) {
+                    if (operation.r_reference==operationRef) {
+                        
+                        operation_data = 
+                        {
+                            r_reference: operation.r_reference,
+                            r_libelle: operation.r_libelle,
+                            r_montant: operation.r_montant,
+                            r_date_creer: operation.r_date_creer
+                        };
+
+                        console.log("Ref:", operation.r_reference);
+
+                        statut.enregistre = true;
+                        statut.envoye = operation.r_statut==1 ? true:false;
+                        
+                        if (operation.r_statut==1)
+                        await Atsgo.findClientOperation(apikey, idClient, async atsgo_operations => {
+                            for (let atsgo_operation of atsgo_operations) {
+                                if (atsgo_operation.referenceOperation==operation.r_reference) {
+                                    statut.valide = atsgo_operation.etat=="VALIDE" ? true:false;
+                                    console.log(atsgo_operation.etat);
+                                    if (statut.valide) {
+                                        console.log(`Opération validée !`);
+                                        end = true;
+                                    }
+                                }
+                            }
+                        }).catch(err => next(err));
+                    }
+                }
+
+                res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération: ${new Date().toLocaleString()}`, analytics:statut, data:operation_data})}\n\n`);
+                res.flushHeaders();
+
+                if (end) return res.end();
+    
+            }).catch(err => next(err));
+
             const intervalId = setInterval(async () => {
 
                 let operation_data = {};
@@ -96,6 +140,7 @@ const checkOperationStatus = async (req, res, next) => {
                                         if (statut.valide) {
                                             clearInterval(intervalId);
                                             console.log(`Opération validée !`);
+                                            end = true;
                                         }
                                         // operation_data = atsgo_operation;
                                     }
@@ -107,7 +152,10 @@ const checkOperationStatus = async (req, res, next) => {
                     res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération: ${new Date().toLocaleString()}`, analytics:statut, data:operation_data})}\n\n`);
                     res.flushHeaders();
 
+                    if (end) return res.end();
+
                 }).catch(err => next(err));
+            
             }, 5000);
 
         }).catch(err => next(err));
