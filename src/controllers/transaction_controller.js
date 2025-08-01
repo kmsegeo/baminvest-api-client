@@ -55,9 +55,9 @@ const checkOperationStatus = async (req, res, next) => {
     const operationRef = req.params.ref;
 
     let statut = {
-        r_enregistre: false,
-        r_envoye: false,
-        r_valide: false
+        enregistre: false,
+        envoye: false,
+        valide: false
     }
 
     console.log(`Recupération des données client`)
@@ -66,36 +66,50 @@ const checkOperationStatus = async (req, res, next) => {
             const idClient = particulier.r_atsgo_id_client;
 
             console.log(`Chargement des opération client`)
-            await Operation.findAllByActeur(acteur_id).then(async operations => {
-                for (let operation of operations) {
-                    if (operation.r_reference==operationRef) {
-                        
-                        console.log("Ref:", operation.r_reference);
+            const intervalId = setInterval(async () => {
 
-                        statut.r_enregistre = true;
-                        statut.r_envoye = operation.r_statut==1 ? true:false;
-                        
-                        if (operation.r_statut==1)
-                        await Atsgo.findClientOperation(apikey, idClient, async atsgo_operations => {
-                            for (let atsgo_operation of atsgo_operations) {
-                                if (atsgo_operation.referenceOperation==operation.r_reference) {
-                                    statut.r_valide = atsgo_operation.etat=="VALIDE" ? true:false;
-                                    console.log(atsgo_operation.etat);
+                let operation_data = {};
+                await Operation.findAllByActeur(acteur_id).then(async operations => {
+
+                    for (let operation of operations) {
+                        if (operation.r_reference==operationRef) {
+                            
+                            operation_data = 
+                            {
+                                r_reference: operation.r_reference,
+                                r_libelle: operation.r_libelle,
+                                r_montant: operation.r_montant,
+                                r_date_creer: operation.r_date_creer
+                            };
+
+                            console.log("Ref:", operation.r_reference);
+
+                            statut.enregistre = true;
+                            statut.envoye = operation.r_statut==1 ? true:false;
+                            
+                            if (operation.r_statut==1)
+                            await Atsgo.findClientOperation(apikey, idClient, async atsgo_operations => {
+                                for (let atsgo_operation of atsgo_operations) {
+                                    if (atsgo_operation.referenceOperation==operation.r_reference) {
+                                        statut.valide = atsgo_operation.etat=="VALIDE" ? true:false;
+                                        console.log(atsgo_operation.etat);
+                                        if (statut.valide) {
+                                            clearInterval(intervalId);
+                                            console.log(`Opération validée !`);
+                                        }
+                                        // operation_data = atsgo_operation;
+                                    }
                                 }
-                            }
-                        }).catch(err => next(err));
+                            }).catch(err => next(err));
+                        }
                     }
-                }
-                // return response(res, 200, `Vérification terminé`, statut);
 
-                res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération: ${new Date().toLocaleString()}`, data:statut})}\n\n`);
+                    res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération: ${new Date().toLocaleString()}`, analytics:statut, data:operation_data})}\n\n`);
+                    res.flushHeaders();
 
-                // const intervalId = setInterval(async () => {
-                //     res.write(`data: ${JSON.stringify({statut: "SUCCESS", message: `Dernière récupération: ${new Date().toLocaleString()}`, data:statut})}\n\n`);
-                //     res.flushHeaders();
-                // }, 5000);
+                }).catch(err => next(err));
+            }, 5000);
 
-            }).catch(err => next(err));
         }).catch(err => next(err));
     }).catch(err => next(err));
 }
