@@ -157,8 +157,8 @@ const generateKycPdfFile = async (req, res, next) => {
 
         const pdfBytes = await pdfDoc.save();
         const fileName = `kyc_${kyc.r_reference}_${Date.now()}.pdf`;
-        const outputPath = path.join(__dirname, '../../uploads', fileName);
-        fs.writeFileSync(outputPath, pdfBytes);
+        // const outputPath = path.join(__dirname, '../../uploads', fileName);
+        // fs.writeFileSync(outputPath, pdfBytes);
 
         // Sauvegarde du chemin dans la db
 
@@ -177,9 +177,11 @@ const generateKycPdfFile = async (req, res, next) => {
 
         // 📤 Aperçu direct dans le navigateur
 
+        console.log(`Fichier KYC généré avec succès: ${fileName}`);
+
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename=filled_kyc_preview.pdf');
-        return res.send(pdfBytes);
+        res.setHeader('Content-Disposition', `inline; filename=${fileName}`);
+        res.send(pdfBytes);
 
     } catch (error) {
         console.error('Erreur:', error);
