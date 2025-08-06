@@ -92,7 +92,6 @@ router.get('/fichiers/generer/kyc', app_auth, session_verify, generateFileContro
 router.get('/fichiers/generer/profilrisque', app_auth, session_verify, generateFileController.generateProfilrisquePdfFile);
 router.get('/fichiers/generer/convention', app_auth, session_verify, generateFileController.generateConventionPdfFile);
 
-
 // OPERATION
 
 router.get('/operations', app_auth, session_verify, atsgo_auth, operationController.getAllActeurOperations);
