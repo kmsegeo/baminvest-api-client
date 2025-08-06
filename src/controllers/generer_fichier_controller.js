@@ -157,31 +157,31 @@ const generateKycPdfFile = async (req, res, next) => {
 
         const pdfBytes = await pdfDoc.save();
         const fileName = `kyc_${kyc.r_reference}_${Date.now()}.pdf`;
-        // const outputPath = path.join(__dirname, '../../uploads', fileName);
-        // fs.writeFileSync(outputPath, pdfBytes);
+        const outputPath = path.join(__dirname, '../../uploads', fileName);
+        fs.writeFileSync(outputPath, pdfBytes);
 
         // Sauvegarde du chemin dans la db
 
-        // const typedoc_intitule = "kyc";
-        // const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${fileName}`;
+        const typedoc_intitule = "kyc";
+        const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${fileName}`;
 
-        // var type = await TypeDocument.findByIntitule(typedoc_intitule);
-        // if (!type) return response(res, 404, `Type de document '${typedoc_intitule}' non trouvé.`);
-        // var doc = await Document.create({
-        //     acteur_id: acteurId, 
-        //     type_document: type.r_i, 
-        //     nom_fichier: fileName, 
-        //     chemin_fichier: chemin_fichier});
+        var type = await TypeDocument.findByIntitule(typedoc_intitule);
+        if (!type) return response(res, 404, `Type de document '${typedoc_intitule}' non trouvé.`);
+        var doc = await Document.create({
+            acteur_id: acteurId, 
+            type_document: type.r_i, 
+            nom_fichier: fileName, 
+            chemin_fichier: chemin_fichier});
 
-        // return response(res, 200, "Fichier KYC généré avec succès.", doc);
+        return response(res, 200, "Fichier KYC généré avec succès.", doc);
 
         // 📤 Aperçu direct dans le navigateur
 
-        console.log(`Fichier KYC généré avec succès: ${fileName}`);
+        // console.log(`Fichier KYC généré avec succès: ${fileName}`);
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename=${fileName}`);
-        res.send(pdfBytes);
+        // res.setHeader('Content-Type', 'application/pdf');
+        // res.setHeader('Content-Disposition', `inline; filename=${fileName}`);
+        // res.send(pdfBytes);
 
     } catch (error) {
         console.error('Erreur:', error);
