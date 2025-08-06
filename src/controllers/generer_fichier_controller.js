@@ -156,7 +156,7 @@ const generateKycPdfFile = async (req, res, next) => {
         // 💾 Sauvegarde locale du fichier
 
         const pdfBytes = await pdfDoc.save();
-        const fileName = `kyc_${kyc.r_reference}_${Date.now()}.pdf`;
+        const fileName = `kyc_${kyc.r_reference}.pdf`;
         const outputPath = path.join(__dirname, '../../uploads', fileName);
         fs.writeFileSync(outputPath, pdfBytes);
 
