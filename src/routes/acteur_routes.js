@@ -11,6 +11,8 @@ const upload = require('../middlewares/multer-config');
 const atsgo_auth = require('../middlewares/atsgo_auth');
 const portefeuilleController = require('../controllers/portefeuille_controller');
 const transactionController = require('../controllers/transaction_controller')
+const fichierController = require('../controllers/fichier_acteur_controller');
+const generateFileController = require('../controllers/generer_fichier_controller');
 
 const router = express.Router();
 
@@ -77,8 +79,16 @@ router.delete('/sessions/:ref', app_auth, session_verify, sessionController.dest
 
 // FICHIERS
 
-router.get('/fichiers', app_auth, session_verify, onbordingController.getActeurFiles);
-router.get('/fichiers/:ref', app_auth, session_verify, onbordingController.getFile);
+router.get('/fichiers', app_auth, session_verify, fichierController.getActeurFiles);
+router.get('/fichiers/photoprofil', app_auth, session_verify, fichierController.getPhotoProfilFile);
+router.get('/fichiers/domiciliation', app_auth, session_verify, fichierController.getDomiciliationFile);
+router.get('/fichiers/signature', app_auth, session_verify, fichierController.getSignatureFile);
+router.get('/fichiers/kyc', app_auth, session_verify, fichierController.getKycFile);
+router.get('/fichiers/profilrisque', app_auth, session_verify, fichierController.getProfilRisqueFile);
+router.get('/fichiers/convention', app_auth, session_verify, fichierController.getConventionFiles);
+router.get('/fichiers/:ref', app_auth, session_verify, fichierController.getFileByRef);
+
+router.post('/fichiers/generer/kyc', app_auth, session_verify, generateFileController.generateKycPdfFile);
 
 
 // OPERATION

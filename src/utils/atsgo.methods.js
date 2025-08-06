@@ -14,7 +14,7 @@ const Atsgo = {
             "Content-Type": "application/json",
         }
         
-        const url_post_client = process.env.ATSGO_URL + process.env.URI_CLIENT + '?ApiKey=' + apikey
+        const url_post_client = process.env.ATSGO_URL + process.env.URI_CLIENT + '?ApiKey=' + apikey;
         console.log(url_post_client);
 
         await fetch(url_post_client, {
@@ -67,9 +67,11 @@ const Atsgo = {
         .then(async validate => {
             if (validate.status!=200) {
                 console.log(validate.errors);
-                throw "Erreur lors de la validation du compte atsgo !";
+                // throw "Erreur lors de la validation du compte atsgo !";
+                console.log(`Erreur lors de la validation du compte atsgo !`);
+            } else {
+                console.log(`Validation du compte atsgo terminé`);
             }
-            console.log(`Validation du compte terminé`);
             
             // callback
             

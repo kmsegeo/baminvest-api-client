@@ -749,7 +749,7 @@ const verifierOtp = async (req, res, next) => {
                                     // "idClientParent": 0,
                                     // "idSecteurActivite": 3
                                 }, async (atsgo_data) => {
-
+                                    
                                     await Atsgo.validateAtsgoAccount(apikey, atsgo_data).then(() => {
                                         Acteur.activeCompte(acteur_id).catch(err => next(err));
                                     }).catch(err => next(err));
