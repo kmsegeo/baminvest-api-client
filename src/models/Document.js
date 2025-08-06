@@ -129,7 +129,8 @@ const Document = {
                 td.r_date_creer,
                 td.r_date_modif
             FROM ${this.tableName} As td, t_type_document As tt  
-            WHERE td.e_type_document=tt.r_i AND td.e_acteur=$1 AND td.r_statut=$2 AND tt.r_intitule=$3`, [acteur_id, 1, intitule]);
+            WHERE td.e_type_document=tt.r_i AND td.e_acteur=$1 AND td.r_statut=$2 AND tt.r_intitule=$3
+            ORDER BY r_i DESC`, [acteur_id, 1, intitule]);
         return res.rows[0];
     },
 

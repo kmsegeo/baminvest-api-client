@@ -89,6 +89,8 @@ router.get('/fichiers/convention', app_auth, session_verify, fichierController.g
 router.get('/fichiers/:ref', app_auth, session_verify, fichierController.getFileByRef);
 
 router.post('/fichiers/generer/kyc', app_auth, session_verify, generateFileController.generateKycPdfFile);
+router.post('/fichiers/generer/profilrisque', app_auth, session_verify, generateFileController.generateProfilrisquePdfFile);
+router.post('/fichiers/generer/convention', app_auth, session_verify, generateFileController.generateConventionPdfFile);
 
 
 // OPERATION
