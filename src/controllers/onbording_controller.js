@@ -748,9 +748,22 @@ const verifierOtp = async (req, res, next) => {
                                     // "idClientParent": 0,
                                     // "idSecteurActivite": 3
                                 }, async (atsgo_data) => {
+
+                                    console.log(`Données avant :`);
+                                    console.log(particulier)
                                     
                                     await Atsgo.validateAtsgoAccount(apikey, atsgo_data).then(() => {
-                                        Acteur.activeCompte(acteur_id).catch(err => next(err));
+
+                                        Acteur.findByEmail(atsgo_data.email).then(async acteur => {
+                                            if (!acteur) throw `Acteur non trouvé !`;
+                                            await Client.Particulier.setAtsgoCallbackData(acteur.e_particulier, atsgo_data.idClient, atsgo_data.code, atsgo_data.numeroCompteTitre).then(async updated_particulier => {
+                                                if (!particulier) throw `Erreur à l'enregistrement du compte titre !`;
+                                                console.log('Données du callback envoyé');
+                                                console.log(updated_particulier);
+                                                // Acteur.activeCompte(acteur_id).catch(err => next(err));
+                                            }).catch(error => { throw error });
+                                        }).catch(error => { throw error });
+
                                     }).catch(err => next(err));
                                     
                                     await OTP.confirm(acteur_id, otp.r_i).catch(err => next(err)); 

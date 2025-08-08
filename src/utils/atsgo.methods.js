@@ -59,7 +59,7 @@ const Atsgo = {
         }
 
         const idClient = atsgo_data.idClient;
-        const ref = atsgo_data.telMobile;
+        const email = atsgo_data.email;
 
         await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT_VALIDATE + '?ApiKey=' + apikey, {
             method: "PATCH",
@@ -79,25 +79,17 @@ const Atsgo = {
             // callback
             
             console.log('Récupération des données client atsgo..');
-            const url_get_client = process.env.ATSGO_URL + process.env.URI_CLIENT + '?Code='+ ref +'&ApiKey=' + apikey;
+            const url_get_client = process.env.ATSGO_URL + process.env.URI_CLIENT + '?Code='+ email +'&ApiKey=' + apikey;
             console.log(url_get_client);
 
             await fetch(url_get_client).then(async resp => resp.json()).then(async data => {
                 console.log('Récupération des données terminé');
-
+                if (data.status!=200) {
+                    console.log(data.errors);
+                    throw `Erreur lors de la récupération des données client atsgo !`;
+                }
                 const cbkdata = data.payLoad;
-                const cpt_espece = cbkdata.code;
-                const cpt_titre = cbkdata.numeroCompteTitre;
-
-                console.log('atsgo_id:', idClient, 'compte_espece:', cpt_espece, 'compte_titre:', cpt_titre)
-
-                await Acteur.findByEmail(ref).then(async acteur => {
-                    if (!acteur) throw `Acteur non trouvé !`;
-                    await Particulier.setAtsgoCallbackData(acteur.e_particulier, idClient, cpt_titre, cpt_espece).then(async particulier => {
-                        if (!particulier) throw `Erreur à l'enregistrement du compte titre !`;
-                        console.log('Données du callback envoyé');
-                    }).catch(error => { throw error });
-                }).catch(error => { throw error });
+                console.log('atsgo_id:', idClient, 'compte_espece:', cbkdata.code, 'compte_titre:', cbkdata.numeroCompteTitre)
             
             }).catch(error => { throw error });
         }).catch(error => { throw error });
