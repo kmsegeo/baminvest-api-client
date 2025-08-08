@@ -684,7 +684,6 @@ const verifierOtp = async (req, res, next) => {
             const data = {};
 
             if (otp.r_operation==1) {
-
                 if (!acteur.r_telephone_prp) return response(res, 404, `Numéro de téléphone principal introuvable !`);
                 
                 console.log(`Chargement des données de l'acteur: particulier, kyc, documents, ..`)

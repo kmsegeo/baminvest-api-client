@@ -62,7 +62,7 @@ router.post('/motdepasse/otp/verifier', app_auth, onbordingController.verifierMo
 
 // OTP
 
-router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiOtp);
+// router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiOtp);
 router.post('/:acteurId/otp/verifier', app_auth, atsgo_auth, onbordingController.verifierOtp);
 
 /////////////////////////

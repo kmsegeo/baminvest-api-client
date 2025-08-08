@@ -8,7 +8,6 @@ const Atsgo = {
     async onbording(apikey, client, callback) {
 
         console.log('Envoi des données à ATSGO..')
-        console.log(client)
 
         const headers =  {
             "Content-Type": "application/json",
@@ -32,10 +31,14 @@ const Atsgo = {
                 //=========== Bypass: A SUPPRIMER EN PROD..
                 
                 console.log('Récupération des données client..');
-                const url_get_client = process.env.ATSGO_URL + process.env.URI_CLIENT + '?Code='+ client.email +'&ApiKey=' + apikey;
+                const url_get_client = process.env.ATSGO_URL + process.env.URI_CLIENT + '?Code='+ client.telMobile +'&ApiKey=' + apikey;
                 console.log(url_get_client);
 
                 await fetch(url_get_client).then(async resp => resp.json()).then(async data => {
+                    if (data.status!=200) {
+                        console.log(data.errors);
+                        throw `Erreur lors de la récupération des données client atsgo !`;
+                    }
                     console.log('Récupération des données terminé');
                     callback(data.payLoad); 
                 });
