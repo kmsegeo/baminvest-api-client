@@ -45,7 +45,7 @@ const Atsgo = {
                 
             } else {
                 console.log('Envoi des données terminé');
-                callback(data.payLoad); 
+                    callback(data.payLoad); 
             }
         }).catch(error => { throw error });
     },
@@ -59,7 +59,7 @@ const Atsgo = {
         }
 
         const idClient = atsgo_data.idClient;
-        const ref = atsgo_data.email;
+        const ref = atsgo_data.telMobile;
 
         await fetch(process.env.ATSGO_URL + process.env.URI_CLIENT_VALIDATE + '?ApiKey=' + apikey, {
             method: "PATCH",
