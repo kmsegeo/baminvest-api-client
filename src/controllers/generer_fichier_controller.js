@@ -6,7 +6,8 @@ const Acteur = require('../models/Acteur');
 const { Particulier } = require('../models/KYC');
 const Document = require('../models/Document');
 const TypeDocument = require('../models/TypeDocument');
-
+const ProfilRisqueReponse = require('../models/ProfilRisqueReponse');
+const uuid = require('uuid');
 
 const generateKycPdfFile = async (req, res, next) => {
 
@@ -171,7 +172,8 @@ const generateKycPdfFile = async (req, res, next) => {
             acteur_id: acteurId, 
             type_document: type.r_i, 
             nom_fichier: fileName, 
-            chemin_fichier: chemin_fichier});
+            chemin_fichier: chemin_fichier
+        });
 
         return response(res, 200, "Fichier KYC généré avec succès.", doc);
 
@@ -190,6 +192,200 @@ const generateKycPdfFile = async (req, res, next) => {
 
 }
 
+const generateProfilrisquePdfFile = async (req, res, next) => {
+
+    try {
+
+        const pdfPath = path.join(__dirname, '../files', 'PROFILRISQUE.pdf');
+        if (!fs.existsSync(pdfPath)) return response(res, 404, "Le fichier PDF source 'PROFILRISQUE.pdf' est introuvable.");
+        
+        const existingPdfBytes = fs.readFileSync(pdfPath);
+        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+        const pages = pdfDoc.getPages();
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+        const fontSize = 10;
+        const fillcolor = rgb(1, 0.55, 0); // Orange
+
+        const today = new Date();
+        
+        const acteurId = req.session.e_acteur;
+        const acteur = await Acteur.findById(acteurId);
+        if (!acteur) return response(res, 404, "Acteur non trouvé.");
+        console.log("acteur", acteur);
+
+        const particulier = await Particulier.findByParticulierId(acteur.e_particulier);
+        if (!particulier) return response(res, 404, "Particulier non trouvé pour cet acteur.");
+        console.log("particulier", particulier);
+
+        const ra = await ProfilRisqueReponse.findAllByActeur(acteurId);
+        console.log("ra", ra);
+
+        // ✍️ Écriture à des positions arbitraires (à ajuster selon le PDF)
+
+        /* [PAGE 1] */
+        const firstPage = pages[0];
+
+        /* INFORMATION GENERALES */
+        firstPage.drawText(acteur.r_nom_complet, { x: 134, y: 738, size: fontSize, font, color: fillcolor });
+        firstPage.drawText(particulier.r_date_naissance.toLocaleDateString() || "", { x: 134, y: 720, size: fontSize, font, color: fillcolor });
+        firstPage.drawText(today.toLocaleDateString(), { x: 134, y: 702, size: fontSize, font, color: fillcolor });
+
+        /* PARTIE 1 : OBJECTIFS D’INVESTISSEMENT */
+        for (let question of ra) {
+
+            if (question.e_risques_questions == 15) {
+                
+                /* Question 1 */
+                if (question.e_risque_reponse == 50) firstPage.drawText("X", { x: 78, y: 501, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse == 51) firstPage.drawText("X", { x: 78, y: 487, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse == 52) firstPage.drawText("X", { x: 78, y: 473, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse == 53) firstPage.drawText("X", { x: 78, y: 459, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse == 54) firstPage.drawText("X", { x: 78, y: 446, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse == 55) firstPage.drawText("X", { x: 78, y: 433, size: fontSize, font, color: fillcolor });
+            }
+
+            if (question.e_risques_questions == 16) {
+                /* PARTIE 2 : CONNAISSANCE ET EXPERIENCE EN MATIERE D’INVESTISSEMENTS */
+                /* Question 2 */
+                if (question.e_risque_reponse==59) {
+                    if (question.e_risque_reponse==56) firstPage.drawText("X", { x: 238, y: 328, size: fontSize, font, color: fillcolor });
+                    if (question.e_risque_reponse==57) firstPage.drawText("X", { x: 352, y: 328, size: fontSize, font, color: fillcolor });
+                    if (question.e_risque_reponse==58) firstPage.drawText("X", { x: 462, y: 328, size: fontSize, font, color: fillcolor });
+                }
+
+                if (question.e_risque_reponse==60) {
+                    if (question.e_risque_reponse==56) firstPage.drawText("X", { x: 238, y: 313, size: fontSize, font, color: fillcolor });
+                    if (question.e_risque_reponse==57) firstPage.drawText("X", { x: 352, y: 313, size: fontSize, font, color: fillcolor });
+                    if (question.e_risque_reponse==58) firstPage.drawText("X", { x: 462, y: 313, size: fontSize, font, color: fillcolor });
+                }
+
+                if (question.e_risque_reponse==61) {
+                    if (question.e_risque_reponse==56) firstPage.drawText("X", { x: 238, y: 299, size: fontSize, font, color: fillcolor });
+                    if (question.e_risque_reponse==57) firstPage.drawText("X", { x: 352, y: 299, size: fontSize, font, color: fillcolor });
+                    if (question.e_risque_reponse==58) firstPage.drawText("X", { x: 462, y: 299, size: fontSize, font, color: fillcolor });
+                }
+            }
+
+            if (question.e_risques_questions == 17) {
+                /* Question 3 */
+                if (question.e_risque_reponse==62) firstPage.drawText("X", { x: 78, y: 245, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==63) firstPage.drawText("X", { x: 78, y: 232, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==64) firstPage.drawText("X", { x: 78, y: 219, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==65) firstPage.drawText("X", { x: 78, y: 206, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==66) firstPage.drawText("X", { x: 78, y: 193, size: fontSize, font, color: fillcolor });
+            }
+
+            if (question.e_risques_questions == 18) {
+                /* PARTIE 3 : CAPACITE A PRENDRE DU RISQUE*/
+                /* Question 4 */
+                if (question.e_risque_reponse==67) firstPage.drawText("X", { x: 78, y: 126, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==68) firstPage.drawText("X", { x: 78, y: 112, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==69) firstPage.drawText("X", { x: 78, y: 98, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==70) firstPage.drawText("X", { x: 78, y: 85, size: fontSize, font, color: fillcolor });
+            }
+            
+        }
+
+        /* [PAGE 2] */
+        const secondPage = pages[1];
+
+        for (let question of ra) {
+
+            if (question.e_risques_questions == 19) {
+                /* Question 5 */
+                if (question.e_risque_reponse==71) secondPage.drawText("X", { x: 78, y: 744, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==72) secondPage.drawText("X", { x: 78, y: 730, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==73) secondPage.drawText("X", { x: 78, y: 716, size: fontSize, font, color: fillcolor });
+            }
+
+            if (question.e_risques_questions == 20) {
+                /* Question 6 */
+                if (question.e_risque_reponse==74) secondPage.drawText("X", { x: 78, y: 658, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==75) secondPage.drawText("X", { x: 78, y: 645, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==76) secondPage.drawText("X", { x: 78, y: 631, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==77) secondPage.drawText("X", { x: 78, y: 617, size: fontSize, font, color: fillcolor });
+            }
+
+            if (question.e_risques_questions == 21) {
+                /* Question 7 */
+                if (question.e_risque_reponse==78) secondPage.drawText("X", { x: 78, y: 531, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==79) secondPage.drawText("X", { x: 78, y: 519, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==80) secondPage.drawText("X", { x: 78, y: 507, size: fontSize, font, color: fillcolor });
+            }
+
+            if (question.e_risques_questions == 22) {
+                /* Question 8 */
+                if (question.e_risque_reponse==81) secondPage.drawText("X", { x: 102, y: 456, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==82) secondPage.drawText("X", { x: 142, y: 456, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==83) secondPage.drawText("X", { x: 188, y: 456, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==84) secondPage.drawText("X", { x: 232, y: 456, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==85) secondPage.drawText("X", { x: 276, y: 456, size: fontSize, font, color: fillcolor });
+            }
+
+            if (question.e_risques_questions == 23) {
+                /* Question 9 */
+                if (question.e_risque_reponse==86) secondPage.drawText("X", { x: 312, y: 242, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==87) secondPage.drawText("X", { x: 312, y: 230, size: fontSize, font, color: fillcolor });
+                if (question.e_risque_reponse==88) secondPage.drawText("X", { x: 312, y: 217, size: fontSize, font, color: fillcolor });
+            }
+
+        }
+
+        // /* [PAGE 3] */
+        const thirdPage = pages[2];
+
+        /* PROFIL INVESTISSEUR */
+        thirdPage.drawText(acteur.r_nom_complet || "", { x: 158, y: 730, size: fontSize, font, color: fillcolor });
+
+        // thirdPage.drawText("X", { x: 89, y: 679, size: fontSize, font, color: fillcolor });
+        // thirdPage.drawText("X", { x: 297, y: 679, size: fontSize, font, color: fillcolor });
+        // thirdPage.drawText("X", { x: 463, y: 679, size: fontSize, font, color: fillcolor });
+
+        /* RESULTATS DU QUESTIONNAIRE */
+        thirdPage.drawText(acteur.profil_investisseur || "", { x: 156, y: 290, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText("Abidjan", { x: 92, y: 206, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText(today.toLocaleDateString(), { x: 206, y: 206, size: fontSize, font, color: fillcolor });
+        
+        /* FIN */
+
+        // 💾 Sauvegarde locale
+
+        const pdfBytes = await pdfDoc.save();
+
+        const fileName = `prsq_${uuid.v4()}_${Date.now()}.pdf`;
+        const outputPath = path.join(__dirname, '../../uploads', fileName);
+        fs.writeFileSync(outputPath, pdfBytes);
+
+        // Sauvegarde du chemin dans la db
+
+        const typedoc_intitule = "profilrisque";
+        const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${fileName}`;
+
+        var type = await TypeDocument.findByIntitule(typedoc_intitule);
+        if (!type) return response(res, 404, `Type de document '${typedoc_intitule}' non trouvé.`);
+        var doc = await Document.create({
+            acteur_id: acteurId, 
+            type_document: type.r_i, 
+            nom_fichier: fileName, 
+            chemin_fichier: chemin_fichier
+        });
+
+        return response(res, 200, "Fichier profilrisque généré avec succès.", doc);
+
+        // 📤 Aperçu direct dans le navigateur
+
+        // res.setHeader('Content-Type', 'application/pdf');
+        // res.setHeader('Content-Disposition', 'inline; filename=filled_profilrisque_preview.pdf');
+        // res.send(pdfBytes);
+
+    } catch (error) {
+        console.error('Erreur:', error);
+        next(error);
+    }
+
+}
 
 const generateConventionPdfFile = async (req, res, next) => {
 
@@ -205,8 +401,7 @@ const generateConventionPdfFile = async (req, res, next) => {
         const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
         const fontSize = 10;
-        // const fillcolor = rgb(0, 0, 0);
-        const fillcolor = rgb(1, 0.55, 0); // Orange
+        const fillcolor = rgb(1, 0.55, 0);      // Orange
         
         const today = new Date();
 
@@ -277,130 +472,6 @@ const generateConventionPdfFile = async (req, res, next) => {
 
 }
 
-const generateProfilrisquePdfFile = async (req, res, next) => {
-
-    try {
-
-        const pdfPath = path.join(__dirname, '../files', 'PROFILRISQUE.pdf');
-        if (!fs.existsSync(pdfPath)) return response(res, 404, "Le fichier PDF source 'PROFILRISQUE.pdf' est introuvable.");
-        
-        const existingPdfBytes = fs.readFileSync(pdfPath);
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-
-        const pages = pdfDoc.getPages();
-        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-        const fontSize = 10;
-        // const fillcolor = rgb(0, 0, 0);
-        const fillcolor = rgb(1, 0.55, 0); // Orange
-
-        const today = new Date();
-
-        // ✍️ Écriture à des positions arbitraires (à ajuster selon le PDF)
-
-        /* [PAGE 1] */
-        const firstPage = pages[0];
-
-        /* INFORMATION GENERALES */
-        firstPage.drawText("KOUAME Kouadio Serge Olivier", { x: 134, y: 738, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("31/03/1987", { x: 134, y: 720, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("06/08/2025", { x: 134, y: 702, size: fontSize, font, color: fillcolor });
-
-        /* PARTIE 1 : OBJECTIFS D’INVESTISSEMENT */
-        /* Question 1 */
-        firstPage.drawText("X", { x: 78, y: 501, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 487, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 473, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 459, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 446, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 433, size: fontSize, font, color: fillcolor });
-
-        /* PARTIE 2 : CONNAISSANCE ET EXPERIENCE EN MATIERE D’INVESTISSEMENTS */
-        /* Question 2 */
-        firstPage.drawText("X", { x: 238, y: 328, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 352, y: 328, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 462, y: 328, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 238, y: 313, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 352, y: 313, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 462, y: 313, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 238, y: 299, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 352, y: 299, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 462, y: 299, size: fontSize, font, color: fillcolor });
-        /* Question 3 */
-        firstPage.drawText("X", { x: 78, y: 245, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 232, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 219, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 206, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 193, size: fontSize, font, color: fillcolor });
-
-        /* PARTIE 3 : CAPACITE A PRENDRE DU RISQUE*/
-        /* Question 4 */
-        firstPage.drawText("X", { x: 78, y: 126, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 112, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 98, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 78, y: 85, size: fontSize, font, color: fillcolor });
-
-        /* [PAGE 2] */
-        const secondPage = pages[1];
-        /* Question 5 */
-        secondPage.drawText("X", { x: 78, y: 744, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 78, y: 730, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 78, y: 716, size: fontSize, font, color: fillcolor });
-        /* Question 6 */
-        secondPage.drawText("X", { x: 78, y: 658, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 78, y: 645, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 78, y: 631, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 78, y: 617, size: fontSize, font, color: fillcolor });
-        /* Question 7 */
-        secondPage.drawText("X", { x: 78, y: 531, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 78, y: 519, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 78, y: 507, size: fontSize, font, color: fillcolor });
-        /* Question 8 */
-        secondPage.drawText("X", { x: 102, y: 456, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 142, y: 456, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 188, y: 456, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 232, y: 456, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 276, y: 456, size: fontSize, font, color: fillcolor });
-        /* Question 9 */
-        secondPage.drawText("X", { x: 312, y: 242, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 312, y: 230, size: fontSize, font, color: fillcolor });
-        secondPage.drawText("X", { x: 312, y: 217, size: fontSize, font, color: fillcolor });
-
-        /* [PAGE 3] */
-        const thirdPage = pages[2];
-        /* PROFIL INVESTISSEUR */
-        thirdPage.drawText("KOUAME Kouadio Serge Olivier", { x: 158, y: 730, size: fontSize, font, color: fillcolor });
-        // thirdPage.drawText("X", { x: 89, y: 679, size: fontSize, font, color: fillcolor });
-        // thirdPage.drawText("X", { x: 297, y: 679, size: fontSize, font, color: fillcolor });
-        // thirdPage.drawText("X", { x: 463, y: 679, size: fontSize, font, color: fillcolor });
-
-        /* RESULTATS DU QUESTIONNAIRE */
-        thirdPage.drawText("Dynamique", { x: 156, y: 290, size: fontSize, font, color: fillcolor });
-        /*  */
-        thirdPage.drawText("Abidjan", { x: 92, y: 206, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("06/08/2025", { x: 206, y: 206, size: fontSize, font, color: fillcolor });
-        
-        /* FIN */
-
-        // 💾 Sauvegarde locale
-
-        const pdfBytes = await pdfDoc.save();
-        const fileName = `profilrisque_filtered_${Date.now()}.pdf`;
-        const outputPath = path.join(__dirname, '../../uploads', fileName);
-        fs.writeFileSync(outputPath, pdfBytes);
-
-        // 📤 Aperçu direct dans le navigateur
-
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename=filled_profilrisque_preview.pdf');
-        res.send(pdfBytes);
-
-    } catch (error) {
-        console.error('Erreur:', error);
-        next(error);
-    }
-
-}
 
 module.exports = {
     generateKycPdfFile,
