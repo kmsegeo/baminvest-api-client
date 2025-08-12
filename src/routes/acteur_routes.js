@@ -80,13 +80,13 @@ router.delete('/sessions/:ref', app_auth, session_verify, sessionController.dest
 // FICHIERS
 
 router.get('/fichiers', app_auth, session_verify, fichierController.getActeurFiles);
+router.get('/fichiers/:ref', app_auth, session_verify, fichierController.getFileByRef);
 router.get('/fichiers/photoprofil', app_auth, session_verify, fichierController.getPhotoProfilFile);
 router.get('/fichiers/domiciliation', app_auth, session_verify, fichierController.getDomiciliationFile);
 router.get('/fichiers/signature', app_auth, session_verify, fichierController.getSignatureFile);
-router.get('/fichiers/kyc', app_auth, session_verify, fichierController.getKycFile);
-router.get('/fichiers/profilrisque', app_auth, session_verify, fichierController.getProfilRisqueFile);
-router.get('/fichiers/convention', app_auth, session_verify, fichierController.getConventionFiles);
-router.get('/fichiers/:ref', app_auth, session_verify, fichierController.getFileByRef);
+// router.get('/fichiers/kyc', app_auth, session_verify, fichierController.getKycFile);
+// router.get('/fichiers/profilrisque', app_auth, session_verify, fichierController.getProfilRisqueFile);
+// router.get('/fichiers/convention', app_auth, session_verify, fichierController.getConventionFiles);
 
 router.get('/fichiers/generer/kyc', app_auth, session_verify, generateFileController.generateKycPdfFile);
 router.get('/fichiers/generer/profilrisque', app_auth, session_verify, generateFileController.generateProfilrisquePdfFile);
