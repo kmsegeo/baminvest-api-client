@@ -176,7 +176,12 @@ const generateKycPdfFile = async (req, res, next) => {
         //     chemin_fichier: chemin_fichier
         // });
 
-        return response(res, 200, "Fichier KYC généré avec succès.", chemin_fichier);
+        const result = {
+            fileName: fileName,
+            chemin_fichier: chemin_fichier
+        };
+
+        return response(res, 200, "Fichier KYC généré avec succès.", result);
 
         // 📤 Aperçu direct dans le navigateur
 
@@ -370,8 +375,13 @@ const generateProfilrisquePdfFile = async (req, res, next) => {
         //     nom_fichier: fileName, 
         //     chemin_fichier: chemin_fichier
         // });
+        
+        const result = {
+            fileName: fileName,
+            chemin_fichier: chemin_fichier
+        };
 
-        return response(res, 200, "Fichier profilrisque généré avec succès.", chemin_fichier);
+        return response(res, 200, "Fichier profilrisque généré avec succès.", result);
 
         // 📤 Aperçu direct dans le navigateur
 
@@ -531,7 +541,12 @@ const generateConventionPdfFile = async (req, res, next) => {
         //     chemin_fichier: chemin_fichier
         // });
 
-        return response(res, 200, "Fichier profilrisque généré avec succès.", chemin_fichier);
+        const result = {
+            fileName: fileName,
+            chemin_fichier: chemin_fichier
+        };
+
+        return response(res, 200, "Fichier profilrisque généré avec succès.", result);
 
         // 📤 Aperçu direct dans le navigateur
 
