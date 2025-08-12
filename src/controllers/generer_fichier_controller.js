@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const Acteur = require('../models/Acteur');
-const { Particulier } = require('../models/KYC');
+const KYC = require('../models/KYC');
+const Client = require('../models/Client');
 const Document = require('../models/Document');
 const TypeDocument = require('../models/TypeDocument');
 const ProfilRisqueReponse = require('../models/ProfilRisqueReponse');
@@ -18,7 +19,7 @@ const generateKycPdfFile = async (req, res, next) => {
         var acteur = await Acteur.findById(acteurId);
         if (!acteur) return response(res, 404, "Acteur non trouvé.");
 
-        var kyc = await Particulier.findByParticulierId(acteur.e_particulier);
+        var kyc = await KYC.Particulier.findByParticulierId(acteur.e_particulier);
         if (!kyc) return response(res, 404, "KYC non trouvé pour cet acteur.");
 
         // Charger le PDF source
@@ -211,16 +212,14 @@ const generateProfilrisquePdfFile = async (req, res, next) => {
         const today = new Date();
         
         const acteurId = req.session.e_acteur;
+        
         const acteur = await Acteur.findById(acteurId);
         if (!acteur) return response(res, 404, "Acteur non trouvé.");
-        console.log("acteur", acteur);
 
-        const particulier = await Particulier.findByParticulierId(acteur.e_particulier);
+        const particulier = await Client.Particulier.findById(acteur.e_particulier);
         if (!particulier) return response(res, 404, "Particulier non trouvé pour cet acteur.");
-        console.log("particulier", particulier);
 
         const ra = await ProfilRisqueReponse.findAllByActeur(acteurId);
-        console.log("ra", ra);
 
         // ✍️ Écriture à des positions arbitraires (à ajuster selon le PDF)
 
@@ -403,67 +402,142 @@ const generateConventionPdfFile = async (req, res, next) => {
         const fontSize = 10;
         const fillcolor = rgb(1, 0.55, 0);      // Orange
         
-        const today = new Date();
 
         // ✍️ Écriture à des positions arbitraires (à ajuster selon le PDF)
 
-        /* [PAGE 3] */
-        const firstPage = pages[2];
+        const today = new Date();
+        const acteurId = req.session.e_acteur;
+        
+        const acteur = await Acteur.findById(acteurId);
+        if (!acteur) return response(res, 404, "Acteur non trouvé.");
+        console.log("acteur", acteur);
 
-        /* INFORMATION GENERALES */
-        firstPage.drawText("X", { x: 78, y: 528, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 131, y: 528, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 188, y: 528, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("KOUAME", { x: 218, y: 498, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("Kouadio", { x: 172, y: 471, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("Serge Olivier", { x: 172, y: 444, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("31/03/1987", { x: 132, y: 417, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("Abidjan", { x: 288, y: 417, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("Ivoirienne", { x: 142, y: 389, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("PASSPORT - No 123456789", { x: 242, y: 361, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("Cocody - 2 Plateaux, mobile", { x: 132, y: 334, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("225 0709672948", { x: 140, y: 306, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("kmsergeo@gmail.com", { x: 338, y: 306, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 79, y: 270, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 265, y: 270, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("X", { x: 426, y: 270, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("KOUAME", { x: 208, y: 252, size: fontSize, font, color: fillcolor });
-        firstPage.drawText("Koffi Jaures Patrick", { x: 208, y: 232, size: fontSize, font, color: fillcolor });
+        const particulier = await Client.Particulier.findById(acteur.e_particulier);
+        if (!particulier) return response(res, 404, "Particulier non trouvé pour cet acteur.");
+        console.log("particulier", particulier);
+
+        /* [PAGE 3] */
+        const thirdPage = pages[2];
+
+        if (particulier.r_civilite==1) thirdPage.drawText("X", { x: 78, y: 528, size: fontSize, font, color: fillcolor });
+        if (particulier.r_civilite==2) thirdPage.drawText("X", { x: 131, y: 528, size: fontSize, font, color: fillcolor });
+        if (particulier.r_civilite==3) thirdPage.drawText("X", { x: 188, y: 528, size: fontSize, font, color: fillcolor });
+
+        thirdPage.drawText(particulier.r_nom || "", { x: 218, y: 498, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText(particulier.r_nom_jeune_fille || "", { x: 218, y: 471, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText(particulier.r_prenom || "", { x: 218, y: 444, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText(particulier.r_date_naissance.toLocaleDateString() || "", { x: 132, y: 417, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText("Abidjan", { x: 288, y: 417, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText(particulier.r_nationalite || "", { x: 142, y: 389, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText(particulier.r_num_piece || "", { x: 242, y: 361, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText(acteur.r_adresse || "", { x: 132, y: 334, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText(acteur.r_telephone_prp || "", { x: 140, y: 306, size: fontSize, font, color: fillcolor });
+        thirdPage.drawText(acteur.r_email || "", { x: 338, y: 306, size: fontSize, font, color: fillcolor });
+
+        if (particulier.r_type_compte==1) thirdPage.drawText("X", { x: 79, y: 270, size: fontSize, font, color: fillcolor });
+        if (particulier.r_type_compte==2) thirdPage.drawText("X", { x: 265, y: 270, size: fontSize, font, color: fillcolor });
+        if (particulier.r_type_compte==3) {
+            thirdPage.drawText("X", { x: 426, y: 270, size: fontSize, font, color: fillcolor });
+            thirdPage.drawText("", { x: 208, y: 252, size: fontSize, font, color: fillcolor });
+            thirdPage.drawText("", { x: 208, y: 232, size: fontSize, font, color: fillcolor });
+        }
 
         /* [PAGE 11] */
-        const secondPage = pages[10];
-        secondPage.drawText(today.toLocaleDateString(), { x: 128, y: 562, size: fontSize, font, color: fillcolor });
+        const eleventhPage = pages[10];
+        eleventhPage.drawText(today.toLocaleDateString(), { x: 128, y: 562, size: fontSize, font, color: fillcolor });
 
-        /* [PAGE 12] */
-        const thirdPage = pages[11];
-        thirdPage.drawText("X", { x: 78, y: 665, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("X", { x: 131, y: 665, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("X", { x: 188, y: 665, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("KOUAME", { x: 172, y: 641, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("Koffi", { x: 172, y: 615, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("Jaures Patrick", { x: 172, y: 587, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("31/03/1987", { x: 128, y: 560, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("Abidjan", { x: 288, y: 560, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("Ivoirienne", { x: 138, y: 532, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("PASSPORT - No 123456789", { x: 242, y: 505, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("Cocody - 2 Plateaux, mobile", { x: 132, y: 477, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("225 0709672948", { x: 140, y: 450, size: fontSize, font, color: fillcolor });
-        thirdPage.drawText("kmsergeo@gmail.com", { x: 338, y: 450, size: fontSize, font, color: fillcolor });
-        
+        if (particulier.r_type_compte==3) {
+            /* [PAGE 12] */
+            const twelfthPage = pages[11];
+            /* ANNEXE I : FICHE D’IDENTIFICATION DU COTITULAIRE DU COMPTE */
+            twelfthPage.drawText("X", { x: 78, y: 665, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("X", { x: 131, y: 665, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("X", { x: 188, y: 665, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("1", { x: 172, y: 641, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("2", { x: 172, y: 615, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("3", { x: 172, y: 587, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("4", { x: 128, y: 560, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("5", { x: 288, y: 560, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("6", { x: 138, y: 532, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("7", { x: 242, y: 505, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("8", { x: 132, y: 477, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("9", { x: 140, y: 449, size: fontSize, font, color: fillcolor });
+            twelfthPage.drawText("10", { x: 338, y: 449, size: fontSize, font, color: fillcolor });
+        }
+
+        /* [PAGE 14] */
+        if (acteur.e_signataire!=0) {
+            const fourteenthPage = pages[13];
+            /* ANNEXE III : FICHE DE PROCURATION */
+            fourteenthPage.drawText("1", { x: 168, y: 705, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("2", { x: 202, y: 683, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("3", { x: 140, y: 661, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("4", { x: 140, y: 640, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("5", { x: 274, y: 618, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("6", { x: 148, y: 597, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("7", { x: 162, y: 575, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("8", { x: 130, y: 554, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("9", { x: 138, y: 532, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("10", { x: 156, y: 511, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("10", { x: 216, y: 463, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("X", { x: 81, y: 406, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("X", { x: 328, y: 406, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("11", { x: 448, y: 409, size: fontSize, font, color: fillcolor });
+            fourteenthPage.drawText("12", { x: 166, y: 368, size: fontSize, font, color: fillcolor });
+        }
+
+        /* [PAGE 15] */
+        if (acteur.e_represantant!=0) {
+            const fifteenthPage = pages[14];
+            /* ANNEXE IV : FICHE D’IDENTIFICATION DU REPRESENTANT LEGAL */
+            fifteenthPage.drawText("X", { x: 78, y: 712, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("X", { x: 131, y: 712, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("X", { x: 188, y: 712, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("1", { x: 172, y: 689, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("2", { x: 172, y: 663, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("3", { x: 172, y: 635, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("4", { x: 128, y: 607, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("5", { x: 288, y: 607, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("6", { x: 138, y: 580, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("7", { x: 242, y: 552, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("8", { x: 140, y: 525, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("9", { x: 134, y: 497, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("10", { x: 140, y: 470, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("11", { x: 338, y: 470, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("12", { x: 268, y: 429, size: fontSize, font, color: fillcolor });
+            fifteenthPage.drawText("13", { x: 268, y: 401, size: fontSize, font, color: fillcolor });
+        }
+
         /* FIN */
 
         // 💾 Sauvegarde locale
 
         const pdfBytes = await pdfDoc.save();
-        const fileName = `convention_filtered_${Date.now()}.pdf`;
+        const fileName = `conv_${uuid.v4()}_${Date.now()}.pdf`;
         const outputPath = path.join(__dirname, '../../uploads', fileName);
         fs.writeFileSync(outputPath, pdfBytes);
 
+        // Sauvegarde du chemin dans la db
+
+        const typedoc_intitule = "convention";
+        const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/uploads/${fileName}`;
+
+        var type = await TypeDocument.findByIntitule(typedoc_intitule);
+        if (!type) return response(res, 404, `Type de document '${typedoc_intitule}' non trouvé.`);
+        var doc = await Document.create({
+            acteur_id: acteurId, 
+            type_document: type.r_i, 
+            nom_fichier: fileName, 
+            chemin_fichier: chemin_fichier
+        });
+
+        return response(res, 200, "Fichier profilrisque généré avec succès.", doc);
+
         // 📤 Aperçu direct dans le navigateur
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename=filled_convention_preview.pdf');
-        res.send(pdfBytes);
+        // res.setHeader('Content-Type', 'application/pdf');
+        // res.setHeader('Content-Disposition', 'inline; filename=filled_convention_preview.pdf');
+        // res.send(pdfBytes);
 
     } catch (error) {
         console.error('Erreur:', error);
