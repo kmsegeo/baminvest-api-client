@@ -2807,6 +2807,9 @@
     "/v1/acteurs/fichiers/generer/kyc": {
       "get": {
         "description": "",
+        "produces": [
+          "application/pdf"
+        ],
         "parameters": [
           {
             "name": "appauth",
@@ -2835,8 +2838,8 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
           }
         }
       }
