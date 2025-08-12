@@ -44,6 +44,7 @@ app.use(base_path + '/events', eventRoutes);
 
 app.use(base_path + '/temp', clientRoutes); 
 
+app.use(`/temp`, express.static(path.join(__dirname, 'temp'))); 
 app.use(`/uploads`, express.static(path.join(__dirname, 'uploads'))); 
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument)); 
