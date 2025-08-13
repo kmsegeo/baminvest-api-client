@@ -597,7 +597,7 @@ const generateBulletinPdfFile = async (req, res, next) => {
         // 💾 Sauvegarde locale
 
         const pdfBytes = await pdfDoc.save();
-        const fileName = `bul_${uuid.v4()}_${Date.now()}.pdf`;
+        const fileName = `bul_${Date.now()}.pdf`;
         const outputPath = path.join(__dirname, '../../temp', fileName);
         fs.writeFileSync(outputPath, pdfBytes);
 
