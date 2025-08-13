@@ -565,11 +565,11 @@ const generateBulletinPdfFile = async (req, res, next) => {
 
     try {
 
-        // const pdfPath = path.join(__dirname, '../files', 'BULLETIN.pdf');
-        // if (!fs.existsSync(pdfPath)) return response(res, 404, "Le fichier PDF source 'BULLETIN.pdf' est introuvable.");
+        const pdfPath = path.join(__dirname, '../files', 'BULLETIN.pdf');
+        if (!fs.existsSync(pdfPath)) return response(res, 404, "Le fichier PDF source 'BULLETIN.pdf' est introuvable.");
         
-        // const existingPdfBytes = fs.readFileSync(pdfPath);
-        // const pdfDoc = await PDFDocument.load(existingPdfBytes);
+        const existingPdfBytes = fs.readFileSync(pdfPath);
+        const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
         // const pages = pdfDoc.getPages();
         // const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -596,14 +596,14 @@ const generateBulletinPdfFile = async (req, res, next) => {
         
         // 💾 Sauvegarde locale
 
-        // const pdfBytes = await pdfDoc.save();
-        const fileName = `BULLETIN.pdf`;
-        // const outputPath = path.join(__dirname, '../../temp', fileName);
-        // fs.writeFileSync(outputPath, pdfBytes);
+        const pdfBytes = await pdfDoc.save();
+        const fileName = `bul_${uuid.v4()}_${Date.now()}.pdf`;
+        const outputPath = path.join(__dirname, '../../temp', fileName);
+        fs.writeFileSync(outputPath, pdfBytes);
 
         // Sauvegarde du chemin dans la db
 
-        const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/files/${fileName}`;
+        const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/temp/${fileName}`;
 
         const result = {
             fileName: fileName,
