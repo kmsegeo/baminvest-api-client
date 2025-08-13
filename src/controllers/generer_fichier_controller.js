@@ -561,9 +561,73 @@ const generateConventionPdfFile = async (req, res, next) => {
 
 }
 
+const generateBulletinPdfFile = async (req, res, next) => {
+
+    try {
+
+        // const pdfPath = path.join(__dirname, '../files', 'BULLETIN.pdf');
+        // if (!fs.existsSync(pdfPath)) return response(res, 404, "Le fichier PDF source 'BULLETIN.pdf' est introuvable.");
+        
+        // const existingPdfBytes = fs.readFileSync(pdfPath);
+        // const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+        // const pages = pdfDoc.getPages();
+        // const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+        // const fontSize = 10;
+        // const fillcolor_orange = rgb(1, 0.55, 0);      // Orange
+        // const fillcolor_black = rgb(0, 0, 0);        // Noir
+
+        // ✍️ Écriture à des positions arbitraires (à ajuster selon le PDF)
+
+        // const today = new Date();
+        // const acteurId = req.session.e_acteur;
+         
+        // const acteur = await Acteur.findById(acteurId);
+        // if (!acteur) return response(res, 404, "Acteur non trouvé.");
+
+        // const particulier = await Client.Particulier.findById(acteur.e_particulier);
+        // if (!particulier) return response(res, 404, "Particulier non trouvé pour cet acteur.");
+
+        /* [PAGE 3] */
+        // const firstPage = pages[0];
+
+        // firstPage.drawText("X", { x: 78, y: 528, size: fontSize, font, color: fillcolor_black });
+        
+        // 💾 Sauvegarde locale
+
+        // const pdfBytes = await pdfDoc.save();
+        const fileName = `BULLETIN.pdf`;
+        // const outputPath = path.join(__dirname, '../../temp', fileName);
+        // fs.writeFileSync(outputPath, pdfBytes);
+
+        // Sauvegarde du chemin dans la db
+
+        const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/files/${fileName}`;
+
+        const result = {
+            fileName: fileName,
+            chemin_fichier: chemin_fichier
+        };
+
+        return response(res, 200, "Fichier profilrisque généré avec succès.", result);
+
+        // 📤 Aperçu direct dans le navigateur
+
+        // res.setHeader('Content-Type', 'application/pdf');
+        // res.setHeader('Content-Disposition', 'inline; filename=filled_convention_preview.pdf');
+        // res.send(pdfBytes);
+
+    } catch (error) {
+        console.error('Erreur:', error);
+        next(error);
+    }
+}
+
 
 module.exports = {
     generateKycPdfFile,
     generateProfilrisquePdfFile,
-    generateConventionPdfFile
+    generateConventionPdfFile,
+    generateBulletinPdfFile
 }

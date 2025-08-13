@@ -91,6 +91,7 @@ router.get('/fichiers/signature', app_auth, session_verify, fichierController.ge
 router.get('/fichiers/generer/kyc', app_auth, session_verify, generateFileController.generateKycPdfFile);
 router.get('/fichiers/generer/profilrisque', app_auth, session_verify, generateFileController.generateProfilrisquePdfFile);
 router.get('/fichiers/generer/convention', app_auth, session_verify, generateFileController.generateConventionPdfFile);
+router.get('/fichiers/generer/bulletin', app_auth, session_verify, generateFileController.generateBulletinPdfFile);
 
 // OPERATION
 
