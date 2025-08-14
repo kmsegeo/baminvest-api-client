@@ -177,8 +177,8 @@ const generateKycPdfFile = async (req, res, next) => {
         // });
 
         const result = {
-            fileName: fileName,
-            chemin_fichier: chemin_fichier
+            r_nom_fichier: fileName,
+            r_chemin_fichier: chemin_fichier
         };
 
         return response(res, 200, "Fichier KYC généré avec succès.", result);
@@ -375,10 +375,10 @@ const generateProfilrisquePdfFile = async (req, res, next) => {
         //     nom_fichier: fileName, 
         //     chemin_fichier: chemin_fichier
         // });
-        
+
         const result = {
-            fileName: fileName,
-            chemin_fichier: chemin_fichier
+            r_nom_fichier: fileName,
+            r_chemin_fichier: chemin_fichier
         };
 
         return response(res, 200, "Fichier profilrisque généré avec succès.", result);
@@ -542,8 +542,8 @@ const generateConventionPdfFile = async (req, res, next) => {
         // });
 
         const result = {
-            fileName: fileName,
-            chemin_fichier: chemin_fichier
+            r_nom_fichier: fileName,
+            r_chemin_fichier: chemin_fichier
         };
 
         return response(res, 200, "Fichier profilrisque généré avec succès.", result);
@@ -606,8 +606,8 @@ const generateBulletinPdfFile = async (req, res, next) => {
         const chemin_fichier = `${req.protocol}://${req.get('host')}/api/bamclient/temp/${fileName}`;
 
         const result = {
-            fileName: fileName,
-            chemin_fichier: chemin_fichier
+            r_nom_fichier: fileName,
+            r_chemin_fichier: chemin_fichier
         };
 
         return response(res, 200, "Fichier profilrisque généré avec succès.", result);
