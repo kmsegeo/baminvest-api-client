@@ -80,7 +80,7 @@ router.delete('/sessions/:ref', app_auth, session_verify, sessionController.dest
 // FICHIERS
 
 router.get('/fichiers', app_auth, session_verify, fichierController.getActeurFiles);
-router.get('/fichiers/:ref', app_auth, session_verify, fichierController.getFileByRef);
+router.get('/fichiers/ref/:ref', app_auth, session_verify, fichierController.getFileByRef);
 router.get('/fichiers/photoprofil', app_auth, session_verify, fichierController.getPhotoProfilFile);
 router.get('/fichiers/domiciliation', app_auth, session_verify, fichierController.getDomiciliationFile);
 router.get('/fichiers/signature', app_auth, session_verify, fichierController.getSignatureFile);

@@ -624,7 +624,6 @@ const generateBulletinPdfFile = async (req, res, next) => {
     }
 }
 
-
 module.exports = {
     generateKycPdfFile,
     generateProfilrisquePdfFile,

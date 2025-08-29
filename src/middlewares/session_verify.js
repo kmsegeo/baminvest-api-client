@@ -28,6 +28,7 @@ module.exports = async (req, res, next) => {
         await Session.findByRef(decodedToken.session).then(session => {
             if (!session) throw `Erreur de session !`;
             if (session.r_statut==0) throw `Session inactive, connexion requise !`;
+            console.log(`Session active !`);
             req.session = session;
             next();
         }).catch(error => response(res, 401, error));

@@ -119,6 +119,7 @@ const Document = {
     },
 
     async findBySpecific(acteur_id, intitule) {
+        console.log(acteur_id, intitule);
         const res = await db.query(`
             SELECT 
                 td.r_i,
