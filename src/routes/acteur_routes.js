@@ -57,13 +57,15 @@ router.post('/:acteurId/motdepasse/activer', app_auth, onbordingController.creat
 router.post('/motdepasse/reinitialiser', app_auth, clientController.resetPassword);
 router.put('/motdepasse/modifier', app_auth, clientController.updatePassword);
 
-router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiMotdepasseOtp);
-router.post('/motdepasse/otp/verifier', app_auth, onbordingController.verifierMotdepasseOtp);
 
 // OTP
 
 // router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiOtp);
 router.post('/:acteurId/otp/verifier', app_auth, atsgo_auth, onbordingController.verifierOtp);
+
+router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiMotdepasseOtp);
+router.post('/motdepasse/otp/verifier', app_auth, onbordingController.verifierMotdepasseOtp);
+
 
 /////////////////////////
 //    SESSION ACTIVE

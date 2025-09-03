@@ -40,17 +40,19 @@ const Atsgo = {
                         throw `Erreur lors de la récupération des données client atsgo !`;
                     }
                     console.log('Récupération des données terminé');
+                    // console.log('atsg_data:', data.payLoad);
                     callback(data.payLoad); 
                 });
                 
             } else {
                 console.log('Envoi des données terminé');
-                    callback(data.payLoad); 
+                // console.log('atsg_data:', data.payLoad);
+                callback(data.payLoad); 
             }
         }).catch(error => { throw error });
     },
 
-    async validateAtsgoAccount(apikey, atsgo_data) {
+    async validateAtsgoAccount(apikey, atsgo_data, callback) {
 
         console.log(`Validation du compte atsgo..`)
 
@@ -89,8 +91,9 @@ const Atsgo = {
                     throw `Erreur lors de la récupération des données client atsgo !`;
                 }
                 const cbkdata = data.payLoad;
-                console.log('atsgo_id:', idClient, 'compte_espece:', cbkdata.code, 'compte_titre:', cbkdata.numeroCompteTitre)
-            
+                console.log('atsgo_id:', idClient, 'compte_espece:', cbkdata.code, 'compte_titre:', cbkdata.numeroCompteTitre);
+                callback(cbkdata);
+
             }).catch(error => { throw error });
         }).catch(error => { throw error });
     },
