@@ -748,10 +748,8 @@ const verifierOtp = async (req, res, next) => {
                                     // "idClientParent": 0,
                                     // "idSecteurActivite": 3
                                 }, async (atsgo_data) => {
-                                    console.log('atsgo_data', atsgo_data)
+                                    
                                     await Atsgo.validateAtsgoAccount(apikey, atsgo_data, async data_validate => {
-
-                                        console.log('data_validate', data_validate)
                                         await Client.Particulier.setAtsgoCallbackData(acteur.e_particulier, data_validate.idClient, data_validate.code, data_validate.numeroCompteTitre).then(updated_particulier => {
                                             if (!updated_particulier) throw `Erreur à l'enregistrement du compte titre !`;
                                             console.log('Données du callback envoyé');
