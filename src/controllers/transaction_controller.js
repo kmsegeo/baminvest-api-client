@@ -65,11 +65,11 @@ const checkOperationStatus = async (req, res, next) => {
         await Particulier.findById(acteur.e_particulier).then(async particulier => {
             const idClient = particulier.r_atsgo_id_client;
 
-            console.log(`Lecture des états de l'opération ${operationRef} \npour le client atsgo ${idClient}`);
+            console.log(`Lecture des états de l'opération ${operationRef} du client atsgo ${idClient}`);
             
             let end = false;
             let operation_data = {};
-            
+
             await Operation.findAllByActeur(acteur_id).then(async operations => {
 
                 for (let operation of operations) {
@@ -87,7 +87,7 @@ const checkOperationStatus = async (req, res, next) => {
                         statut.envoye = operation.r_statut==1 ? true:false;
                         
                         if (operation.r_statut==1)
-                        await Atsgo.findClientOperation(apikey, idClient, async atsgo_operations => {
+                        await Atsgo.findClientOperation(apikey, idClient, atsgo_operations => {
                             for (let atsgo_operation of atsgo_operations) {
                                 if (atsgo_operation.referenceOperation==operation.r_reference) {
                                     statut.valide = atsgo_operation.etat=="VALIDE" ? true:false;
@@ -128,7 +128,7 @@ const checkOperationStatus = async (req, res, next) => {
                             statut.envoye = operation.r_statut==1 ? true:false;
                             
                             if (operation.r_statut==1)
-                            await Atsgo.findClientOperation(apikey, idClient, async atsgo_operations => {
+                            await Atsgo.findClientOperation(apikey, idClient, atsgo_operations => {
                                 for (let atsgo_operation of atsgo_operations) {
                                     if (atsgo_operation.referenceOperation==operation.r_reference) {
                                         statut.valide = atsgo_operation.etat=="VALIDE" ? true:false;
@@ -138,7 +138,6 @@ const checkOperationStatus = async (req, res, next) => {
                                             console.log(`Opération validée !`);
                                             end = true;
                                         }
-                                        // operation_data = atsgo_operation;
                                     }
                                 }
                             }).catch(err => next(err));
