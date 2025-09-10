@@ -65,7 +65,7 @@ const checkOperationStatus = async (req, res, next) => {
         await Particulier.findById(acteur.e_particulier).then(async particulier => {
             const idClient = particulier.r_atsgo_id_client;
 
-            console.log(`Chargement des opération client`)
+            console.log(`Lecture des états de l'opération ${operationRef} pour le client ${idClient}`);
             
             let end = false;
 
