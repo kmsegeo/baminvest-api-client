@@ -65,10 +65,11 @@ const checkOperationStatus = async (req, res, next) => {
         await Particulier.findById(acteur.e_particulier).then(async particulier => {
             const idClient = particulier.r_atsgo_id_client;
 
-            console.log(`Lecture des états de l'opération ${operationRef} pour le client ${idClient}`);
+            console.log(`Lecture des états de l'opération ${operationRef} \npour le client atsgo ${idClient}`);
             
             let end = false;
-
+            let operation_data = {};
+            
             await Operation.findAllByActeur(acteur_id).then(async operations => {
 
                 for (let operation of operations) {
@@ -110,7 +111,6 @@ const checkOperationStatus = async (req, res, next) => {
 
             const intervalId = setInterval(async () => {
 
-                let operation_data = {};
                 await Operation.findAllByActeur(acteur_id).then(async operations => {
 
                     for (let operation of operations) {
