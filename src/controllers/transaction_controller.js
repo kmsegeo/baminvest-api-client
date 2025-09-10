@@ -124,8 +124,6 @@ const checkOperationStatus = async (req, res, next) => {
                                 r_date_creer: operation.r_date_creer
                             };
 
-                            console.log("Ref:", operation.r_reference);
-
                             statut.enregistre = true;
                             statut.envoye = operation.r_statut==1 ? true:false;
                             
