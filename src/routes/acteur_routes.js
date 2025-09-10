@@ -60,11 +60,11 @@ router.put('/motdepasse/modifier', app_auth, clientController.updatePassword);
 
 // OTP
 
-// router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiOtp);
+router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiOtp);
 router.post('/:acteurId/otp/verifier', app_auth, atsgo_auth, onbordingController.verifierOtp);
 
-router.get('/:acteurId/otp/renvoyer', app_auth, onbordingController.renvoiMotdepasseOtp);
-router.post('/motdepasse/otp/verifier', app_auth, onbordingController.verifierMotdepasseOtp);
+router.get('/otp/renvoyer', app_auth, onbordingController.renvoiMotdepasseOtp);
+router.post('/otp/verifier', app_auth, onbordingController.verifierMotdepasseOtp);
 
 
 /////////////////////////
