@@ -3479,7 +3479,7 @@
             "type": "string"
           },
           {
-            "name": "prefix_fonds",
+            "name": "prefixe_fonds",
             "in": "query",
             "type": "string"
           }
